@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../main.dart';
-import '../../models/profile_model.dart';
+import '../../models/agent_model.dart';
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../../services/user_service.dart';
+import '../../services/agent_service.dart';
 import '../screens/private/profile_screen_widget.dart';
 
 class UpdateProfileButtonWidget extends StatefulWidget {
@@ -36,13 +36,10 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  final response = await UserService().updateProfileProcedure(
-                      FormService.fullName,
-                      FormService.email,
-                      FormService.avatar);
+                  final response = await AgentService().updateProfileProcedure(
+                      FormService.name, FormService.email, FormService.avatar);
                   if (response == true) {
-                    ProfileModel? newProfile =
-                        await UserService().loadProfile();
+                    AgentModel? updatedAgent = await AgentService().loadAgent();
                     if (!mounted) return;
                     final snackBar = SnackBar(
                       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -56,13 +53,13 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                           )),
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    if (EmailValidator.validate(newProfile!.email)) {
+                    if (EmailValidator.validate(updatedAgent!.email)) {
                       if (!mounted) return;
                       Navigator.of(context, rootNavigator: true)
                           .pushAndRemoveUntil(
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      ProfileScreenWidget(profile: newProfile)),
+                                      ProfileScreenWidget(agent: updatedAgent)),
                               (route) => false);
                     } else {
                       Navigator.of(context, rootNavigator: true)
@@ -117,13 +114,10 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  final response = await UserService().updateProfileProcedure(
-                      FormService.fullName,
-                      FormService.email,
-                      FormService.avatar);
+                  final response = await AgentService().updateProfileProcedure(
+                      FormService.name, FormService.email, FormService.avatar);
                   if (response == true) {
-                    ProfileModel? newProfile =
-                        await UserService().loadProfile();
+                    AgentModel? newProfile = await AgentService().loadAgent();
                     if (!mounted) return;
                     final snackBar = SnackBar(
                       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -143,7 +137,7 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                           .pushAndRemoveUntil(
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      ProfileScreenWidget(profile: newProfile)),
+                                      ProfileScreenWidget(agent: newProfile)),
                               (route) => false);
                     } else {
                       Navigator.of(context, rootNavigator: true)

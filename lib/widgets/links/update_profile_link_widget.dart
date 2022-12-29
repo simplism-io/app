@@ -2,12 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../models/profile_model.dart';
+import '../../models/agent_model.dart';
 import '../../services/localization_service.dart';
 import '../screens/private/update_profile_screen_widget.dart';
 
 class UpdateProfileLinkWidget extends StatelessWidget {
-  final ProfileModel? profile;
+  final AgentModel? profile;
   final Uint8List? avatarBytes;
   const UpdateProfileLinkWidget({super.key, this.profile, this.avatarBytes});
 

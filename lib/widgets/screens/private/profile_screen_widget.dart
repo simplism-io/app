@@ -8,7 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../main.dart';
-import '../../../models/profile_model.dart';
+import '../../../models/agent_model.dart';
 import '../../../services/localization_service.dart';
 import '../../links/go_back_link_widget.dart';
 import '../../links/update_password_link_widget.dart';
@@ -20,10 +20,10 @@ final supabase = Supabase.instance.client;
 
 // ignore: must_be_immutable
 class ProfileScreenWidget extends StatelessWidget {
-  final ProfileModel? profile;
+  final AgentModel? agent;
   ProfileScreenWidget({
     super.key,
-    required this.profile,
+    required this.agent,
   });
 
   final formKeyForm = GlobalKey<FormState>();
@@ -33,7 +33,7 @@ class ProfileScreenWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    avatarBytes = base64Decode(profile!.avatar);
+    avatarBytes = base64Decode(agent!.avatar);
 
     return loading
         ? const LoaderSpinnerWidget()
@@ -81,13 +81,13 @@ class ProfileScreenWidget extends StatelessWidget {
                             child: Column(
                               children: [
                                 ProfileOverviewSectionWidget(
-                                    profile: profile, avatarBytes: avatarBytes),
+                                    profile: agent, avatarBytes: avatarBytes),
                                 const SizedBox(height: 30),
                                 UpdateProfileLinkWidget(
-                                    profile: profile, avatarBytes: avatarBytes),
+                                    profile: agent, avatarBytes: avatarBytes),
                                 const SizedBox(height: 10),
                                 UpdatePasswordLinkWidget(
-                                  profile: profile,
+                                  profile: agent,
                                 ),
                               ],
                             ),

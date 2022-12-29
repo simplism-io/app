@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/localization_service.dart';
-import '../../services/user_service.dart';
+import '../../services/agent_service.dart';
 
 class SignInWithGoogleButtonWidget extends StatelessWidget {
   const SignInWithGoogleButtonWidget({super.key});
@@ -21,7 +21,7 @@ class SignInWithGoogleButtonWidget extends StatelessWidget {
           ? CupertinoButton(
               onPressed: () async {
                 try {
-                  UserService().signInUsingGoogle();
+                  AgentService().signInUsingGoogle();
                   final snackBarSignIn = SnackBar(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     content: Text(
@@ -71,7 +71,7 @@ class SignInWithGoogleButtonWidget extends StatelessWidget {
           : ElevatedButton(
               onPressed: () async {
                 try {
-                  UserService().signInUsingGoogle();
+                  AgentService().signInUsingGoogle();
                   final snackBarSignIn = SnackBar(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     content: Text(

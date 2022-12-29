@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../services/localization_service.dart';
-import '../../services/user_service.dart';
+import '../../services/agent_service.dart';
 
 class SignOutDrawerLink extends StatelessWidget {
   const SignOutDrawerLink({super.key});
@@ -33,7 +33,7 @@ class SignOutDrawerLink extends StatelessWidget {
                   )),
             );
             ScaffoldMessenger.of(context).showSnackBar(signOutSnackbar);
-            await UserService().signOut();
+            await AgentService().signOut();
           },
         ),
       ]),

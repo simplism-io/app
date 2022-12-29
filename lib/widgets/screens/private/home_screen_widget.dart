@@ -6,10 +6,10 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../models/message_model.dart';
-import '../../../models/profile_model.dart';
+import '../../../models/agent_model.dart';
 import '../../../services/localization_service.dart';
 import '../../../services/message_service.dart';
-import '../../../services/user_service.dart';
+import '../../../services/agent_service.dart';
 import '../../drop_downs/language_drawer_dropdown_widget.dart';
 import '../../headers/private_end_drawer_header_widget.dart';
 import '../../icons/private_drawer_icon_widget.dart';
@@ -24,8 +24,8 @@ import '../../switchers/theme_drawer_switcher_widget.dart';
 final supabase = Supabase.instance.client;
 
 class HomeScreenWidget extends StatefulWidget {
-  final ProfileModel? profile;
-  const HomeScreenWidget({Key? key, required this.profile}) : super(key: key);
+  final AgentModel? agent;
+  const HomeScreenWidget({Key? key, required this.agent}) : super(key: key);
 
   @override
   State<HomeScreenWidget> createState() => _HomeScreenWidgetState();
@@ -183,7 +183,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
         children: [
           const PrivateEndDrawerHeaderWidget(),
           const SizedBox(height: 20.0),
-          ProfileDrawerLinkWidget(profile: widget.profile),
+          ProfileDrawerLinkWidget(agent: widget.agent),
           const SizedBox(height: 5.0),
           const LanguageDrawerDropdownWidget(),
           const ThemeDrawerSwitcherWidget(),
@@ -195,8 +195,8 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
     );
   }
 
-  Future<ProfileModel> loadProfile() async {
-    return await UserService().loadProfile();
+  Future<AgentModel> loadProfile() async {
+    return await AgentService().loadAgent();
   }
 
   @override

@@ -7,7 +7,7 @@ ThemeData light = ThemeData(
   scaffoldBackgroundColor: Colors.white,
   colorScheme: const ColorScheme(
     brightness: Brightness.light,
-    primary: Colors.green,
+    primary: Colors.orange,
     onPrimary: Colors.white,
     secondary: Colors.grey,
     onSecondary: Colors.white,
@@ -25,7 +25,7 @@ ThemeData dark = ThemeData(
   scaffoldBackgroundColor: Colors.black,
   colorScheme: const ColorScheme(
     brightness: Brightness.dark,
-    primary: Colors.green,
+    primary: Colors.orange,
     onPrimary: Colors.white,
     secondary: Colors.grey,
     onSecondary: Colors.white,

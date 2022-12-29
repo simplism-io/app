@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../models/profile_model.dart';
+import '../../models/agent_model.dart';
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
 import '../buttons/update_profile_button_widget.dart';
@@ -14,7 +14,7 @@ import '../form_fields/name_form_field_widget.dart';
 import '../headers/profile_header_widget.dart';
 
 class UpdateProfileFormWidget extends StatefulWidget {
-  final ProfileModel? profile;
+  final AgentModel? profile;
   final Uint8List? avatarBytes;
 
   const UpdateProfileFormWidget(
@@ -99,7 +99,7 @@ class _UpdateProfileFormWidgetState extends State<UpdateProfileFormWidget> {
                 const SizedBox(height: 50.0),
                 EmailFormFieldWidget(email: widget.profile!.email),
                 const SizedBox(height: 15),
-                NameFormFieldWidget(fullName: widget.profile!.fullName),
+                NameFormFieldWidget(fullName: widget.profile!.name),
                 const SizedBox(height: 15.0),
                 UpdateProfileButtonWidget(formKey: formKey)
               ],

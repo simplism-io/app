@@ -6,7 +6,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../../services/user_service.dart';
+import '../../services/agent_service.dart';
 
 class SignInUpButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -34,7 +34,7 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                       onPressed: () async {
                         if (widget.formKey.currentState!.validate()) {
                           setState(() => loader = true);
-                          bool success = await UserService()
+                          bool success = await AgentService()
                               .signInUsingEmailAndPassword(
                                   FormService.email, FormService.password);
                           if (success == true) {
@@ -98,7 +98,7 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                       onPressed: () async {
                         if (widget.formKey.currentState!.validate()) {
                           setState(() => loader = true);
-                          bool success = await UserService()
+                          bool success = await AgentService()
                               .signInUsingEmailAndPassword(
                                   FormService.email, FormService.password);
                           if (success == true) {
@@ -171,7 +171,7 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                       onPressed: () async {
                         if (widget.formKey.currentState!.validate()) {
                           setState(() => loader = true);
-                          bool success = await UserService()
+                          bool success = await AgentService()
                               .signUpUsingEmailAndPassword(
                                   email: FormService.email,
                                   password: FormService.password);
@@ -220,8 +220,9 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                       onPressed: () async {
                         if (widget.formKey.currentState!.validate()) {
                           setState(() => loader = true);
-                          bool success = await UserService()
+                          bool success = await AgentService()
                               .signUpUsingEmailAndPassword(
+                                  organisation: FormService.organisation,
                                   email: FormService.email,
                                   password: FormService.password);
                           if (success == true) {
@@ -242,7 +243,6 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                             );
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(signUpSnackbar);
-                            //setState(() => FormService.signup = false);
                           }
                         } else {
                           setState(() {

@@ -5,15 +5,16 @@ import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
 import '../icons/name_face_icon_widget.dart';
 
-class NameFormFieldWidget extends StatefulWidget {
-  final String fullName;
-  const NameFormFieldWidget({super.key, required this.fullName});
+class OrganisationFormFieldWidget extends StatefulWidget {
+  const OrganisationFormFieldWidget({super.key});
 
   @override
-  State<NameFormFieldWidget> createState() => _NameFormFieldWidgetState();
+  State<OrganisationFormFieldWidget> createState() =>
+      _OrganisationFormFieldWidgetState();
 }
 
-class _NameFormFieldWidgetState extends State<NameFormFieldWidget> {
+class _OrganisationFormFieldWidgetState
+    extends State<OrganisationFormFieldWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -26,14 +27,14 @@ class _NameFormFieldWidgetState extends State<NameFormFieldWidget> {
             border: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(5))),
             labelText: LocalizationService.of(context)
-                    ?.translate('name_input_label') ??
+                    ?.translate('organisation_input_label') ??
                 '',
             labelStyle: const TextStyle(
               fontSize: 15,
             ), //label style
             prefixIcon: const NameFaceIconWidget(),
             hintText: LocalizationService.of(context)
-                    ?.translate('name_input_label') ??
+                    ?.translate('organisation_input_label') ??
                 '',
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5.0),
@@ -51,18 +52,17 @@ class _NameFormFieldWidgetState extends State<NameFormFieldWidget> {
             ),
           ),
           textAlign: TextAlign.left,
-          initialValue: widget.fullName,
           autofocus: true,
           validator: (String? value) {
             //print(value.length);
             return (value != null && value.length < 2)
                 ? LocalizationService.of(context)
-                        ?.translate('invalid_name_message') ??
+                        ?.translate('invalid_organisation_message') ??
                     ''
                 : null;
           },
           onChanged: (val) {
-            setState(() => FormService.name = val);
+            setState(() => FormService.organisation = val);
           }),
     );
   }

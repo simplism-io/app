@@ -4,11 +4,11 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/profile_model.dart';
+import '../models/agent_model.dart';
 
 final supabase = Supabase.instance.client;
 
-class UserService extends ChangeNotifier {
+class AgentService extends ChangeNotifier {
   Future signInUsingEmailAndPassword(email, password) async {
     try {
       if (kDebugMode) {
@@ -29,15 +29,50 @@ class UserService extends ChangeNotifier {
     }
   }
 
-  Future signUpUsingEmailAndPassword({email, password}) async {
+  Future<void> deleteOrganisation(organisation) async {
+    await supabase
+        .from('organisations')
+        .delete()
+        .match({'organisation': organisation});
+  }
+
+  Future signUpUsingEmailAndPassword({organisation, email, password}) async {
     try {
       if (kDebugMode) {
         print('Trying to sign up');
       }
-      AuthResponse result =
-          await supabase.auth.signUp(email: email, password: password);
-      if (EmailValidator.validate(result.user!.email!)) {
-        return true;
+      final resultInsertOrganisation = await supabase
+          .from('organisations')
+          .insert({'organisation': organisation});
+      if (resultInsertOrganisation == null) {
+        final resultSelectOrganisation = await supabase
+            .from('organisations')
+            .select('id')
+            .eq('organisation', organisation);
+        if (resultSelectOrganisation != null) {
+          AuthResponse result = await supabase.auth.signUp(
+            email: email,
+            password: password,
+          );
+          if (EmailValidator.validate(result.user!.email!)) {
+            final resultInsertAgent = await supabase.from('agents').insert({
+              'id': result.user!.id,
+              'organisation_id': resultSelectOrganisation[0]['id']
+            });
+            if (resultInsertAgent == null) {
+              return true;
+            } else {
+              await deleteOrganisation(organisation);
+              return false;
+            }
+          } else {
+            await deleteOrganisation(organisation);
+            return false;
+          }
+        } else {
+          await deleteOrganisation(organisation);
+          return false;
+        }
       } else {
         return false;
       }
@@ -168,10 +203,10 @@ class UserService extends ChangeNotifier {
     }
   }
 
-  Future loadProfile() async {
-    return ProfileModel.fromMap(
+  Future loadAgent() async {
+    return AgentModel.fromMap(
         map: await supabase
-            .from('profiles')
+            .from('agents')
             .select()
             .eq('id', supabase.auth.currentUser!.id)
             .single(),

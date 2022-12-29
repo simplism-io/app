@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../models/profile_model.dart';
+import '../../models/agent_model.dart';
 import '../../services/localization_service.dart';
 import '../screens/private/update_password_screen_widget..dart';
 
 class UpdatePasswordLinkWidget extends StatelessWidget {
-  final ProfileModel? profile;
+  final AgentModel? profile;
   const UpdatePasswordLinkWidget({super.key, this.profile});
 
   @override

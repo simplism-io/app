@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 class FormService extends ChangeNotifier {
   static String? email;
-  static String? fullName;
+  static String? name;
+  static String? organisation;
   static Uint8List? avatar;
   static String? password;
   static String? newPassword;

@@ -5,7 +5,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../../services/user_service.dart';
+import '../../services/agent_service.dart';
 
 class UpdatePasswordButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -34,7 +34,7 @@ class _UpdatePasswordButtonWidgetState
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  final response = await UserService()
+                  final response = await AgentService()
                       .updatePassword(FormService.newPassword);
                   setState(() => loader = false);
                   if (response == true) {
@@ -97,7 +97,7 @@ class _UpdatePasswordButtonWidgetState
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  final response = await UserService()
+                  final response = await AgentService()
                       .updatePassword(FormService.newPassword);
                   setState(() => loader = false);
                   if (response == true) {

@@ -22,10 +22,14 @@ Future<void> main() async {
 
   await dotenv.load(fileName: ".env");
 
-  HiveLocalStorage.encryptionKey = dotenv.env["SUPABASE_SECURE_KEY"];
+  //HiveLocalStorage.encryptionKey = dotenv.env["SUPABASE_SECURE_KEY"];
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_KEY']!,
+    url: kDebugMode
+        ? dotenv.env['SUPABASE_URL_DEBUG']!
+        : dotenv.env['SUPABASE_URL_PROD']!,
+    anonKey: kDebugMode
+        ? dotenv.env['SUPABASE_KEY_DEBUG']!
+        : dotenv.env['SUPABASE_KEY_PROD']!,
   );
 
   runApp(const App());

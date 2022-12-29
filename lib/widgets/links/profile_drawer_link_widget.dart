@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../models/profile_model.dart';
+import '../../models/agent_model.dart';
 import '../../services/localization_service.dart';
 import '../screens/private/profile_screen_widget.dart';
 
 class ProfileDrawerLinkWidget extends StatelessWidget {
-  final ProfileModel? profile;
-  const ProfileDrawerLinkWidget({super.key, required this.profile});
+  final AgentModel? agent;
+  const ProfileDrawerLinkWidget({super.key, required this.agent});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class ProfileDrawerLinkWidget extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => ProfileScreenWidget(profile: profile),
+                builder: (context) => ProfileScreenWidget(agent: agent),
               ),
             );
           },

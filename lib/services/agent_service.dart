@@ -29,6 +29,57 @@ class AgentService extends ChangeNotifier {
     }
   }
 
+  Future createOrganisation(organisation) async {
+    return await supabase
+        .from('organisations')
+        .insert({'organisation': organisation});
+  }
+
+  Future getOrganisation(organisation) async {
+    return await supabase
+        .from('organisations')
+        .select('id')
+        .eq('organisation', organisation);
+  }
+
+  Future createAgent(userId, organizationId) async {
+    return await supabase
+        .from('agents')
+        .insert({'id': userId, 'organisation_id': organizationId});
+  }
+
+  Future createOrganisationAndAgentProcedure(organisation) async {
+    try {
+      if (kDebugMode) {
+        print('Trying to save organisation ');
+      }
+      final resultCreateOrganisation = await createOrganisation(organisation);
+      if (resultCreateOrganisation == null) {
+        final resultSelectOrganisation = await getOrganisation(organisation);
+        if (resultSelectOrganisation != null) {
+          final resultCreateAgent = await createAgent(
+              supabase.auth.currentUser!.id, resultSelectOrganisation[0]['id']);
+          if (resultCreateAgent == null) {
+            return true;
+          } else {
+            await deleteOrganisation(organisation);
+            return false;
+          }
+        } else {
+          await deleteOrganisation(organisation);
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return false;
+    }
+  }
+
   Future<void> deleteOrganisation(organisation) async {
     await supabase
         .from('organisations')
@@ -41,25 +92,18 @@ class AgentService extends ChangeNotifier {
       if (kDebugMode) {
         print('Trying to sign up');
       }
-      final resultInsertOrganisation = await supabase
-          .from('organisations')
-          .insert({'organisation': organisation});
-      if (resultInsertOrganisation == null) {
-        final resultSelectOrganisation = await supabase
-            .from('organisations')
-            .select('id')
-            .eq('organisation', organisation);
+      final resultCreateOrganisation = await createOrganisation(organisation);
+      if (resultCreateOrganisation == null) {
+        final resultSelectOrganisation = await getOrganisation(organisation);
         if (resultSelectOrganisation != null) {
           AuthResponse result = await supabase.auth.signUp(
             email: email,
             password: password,
           );
           if (EmailValidator.validate(result.user!.email!)) {
-            final resultInsertAgent = await supabase.from('agents').insert({
-              'id': result.user!.id,
-              'organisation_id': resultSelectOrganisation[0]['id']
-            });
-            if (resultInsertAgent == null) {
+            final resultCreateAgent = await createAgent(
+                result.user!.id, resultSelectOrganisation[0]['id']);
+            if (resultCreateAgent == null) {
               return true;
             } else {
               await deleteOrganisation(organisation);

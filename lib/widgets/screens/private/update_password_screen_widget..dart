@@ -25,35 +25,28 @@ class UpdatePasswordScreenWidget extends StatelessWidget {
               leading: const GoBackIconWidget(),
               elevation: 0,
               backgroundColor: Theme.of(context).colorScheme.background,
-              centerTitle: true,
             ),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: Center(
-                  child: SizedBox(
-                    width: ResponsiveValue(context,
-                        defaultValue: 450.0,
-                        valueWhen: const [
-                          Condition.largerThan(name: MOBILE, value: 450.0),
-                          Condition.smallerThan(
-                              name: TABLET, value: double.infinity)
-                        ]).value,
-                    child: Column(
-                      children: [
-                        Column(
-                          children: [
-                            UpdatePasswordFormWidget(profile: profile)
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        GoBackLinkWidget(
-                            removeState: false,
-                            label: LocalizationService.of(context)
-                                    ?.translate('go_back_profile_link_label') ??
-                                ''),
-                      ],
-                    ),
+            body: Padding(
+              padding: const EdgeInsets.all(40.0),
+              child: Center(
+                child: SizedBox(
+                  width: ResponsiveValue(context,
+                      defaultValue: 450.0,
+                      valueWhen: const [
+                        Condition.largerThan(name: MOBILE, value: 450.0),
+                        Condition.smallerThan(
+                            name: TABLET, value: double.infinity)
+                      ]).value,
+                  child: Column(
+                    children: [
+                      UpdatePasswordFormWidget(profile: profile),
+                      const SizedBox(height: 20),
+                      GoBackLinkWidget(
+                          removeState: false,
+                          label: LocalizationService.of(context)
+                                  ?.translate('go_back_profile_link_label') ??
+                              ''),
+                    ],
                   ),
                 ),
               ),

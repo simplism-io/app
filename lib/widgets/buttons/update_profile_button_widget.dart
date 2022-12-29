@@ -1,10 +1,10 @@
+import 'package:base/widgets/screens/bouncer_widget.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../main.dart';
 import '../../models/agent_model.dart';
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
@@ -65,7 +65,7 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                       Navigator.of(context, rootNavigator: true)
                           .pushAndRemoveUntil(
                               MaterialPageRoute(
-                                  builder: (context) => const App()),
+                                  builder: (context) => const BouncerWidget()),
                               (route) => false);
                     }
                   } else {
@@ -143,7 +143,7 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                       Navigator.of(context, rootNavigator: true)
                           .pushAndRemoveUntil(
                               MaterialPageRoute(
-                                  builder: (context) => const App()),
+                                  builder: (context) => const BouncerWidget()),
                               (route) => false);
                     }
                   } else {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../services/form_service.dart';
 import '../buttons/reset_password_button_widget.dart';
 import '../form_fields/email_form_field_widget.dart';
 import '../headers/reset_password_header_widget.dart';
@@ -17,9 +16,6 @@ class ResetPasswordFormWidget extends StatefulWidget {
 class _ResetPasswordFormWidgetState extends State<ResetPasswordFormWidget> {
   final formKey = GlobalKey<FormState>();
 
-  bool loading = false;
-  bool loader = false;
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -30,8 +26,7 @@ class _ResetPasswordFormWidgetState extends State<ResetPasswordFormWidget> {
             const SizedBox(height: 40.0),
             const EmailFormFieldWidget(email: ''),
             const SizedBox(height: 15.0),
-            ResetPasswordButtonWidget(
-                formKey: formKey, email: FormService.email),
+            ResetPasswordButtonWidget(formKey: formKey),
             const SizedBox(height: 30.0),
             const UndoResetLinkWidget()
           ],

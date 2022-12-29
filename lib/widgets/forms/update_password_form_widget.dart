@@ -18,7 +18,6 @@ class UpdatePasswordFormWidget extends StatefulWidget {
 
 class _UpdatePasswordFormWidgetState extends State<UpdatePasswordFormWidget> {
   final formKey = GlobalKey<FormState>();
-  bool loader = false;
 
   @override
   Widget build(BuildContext context) {

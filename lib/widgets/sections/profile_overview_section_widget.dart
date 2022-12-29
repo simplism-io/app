@@ -33,10 +33,10 @@ class ProfileOverviewSectionWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 child: Image.memory(avatarBytes!))),
         const SizedBox(height: 50.0),
-        Text(
-          profile!.name,
-          style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-        ),
+        // Text(
+        //   profile!.name,
+        //   style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        // ),
         const SizedBox(height: 20),
         Text(profile!.email),
       ],

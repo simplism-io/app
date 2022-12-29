@@ -3,14 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
 import '../../services/agent_service.dart';
 
 class ResetPasswordButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  final String? email;
-  const ResetPasswordButtonWidget(
-      {super.key, required this.formKey, this.email});
+  const ResetPasswordButtonWidget({super.key, required this.formKey});
 
   @override
   State<ResetPasswordButtonWidget> createState() =>
@@ -33,7 +32,7 @@ class _ResetPasswordButtonWidgetState extends State<ResetPasswordButtonWidget> {
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  await AgentService().resetPassword(widget.email);
+                  await AgentService().resetPassword(FormService.email);
                   if (!mounted) return;
                   final resetPasswordSnackbar = SnackBar(
                     backgroundColor: Theme.of(context).colorScheme.primary,
@@ -75,7 +74,7 @@ class _ResetPasswordButtonWidgetState extends State<ResetPasswordButtonWidget> {
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  await AgentService().resetPassword(widget.email);
+                  await AgentService().resetPassword(FormService.email);
                   if (!mounted) return;
                   final resetPasswordSnackbar = SnackBar(
                     backgroundColor: Theme.of(context).colorScheme.primary,

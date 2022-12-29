@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -33,7 +31,7 @@ class ProfileScreenWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    avatarBytes = base64Decode(agent!.avatar);
+    // avatarBytes = base64Decode(agent!.avatar);
 
     return loading
         ? const LoaderSpinnerWidget()

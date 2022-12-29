@@ -1,8 +1,7 @@
-import 'package:base/widgets/screens/private/create_organisation_and_agent_screen_widget.dart';
+import 'package:base/widgets/screens/private/create_organisation_and_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/agent_model.dart';
-import '../../services/localization_service.dart';
 import '../../services/agent_service.dart';
 import '../loaders/loader_spinner_widget.dart';
 import '../screens/private/home_screen_widget.dart';
@@ -16,18 +15,8 @@ class HomeScreenFutureBuilderWidget extends StatelessWidget {
       builder: (ctx, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (!snapshot.hasData) {
-            return const CreateOrganisationAndAgentScreenWidget();
-            // if (snapshot.hasError) {
-
-            //   return Center(
-            //       child: Text(
-            //           LocalizationService.of(context)
-            //                   ?.translate('general_error_snackbar_label') ??
-            //               '',
-            //           style: TextStyle(
-            //               fontSize: 30,
-            //               color: Theme.of(context).colorScheme.onBackground)));
-          } else if (snapshot.hasData) {
+            return const CreateOrganisationScreenWidget();
+          } else {
             final AgentModel agent = snapshot.data!;
             return HomeScreenWidget(agent: agent);
           }

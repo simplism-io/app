@@ -15,14 +15,15 @@ class HomeScreenFutureBuilderWidget extends StatelessWidget {
     return FutureBuilder(
       builder: (ctx, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          if (!snapshot.hasData) {
-            return const CreateOrganisationScreenWidget();
-          } else {
+          if (snapshot.hasData) {
             final AgentModel agent = snapshot.data!;
-            if (agent.name == null) {
+            if (agent.name == null || agent.name == '') {
               return const CreateAgentNameScreenWidget();
             }
             return HomeScreenWidget(agent: agent);
+          }
+          if (!snapshot.hasData) {
+            //return const CreateOrganisationScreenWidget();
           }
         }
         return const LoaderSpinnerWidget();

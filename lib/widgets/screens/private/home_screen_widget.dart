@@ -43,20 +43,26 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
             padding: const EdgeInsets.fromLTRB(10.0, 0, 0, 0),
             child: Row(
               children: [
-                const Text('Open'),
-                SizedBox(
-                  child: Builder(
-                    builder: (context) {
-                      return IconButton(
-                        icon: const Icon(
-                          Icons.chevron_right,
-                        ),
-                        onPressed: () {
-                          Scaffold.of(context).openDrawer();
+                const SizedBox(height: 5),
+                const Text('All Messages'),
+                Column(
+                  children: [
+                    const SizedBox(height: 4),
+                    SizedBox(
+                      child: Builder(
+                        builder: (context) {
+                          return IconButton(
+                            icon: const Icon(
+                              Icons.chevron_right,
+                            ),
+                            onPressed: () {
+                              Scaffold.of(context).openDrawer();
+                            },
+                          );
                         },
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -92,10 +98,6 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
         ],
       ),
     );
-  }
-
-  Future<AgentModel> loadProfile() async {
-    return await AgentService().loadAgent();
   }
 
   @override

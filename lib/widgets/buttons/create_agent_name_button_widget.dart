@@ -82,8 +82,7 @@ class _CreateAgentNameButtonWidgetState
                   setState(() => loader = true);
                   final result =
                       await AgentService().createAgentName(FormService.name);
-                  print(result);
-                  if (result == true) {
+                  if (result == null) {
                     if (!mounted) return;
                     SnackBarService().successSnackBar(
                         'create_agent_name_snackbar_label', context);

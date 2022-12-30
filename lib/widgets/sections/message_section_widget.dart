@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/message_model.dart';
 import '../../services/localization_service.dart';
-import '../builders/message_service.dart';
+import '../../services/message_service.dart';
 import '../loaders/loader_spinner_widget.dart';
 
 class MessageSectionWidget extends StatefulWidget {
@@ -52,12 +52,15 @@ class _MessageSectionWidgetState extends State<MessageSectionWidget> {
                     itemBuilder: (context, index) {
                       final message = messages[index];
                       return Card(
-                          // In many cases, the key isn't mandatory
+                          color: Theme.of(context).colorScheme.surface,
                           margin: const EdgeInsets.symmetric(
                               vertical: 5, horizontal: 15),
                           child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Text(message.content!),
+                            padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                            child: Text(
+                              message.title,
+                              style: TextStyle(fontSize: 15),
+                            ),
                           ));
                     }),
               ],

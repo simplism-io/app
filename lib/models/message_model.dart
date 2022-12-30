@@ -3,26 +3,29 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final supabase = Supabase.instance.client;
 
 class MessageModel {
-  final String? id;
-  final String? profileId;
-  final String? content;
-  //final DateTime? created;
-  final bool? isMine;
+  final String id;
+  final String organisationId;
+  final String title;
+  final String body;
+  final DateTime created;
+  final bool isMine;
 
   MessageModel({
-    this.id,
-    this.profileId,
-    this.content,
-    //this.created,
-    this.isMine,
+    required this.id,
+    required this.organisationId,
+    required this.title,
+    required this.body,
+    required this.created,
+    required this.isMine,
   });
 
   MessageModel.fromMap({
     required Map<String, dynamic> map,
     required String uid,
   })  : id = map['id'],
-        profileId = map['profile_id'],
-        content = map['content'],
-        //createdAt = DateTime.parse(map['created']),
-        isMine = uid == map['profile_id'];
+        organisationId = map['organisation_id'],
+        title = map['title'],
+        body = map['body'],
+        created = DateTime.parse(map['created']),
+        isMine = uid == map['agent_id'];
 }

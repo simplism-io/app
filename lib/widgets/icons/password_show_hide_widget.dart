@@ -6,8 +6,8 @@ import 'package:provider/provider.dart';
 
 import '../../services/form_service.dart';
 
-class PasswordEyeSlashIconWidget extends StatelessWidget {
-  const PasswordEyeSlashIconWidget({super.key});
+class PasswordShowHideIconWidget extends StatelessWidget {
+  const PasswordShowHideIconWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -5,16 +5,16 @@ import '../buttons/create_organisation_button_widget.dart';
 import '../form_fields/organisation_form_field_widget.dart';
 import '../headers/create_organisation_header_widget.dart';
 
-class CreateOrganisationAndAgentFormWidget extends StatefulWidget {
-  const CreateOrganisationAndAgentFormWidget({super.key});
+class CreateOrganisationFormWidget extends StatefulWidget {
+  const CreateOrganisationFormWidget({super.key});
 
   @override
-  State<CreateOrganisationAndAgentFormWidget> createState() =>
+  State<CreateOrganisationFormWidget> createState() =>
       _CreateOrganisationFormWidgetState();
 }
 
 class _CreateOrganisationFormWidgetState
-    extends State<CreateOrganisationAndAgentFormWidget> {
+    extends State<CreateOrganisationFormWidget> {
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -31,8 +31,7 @@ class _CreateOrganisationFormWidgetState
                 const SizedBox(height: 40.0),
                 const OrganisationFormFieldWidget(),
                 const SizedBox(height: 15.0),
-                CreateOrganisationButtonWidget(
-                    formKey: formKey, organisation: FormService.organisation),
+                CreateOrganisationButtonWidget(formKey: formKey),
               ],
             )),
       ),

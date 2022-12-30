@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class PasswordKeyHoleIconWidget extends StatelessWidget {
-  const PasswordKeyHoleIconWidget({super.key});
+class OrganisationIconWidget extends StatelessWidget {
+  const OrganisationIconWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,8 +11,8 @@ class PasswordKeyHoleIconWidget extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
       child: Icon((defaultTargetPlatform == TargetPlatform.iOS ||
               defaultTargetPlatform == TargetPlatform.macOS)
-          ? CupertinoIcons.lock
-          : FontAwesomeIcons.unlockKeyhole),
+          ? CupertinoIcons.building_2_fill
+          : FontAwesomeIcons.building),
     );
   }
 }

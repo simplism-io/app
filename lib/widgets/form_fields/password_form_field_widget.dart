@@ -4,8 +4,8 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../icons/password_eye_slash_icon_widget.dart';
-import '../icons/password_key_hole_icon_widget.dart';
+import '../icons/password_show_hide_widget.dart';
+import '../icons/password_icon_widget.dart';
 
 class PasswordFormFieldWidget extends StatefulWidget {
   const PasswordFormFieldWidget({super.key});
@@ -50,8 +50,8 @@ class _PasswordFormFieldWidgetState extends State<PasswordFormFieldWidget> {
                 labelStyle: const TextStyle(
                   fontSize: 15,
                 ), //label style
-                prefixIcon: const PasswordKeyHoleIconWidget(),
-                suffixIcon: const PasswordEyeSlashIconWidget(),
+                prefixIcon: const PasswordIconWidget(),
+                suffixIcon: const PasswordShowHideIconWidget(),
               ),
               textAlign: TextAlign.left,
               autofocus: true,

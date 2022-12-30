@@ -9,6 +9,7 @@ import '../../models/agent_model.dart';
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
 import '../../services/agent_service.dart';
+import '../../services/snackbar_service.dart';
 import '../screens/private/profile_screen_widget.dart';
 
 class UpdateProfileButtonWidget extends StatefulWidget {
@@ -41,18 +42,8 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                   if (response == true) {
                     AgentModel? updatedAgent = await AgentService().loadAgent();
                     if (!mounted) return;
-                    final snackBar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      content: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('update_profile_snackbar') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    SnackBarService().successSnackBar(
+                        'update_profile_snackbar_label', context);
                     if (EmailValidator.validate(updatedAgent!.email)) {
                       if (!mounted) return;
                       Navigator.of(context, rootNavigator: true)
@@ -74,18 +65,8 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                     });
                     if (!mounted) return;
                     setState(() => {loader = false});
-                    final errorSnackbar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.error,
-                      content: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('general_error_snackbar_label') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onError,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(errorSnackbar);
+                    SnackBarService().errorSnackBar(
+                        'authentication_error_snackbar_label', context);
                   }
                 } else {
                   setState(() {
@@ -119,18 +100,8 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                   if (response == true) {
                     AgentModel? newProfile = await AgentService().loadAgent();
                     if (!mounted) return;
-                    final snackBar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      content: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('update_profile_snackbar') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    SnackBarService().successSnackBar(
+                        'update_profile_snackbar_label', context);
                     if (EmailValidator.validate(newProfile!.email)) {
                       if (!mounted) return;
                       Navigator.of(context, rootNavigator: true)
@@ -152,18 +123,8 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                     });
                     if (!mounted) return;
                     setState(() => {loader = false});
-                    final errorSnackbar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.error,
-                      content: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('general_error_snackbar_label') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onError,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(errorSnackbar);
+                    SnackBarService().errorSnackBar(
+                        'authentication_error_snackbar_label', context);
                   }
                 } else {
                   setState(() {

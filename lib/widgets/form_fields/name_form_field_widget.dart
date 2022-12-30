@@ -3,11 +3,11 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../icons/name_face_icon_widget.dart';
+import '../icons/name_icon_widget.dart';
 
 class NameFormFieldWidget extends StatefulWidget {
-  final String fullName;
-  const NameFormFieldWidget({super.key, required this.fullName});
+  final String? name;
+  const NameFormFieldWidget({super.key, this.name});
 
   @override
   State<NameFormFieldWidget> createState() => _NameFormFieldWidgetState();
@@ -31,7 +31,7 @@ class _NameFormFieldWidgetState extends State<NameFormFieldWidget> {
             labelStyle: const TextStyle(
               fontSize: 15,
             ), //label style
-            prefixIcon: const NameFaceIconWidget(),
+            prefixIcon: const NameIconWidget(),
             hintText: LocalizationService.of(context)
                     ?.translate('name_input_label') ??
                 '',
@@ -51,7 +51,7 @@ class _NameFormFieldWidgetState extends State<NameFormFieldWidget> {
             ),
           ),
           textAlign: TextAlign.left,
-          initialValue: widget.fullName,
+          initialValue: widget.name,
           autofocus: true,
           validator: (String? value) {
             //print(value.length);

@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class NameFaceIconWidget extends StatelessWidget {
-  const NameFaceIconWidget({super.key});
+class NameIconWidget extends StatelessWidget {
+  const NameIconWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

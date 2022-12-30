@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../models/message_model.dart';
 import '../../services/localization_service.dart';
-import '../../services/message_service.dart';
+import '../builders/message_service.dart';
 import '../loaders/loader_spinner_widget.dart';
 
 class MessageSectionWidget extends StatefulWidget {

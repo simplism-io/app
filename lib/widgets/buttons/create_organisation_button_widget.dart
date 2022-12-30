@@ -7,12 +7,12 @@ import 'package:responsive_framework/responsive_framework.dart';
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
 import '../../services/agent_service.dart';
+import '../../services/snackbar_service.dart';
 
 class CreateOrganisationButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  final String? organisation;
   const CreateOrganisationButtonWidget(
-      {super.key, required this.formKey, this.organisation});
+      {super.key, required this.formKey});
 
   @override
   State<CreateOrganisationButtonWidget> createState() =>
@@ -25,36 +25,6 @@ class _CreateOrganisationButtonWidgetState
 
   @override
   Widget build(BuildContext context) {
-    createOrganisationSnackBar() {
-      final createOrganisationSnackbar = SnackBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        content: Text(
-            LocalizationService.of(context)
-                    ?.translate('create_organisation_snackbar_label') ??
-                '',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimary,
-            )),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(createOrganisationSnackbar);
-    }
-
-    errorSnackbar() {
-      final errorSnackbar = SnackBar(
-        backgroundColor: Theme.of(context).colorScheme.error,
-        content: Text(
-            LocalizationService.of(context)
-                    ?.translate('general_error_snackbar_label') ??
-                '',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onError,
-            )),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(errorSnackbar);
-    }
-
     return SizedBox(
       width: ResponsiveValue(context, defaultValue: 300.0, valueWhen: const [
         Condition.largerThan(name: MOBILE, value: 300.0),
@@ -71,7 +41,8 @@ class _CreateOrganisationButtonWidgetState
                           FormService.organisation);
                   if (result == true) {
                     if (!mounted) return;
-                    createOrganisationSnackBar();
+                    SnackBarService().successSnackBar(
+                        'create_organisation_snackbar_label', context);
                     Navigator.of(context, rootNavigator: true)
                         .pushAndRemoveUntil(
                             MaterialPageRoute(
@@ -83,7 +54,8 @@ class _CreateOrganisationButtonWidgetState
                     });
                     if (!mounted) return;
                     setState(() => {loader = false});
-                    errorSnackbar();
+                    SnackBarService()
+                        .errorSnackBar('general_error_snackbar_label', context);
                   }
                 } else {
                   setState(() {
@@ -114,7 +86,8 @@ class _CreateOrganisationButtonWidgetState
                           FormService.organisation);
                   if (result == true) {
                     if (!mounted) return;
-                    createOrganisationSnackBar();
+                    SnackBarService().successSnackBar(
+                        'create_organisation_snackbar_label', context);
                     Navigator.of(context, rootNavigator: true)
                         .pushAndRemoveUntil(
                             MaterialPageRoute(
@@ -126,7 +99,8 @@ class _CreateOrganisationButtonWidgetState
                     });
                     if (!mounted) return;
                     setState(() => {loader = false});
-                    errorSnackbar();
+                    SnackBarService()
+                        .errorSnackBar('general_error_snackbar_label', context);
                   }
                 } else {
                   setState(() {

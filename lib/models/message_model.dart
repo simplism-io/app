@@ -3,6 +3,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final supabase = Supabase.instance.client;
 
 class MessageModel {
+  final String? id;
+  final String? profileId;
+  final String? content;
+  //final DateTime? created;
+  final bool? isMine;
+
   MessageModel({
     this.id,
     this.profileId,
@@ -10,12 +16,6 @@ class MessageModel {
     //this.created,
     this.isMine,
   });
-
-  final String? id;
-  final String? profileId;
-  final String? content;
-  //final DateTime? created;
-  final bool? isMine;
 
   MessageModel.fromMap({
     required Map<String, dynamic> map,

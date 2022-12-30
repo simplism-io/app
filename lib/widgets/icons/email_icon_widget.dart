@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class EmailEnvelopeIconWidget extends StatelessWidget {
-  const EmailEnvelopeIconWidget({super.key});
+class EmailIconWidget extends StatelessWidget {
+  const EmailIconWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

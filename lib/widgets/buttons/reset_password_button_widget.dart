@@ -6,6 +6,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
 import '../../services/agent_service.dart';
+import '../../services/snackbar_service.dart';
 
 class ResetPasswordButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -34,19 +35,8 @@ class _ResetPasswordButtonWidgetState extends State<ResetPasswordButtonWidget> {
                   setState(() => loader = true);
                   await AgentService().resetPassword(FormService.email);
                   if (!mounted) return;
-                  final resetPasswordSnackbar = SnackBar(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    content: Text(
-                        LocalizationService.of(context)
-                                ?.translate('reset_password_snackbar_label') ??
-                            '',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        )),
-                  );
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(resetPasswordSnackbar);
+                  SnackBarService().successSnackBar(
+                      'reset_password_snackbar_label', context);
                 } else {
                   setState(() {
                     loader = false;
@@ -76,19 +66,8 @@ class _ResetPasswordButtonWidgetState extends State<ResetPasswordButtonWidget> {
                   setState(() => loader = true);
                   await AgentService().resetPassword(FormService.email);
                   if (!mounted) return;
-                  final resetPasswordSnackbar = SnackBar(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    content: Text(
-                        LocalizationService.of(context)
-                                ?.translate('reset_password_snackbar_label') ??
-                            '',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        )),
-                  );
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(resetPasswordSnackbar);
+                  SnackBarService().successSnackBar(
+                      'reset_password_snackbar_label', context);
                 } else {
                   setState(() {
                     loader = false;

@@ -3,30 +3,31 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import '../../services/agent_service.dart';
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../../services/agent_service.dart';
 import '../../services/snackbar_service.dart';
+import '../screens/bouncer_widget.dart';
 
-class UpdatePasswordButtonWidget extends StatefulWidget {
+class CreateAgentNameButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
 
-  const UpdatePasswordButtonWidget({super.key, required this.formKey});
+  const CreateAgentNameButtonWidget({super.key, required this.formKey});
 
   @override
-  State<UpdatePasswordButtonWidget> createState() =>
-      _UpdatePasswordButtonWidgetState();
+  State<CreateAgentNameButtonWidget> createState() =>
+      _CreateAgentNameButtonWidgetState();
 }
 
-class _UpdatePasswordButtonWidgetState
-    extends State<UpdatePasswordButtonWidget> {
+class _CreateAgentNameButtonWidgetState
+    extends State<CreateAgentNameButtonWidget> {
   bool loader = false;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: ResponsiveValue(context, defaultValue: 400.0, valueWhen: const [
-        Condition.largerThan(name: MOBILE, value: 400.0),
+      width: ResponsiveValue(context, defaultValue: 300.0, valueWhen: const [
+        Condition.largerThan(name: MOBILE, value: 300.0),
         Condition.smallerThan(name: TABLET, value: double.infinity)
       ]).value,
       child: (defaultTargetPlatform == TargetPlatform.iOS ||
@@ -35,19 +36,23 @@ class _UpdatePasswordButtonWidgetState
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  final response = await AgentService()
-                      .updatePassword(FormService.newPassword);
-                  setState(() => loader = false);
-                  if (response == true) {
+                  final result =
+                      await AgentService().createAgentName(FormService.name);
+                  if (result == true) {
                     if (!mounted) return;
                     SnackBarService().successSnackBar(
-                        'update_password_snackbar_label', context);
-                    Navigator.pop(context);
+                        'create_agent_name_snackbar_label', context);
+                    Navigator.of(context, rootNavigator: true)
+                        .pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (context) => const BouncerWidget()),
+                            (route) => false);
                   } else {
                     setState(() {
                       loader = false;
                     });
                     if (!mounted) return;
+                    setState(() => {loader = false});
                     SnackBarService()
                         .errorSnackBar('general_error_snackbar_label', context);
                   }
@@ -58,41 +63,43 @@ class _UpdatePasswordButtonWidgetState
                 }
               },
               color: Theme.of(context).colorScheme.primary,
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Text(
-                  loader == true
-                      ? LocalizationService.of(context)
-                              ?.translate('loader_button_label') ??
-                          ''
-                      : LocalizationService.of(context)
-                              ?.translate('update_password_button_label') ??
-                          '',
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold),
-                ),
+              child: Text(
+                loader == true
+                    ? LocalizationService.of(context)
+                            ?.translate('loader_button_label') ??
+                        ''
+                    : LocalizationService.of(context)
+                            ?.translate('create_agent_name_button_label') ??
+                        '',
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold),
               ),
             )
           : ElevatedButton(
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  final response = await AgentService()
-                      .updatePassword(FormService.newPassword);
-                  setState(() => loader = false);
-                  if (response == true) {
+                  final result =
+                      await AgentService().createAgentName(FormService.name);
+                  print(result);
+                  if (result == true) {
                     if (!mounted) return;
                     SnackBarService().successSnackBar(
-                        'update_password_snackbar_label', context);
-                    Navigator.pop(context);
+                        'create_agent_name_snackbar_label', context);
+                    Navigator.of(context, rootNavigator: true)
+                        .pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (context) => const BouncerWidget()),
+                            (route) => false);
                   } else {
                     setState(() {
                       loader = false;
                     });
                     if (!mounted) return;
-                    SnackBarService().errorSnackBar(
-                        'authentication_error_snackbar_label', context);
+                    setState(() => {loader = false});
+                    SnackBarService()
+                        .errorSnackBar('general_error_snackbar_label', context);
                   }
                 } else {
                   setState(() {
@@ -108,7 +115,7 @@ class _UpdatePasswordButtonWidgetState
                               ?.translate('loader_button_label') ??
                           ''
                       : LocalizationService.of(context)
-                              ?.translate('update_password_button_label') ??
+                              ?.translate('create_agent_name_button_label') ??
                           '',
                   style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,

@@ -29,6 +29,12 @@ class AgentService extends ChangeNotifier {
     }
   }
 
+  Future createAgentName(name) async {
+    return await supabase
+        .from('agents')
+        .update({'name': name}).match({'id': supabase.auth.currentUser!.id});
+  }
+
   Future createOrganisation(organisation) async {
     return await supabase
         .from('organisations')

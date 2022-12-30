@@ -1,4 +1,5 @@
-import 'package:base/widgets/screens/private/create_organisation_and_widget.dart';
+import 'package:base/widgets/screens/private/create_agent_name_screen_widget.dart';
+import 'package:base/widgets/screens/private/create_organisation_screen_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/agent_model.dart';
@@ -18,6 +19,9 @@ class HomeScreenFutureBuilderWidget extends StatelessWidget {
             return const CreateOrganisationScreenWidget();
           } else {
             final AgentModel agent = snapshot.data!;
+            if (agent.name == null) {
+              return const CreateAgentNameScreenWidget();
+            }
             return HomeScreenWidget(agent: agent);
           }
         }

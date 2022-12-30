@@ -1,9 +1,9 @@
+import 'package:base/widgets/icons/organisation_icon_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../icons/name_face_icon_widget.dart';
 
 class OrganisationFormFieldWidget extends StatefulWidget {
   const OrganisationFormFieldWidget({super.key});
@@ -32,7 +32,7 @@ class _OrganisationFormFieldWidgetState
             labelStyle: const TextStyle(
               fontSize: 15,
             ), //label style
-            prefixIcon: const NameFaceIconWidget(),
+            prefixIcon: const OrganisationIconWidget(),
             hintText: LocalizationService.of(context)
                     ?.translate('organisation_input_label') ??
                 '',

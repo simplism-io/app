@@ -5,6 +5,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/localization_service.dart';
 import '../../services/agent_service.dart';
+import '../../services/snackbar_service.dart';
 
 class SignInWithGoogleButtonWidget extends StatelessWidget {
   const SignInWithGoogleButtonWidget({super.key});
@@ -72,37 +73,11 @@ class SignInWithGoogleButtonWidget extends StatelessWidget {
               onPressed: () async {
                 try {
                   AgentService().signInUsingGoogle();
-                  final snackBarSignIn = SnackBar(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    content: Text(
-                        LocalizationService.of(context)
-                                ?.translate('sign_in_google_snackbar_label') ??
-                            '',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: ResponsiveValue(context,
-                              defaultValue: 15.0,
-                              valueWhen: const [
-                                Condition.smallerThan(
-                                    name: DESKTOP, value: 15.0),
-                              ]).value,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        )),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBarSignIn);
+                  SnackBarService().successSnackBar(
+                      'sign_in_google_snackbar_label', context);
                 } catch (e) {
-                  final errorSnackbar = SnackBar(
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                    content: Text(
-                        LocalizationService.of(context)
-                                ?.translate('general_error_snackbar_label') ??
-                            '',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onError,
-                        )),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(errorSnackbar);
+                  SnackBarService()
+                      .errorSnackBar('general_error_snackbar_label', context);
                 }
               },
               style: ElevatedButton.styleFrom(

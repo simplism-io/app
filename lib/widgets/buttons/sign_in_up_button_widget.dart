@@ -7,6 +7,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
 import '../../services/agent_service.dart';
+import '../../services/snackbar_service.dart';
 
 class SignInUpButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -39,39 +40,13 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                                   FormService.email, FormService.password);
                           if (success == true) {
                             if (!mounted) return;
-                            final signInSnackbar = SnackBar(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              content: Text(
-                                  LocalizationService.of(context)?.translate(
-                                          'sign_in_snackbar_label') ??
-                                      '',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  )),
-                            );
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(signInSnackbar);
+                            SnackBarService().successSnackBar(
+                                'sign_in_snackbar_label', context);
                           } else {
                             if (!mounted) return;
                             setState(() => {loader = false});
-                            final errorSnackbar = SnackBar(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.error,
-                              content: Text(
-                                  LocalizationService.of(context)?.translate(
-                                          'authentication_error_snackbar_label') ??
-                                      '',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onError,
-                                  )),
-                            );
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(errorSnackbar);
+                            SnackBarService().errorSnackBar(
+                                'authentication_error_snackbar_label', context);
                           }
                         } else {
                           setState(() => {
@@ -103,39 +78,13 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                                   FormService.email, FormService.password);
                           if (success == true) {
                             if (!mounted) return;
-                            final signInSnackbar = SnackBar(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              content: Text(
-                                  LocalizationService.of(context)?.translate(
-                                          'sign_in_snackbar_label') ??
-                                      '',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  )),
-                            );
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(signInSnackbar);
+                            SnackBarService().successSnackBar(
+                                'sign_in_snackbar_label', context);
                           } else {
                             if (!mounted) return;
                             setState(() => {loader = false});
-                            final errorSnackbar = SnackBar(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.error,
-                              content: Text(
-                                  LocalizationService.of(context)?.translate(
-                                          'authentication_error_snackbar_label') ??
-                                      '',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onError,
-                                  )),
-                            );
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(errorSnackbar);
+                            SnackBarService().errorSnackBar(
+                                'authentication_error_snackbar_label', context);
                           }
                         } else {
                           setState(() => {
@@ -178,22 +127,8 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                           if (success == true) {
                             if (!mounted) return;
                             setState(() => loader = false);
-                            final signUpSnackbar = SnackBar(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              content: Text(
-                                  LocalizationService.of(context)?.translate(
-                                          'sign_up_snackbar_label') ??
-                                      '',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  )),
-                            );
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(signUpSnackbar);
-                            //setState(() => FormService.signup = false);
+                            SnackBarService().successSnackBar(
+                                'sign_up_snackbar_label', context);
                           }
                         } else {
                           setState(() {
@@ -228,21 +163,8 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                           if (success == true) {
                             if (!mounted) return;
                             setState(() => loader = false);
-                            final signUpSnackbar = SnackBar(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              content: Text(
-                                  LocalizationService.of(context)?.translate(
-                                          'sign_up_snackbar_label') ??
-                                      '',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  )),
-                            );
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(signUpSnackbar);
+                            SnackBarService().successSnackBar(
+                                'sign_up_snackbar_label', context);
                           }
                         } else {
                           setState(() {

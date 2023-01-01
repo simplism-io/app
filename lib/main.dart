@@ -10,6 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'services/form_service.dart';
+import 'services/message_service.dart';
 import 'services/theme_service.dart';
 import 'services/biometric_service.dart';
 import 'services/internationalization_service.dart';
@@ -46,6 +47,7 @@ class App extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => BiometricService()),
           ChangeNotifierProvider(create: (_) => InternationalizationService()),
           ChangeNotifierProvider(create: (_) => FormService()),
+          ChangeNotifierProvider(create: (_) => MessageService()),
         ],
         child: Consumer3<ThemeService, InternationalizationService,
                 BiometricService>(

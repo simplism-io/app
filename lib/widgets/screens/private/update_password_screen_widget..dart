@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../../models/agent_model.dart';
 import '../../../services/localization_service.dart';
 import '../../forms/update_password_form_widget.dart';
 import '../../icons/go_back_icon_widget.dart';
@@ -11,8 +10,8 @@ import '../../links/go_back_link_widget.dart';
 import '../../loaders/loader_spinner_widget.dart';
 
 class UpdatePasswordScreenWidget extends StatelessWidget {
-  final AgentModel? profile;
-  const UpdatePasswordScreenWidget({Key? key, this.profile}) : super(key: key);
+  final dynamic agent;
+  const UpdatePasswordScreenWidget({Key? key, this.agent}) : super(key: key);
 
   final bool loading = false;
 
@@ -39,7 +38,7 @@ class UpdatePasswordScreenWidget extends StatelessWidget {
                       ]).value,
                   child: Column(
                     children: [
-                      UpdatePasswordFormWidget(profile: profile),
+                      const UpdatePasswordFormWidget(),
                       const SizedBox(height: 20),
                       GoBackLinkWidget(
                           removeState: false,

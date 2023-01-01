@@ -6,7 +6,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../main.dart';
-import '../../../models/agent_model.dart';
 import '../../../services/localization_service.dart';
 import '../../links/go_back_link_widget.dart';
 import '../../links/update_password_link_widget.dart';
@@ -18,7 +17,7 @@ final supabase = Supabase.instance.client;
 
 // ignore: must_be_immutable
 class ProfileScreenWidget extends StatelessWidget {
-  final AgentModel? agent;
+  final dynamic agent;
   ProfileScreenWidget({
     super.key,
     required this.agent,
@@ -79,13 +78,13 @@ class ProfileScreenWidget extends StatelessWidget {
                             child: Column(
                               children: [
                                 ProfileOverviewSectionWidget(
-                                    profile: agent, avatarBytes: avatarBytes),
+                                    agent: agent, avatarBytes: avatarBytes),
                                 const SizedBox(height: 30),
                                 UpdateProfileLinkWidget(
-                                    profile: agent, avatarBytes: avatarBytes),
+                                    agent: agent, avatarBytes: avatarBytes),
                                 const SizedBox(height: 10),
                                 UpdatePasswordLinkWidget(
-                                  profile: agent,
+                                  agent: agent,
                                 ),
                               ],
                             ),

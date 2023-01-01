@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../models/agent_model.dart';
 import '../../services/localization_service.dart';
 import '../screens/private/profile_screen_widget.dart';
 
 class ProfileDrawerLinkWidget extends StatelessWidget {
-  final AgentModel? agent;
+  final dynamic agent;
   const ProfileDrawerLinkWidget({super.key, required this.agent});
 
   @override

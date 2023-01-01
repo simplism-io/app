@@ -2,14 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../models/agent_model.dart';
 import '../../services/localization_service.dart';
 import '../screens/private/update_profile_screen_widget.dart';
 
 class UpdateProfileLinkWidget extends StatelessWidget {
-  final AgentModel? profile;
+  final dynamic agent;
   final Uint8List? avatarBytes;
-  const UpdateProfileLinkWidget({super.key, this.profile, this.avatarBytes});
+  const UpdateProfileLinkWidget({super.key, this.agent, this.avatarBytes});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,7 @@ class UpdateProfileLinkWidget extends StatelessWidget {
             onPressed: () => {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => UpdateProfileScreenWidget(
-                        profile: profile, avatarBytes: avatarBytes),
+                        agent: agent, avatarBytes: avatarBytes),
                   ))
                 }));
   }

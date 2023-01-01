@@ -11,7 +11,7 @@ class AuthenticationSectionOverviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-        color: Theme.of(context).colorScheme.onSurface,
+        color: Theme.of(context).colorScheme.surface,
         elevation: 0,
         child: Padding(
             padding: const EdgeInsets.fromLTRB(15.0, 30.0, 15.0, 40.0),

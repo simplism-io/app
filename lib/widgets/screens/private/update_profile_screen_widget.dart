@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../models/agent_model.dart';
 import '../../../services/localization_service.dart';
 import '../../forms/update_profile_form_widget.dart';
 import '../../links/go_back_link_widget.dart';
@@ -13,9 +12,9 @@ import '../../loaders/loader_spinner_widget.dart';
 final supabase = Supabase.instance.client;
 
 class UpdateProfileScreenWidget extends StatelessWidget {
-  final AgentModel? profile;
+  final dynamic agent;
   final Uint8List? avatarBytes;
-  const UpdateProfileScreenWidget({Key? key, this.profile, this.avatarBytes})
+  const UpdateProfileScreenWidget({Key? key, this.agent, this.avatarBytes})
       : super(key: key);
 
   final bool loading = false;
@@ -58,7 +57,7 @@ class UpdateProfileScreenWidget extends StatelessWidget {
                     children: [
                       const SizedBox(height: 20),
                       UpdateProfileFormWidget(
-                          profile: profile, avatarBytes: avatarBytes),
+                          agent: agent, avatarBytes: avatarBytes),
                       const SizedBox(height: 20),
                       GoBackLinkWidget(
                           removeState: false,

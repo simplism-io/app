@@ -4,8 +4,6 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/agent_model.dart';
-
 final supabase = Supabase.instance.client;
 
 class AgentService extends ChangeNotifier {
@@ -45,13 +43,27 @@ class AgentService extends ChangeNotifier {
     return await supabase
         .from('organisations')
         .select('id')
-        .eq('organisation', organisation);
+        .eq('organisation', organisation)
+        .single();
   }
 
   Future createAgent(userId, organizationId) async {
     return await supabase
         .from('agents')
         .insert({'id': userId, 'organisation_id': organizationId});
+  }
+
+  Future updateOrganisationIdInUserMetaData(organisationId) async {
+    final UserResponse result = await supabase.auth.updateUser(
+      UserAttributes(
+        data: {'organisation_id': organisationId},
+      ),
+    );
+    if (EmailValidator.validate(result.user!.email!)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future createOrganisationAndAgentProcedure(organisation) async {
@@ -63,10 +75,17 @@ class AgentService extends ChangeNotifier {
       if (resultCreateOrganisation == null) {
         final resultSelectOrganisation = await getOrganisation(organisation);
         if (resultSelectOrganisation != null) {
-          final resultCreateAgent = await createAgent(
-              supabase.auth.currentUser!.id, resultSelectOrganisation[0]['id']);
-          if (resultCreateAgent == null) {
-            return true;
+          final updateAgentMetaData = await updateOrganisationIdInUserMetaData(
+              resultSelectOrganisation['id']);
+          if (updateAgentMetaData == true) {
+            final resultCreateAgent = await createAgent(
+                supabase.auth.currentUser!.id, resultSelectOrganisation['id']);
+            if (resultCreateAgent == null) {
+              return true;
+            } else {
+              await deleteOrganisation(organisation);
+              return false;
+            }
           } else {
             await deleteOrganisation(organisation);
             return false;
@@ -254,12 +273,10 @@ class AgentService extends ChangeNotifier {
   }
 
   Future loadAgent() async {
-    return AgentModel.fromMap(
-        map: await supabase
-            .from('agents')
-            .select()
-            .eq('id', supabase.auth.currentUser!.id)
-            .single(),
-        emailFromAuth: supabase.auth.currentUser!.email!);
+    return await supabase
+        .from('agents')
+        .select()
+        .eq('id', supabase.auth.currentUser!.id)
+        .single();
   }
 }

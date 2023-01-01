@@ -1,13 +1,9 @@
-import 'dart:async';
-
 import 'package:base/widgets/sections/message_section_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../models/agent_model.dart';
-import '../../../services/agent_service.dart';
 import '../../drop_downs/language_drawer_dropdown_widget.dart';
 import '../../headers/private_end_drawer_header_widget.dart';
 import '../../icons/private_drawer_icon_widget.dart';
@@ -21,7 +17,7 @@ import '../../switchers/theme_drawer_switcher_widget.dart';
 final supabase = Supabase.instance.client;
 
 class HomeScreenWidget extends StatefulWidget {
-  final AgentModel? agent;
+  final dynamic agent;
   const HomeScreenWidget({Key? key, required this.agent}) : super(key: key);
 
   @override

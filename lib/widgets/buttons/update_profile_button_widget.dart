@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../models/agent_model.dart';
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
 import '../../services/agent_service.dart';
@@ -40,7 +39,7 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                   final response = await AgentService().updateProfileProcedure(
                       FormService.name, FormService.email, FormService.avatar);
                   if (response == true) {
-                    AgentModel? updatedAgent = await AgentService().loadAgent();
+                    final updatedAgent = await AgentService().loadAgent();
                     if (!mounted) return;
                     SnackBarService().successSnackBar(
                         'update_profile_snackbar_label', context);
@@ -98,7 +97,7 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                   final response = await AgentService().updateProfileProcedure(
                       FormService.name, FormService.email, FormService.avatar);
                   if (response == true) {
-                    AgentModel? newProfile = await AgentService().loadAgent();
+                    final newProfile = await AgentService().loadAgent();
                     if (!mounted) return;
                     SnackBarService().successSnackBar(
                         'update_profile_snackbar_label', context);

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../models/agent_model.dart';
 import '../../services/localization_service.dart';
 import '../screens/private/update_password_screen_widget..dart';
 
 class UpdatePasswordLinkWidget extends StatelessWidget {
-  final AgentModel? profile;
-  const UpdatePasswordLinkWidget({super.key, this.profile});
+  final dynamic agent;
+  const UpdatePasswordLinkWidget({super.key, this.agent});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +25,7 @@ class UpdatePasswordLinkWidget extends StatelessWidget {
             onPressed: () => {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
-                        UpdatePasswordScreenWidget(profile: profile),
+                        UpdatePasswordScreenWidget(agent: agent),
                   ))
                 }));
   }

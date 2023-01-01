@@ -26,6 +26,7 @@ class PasswordShowHideIconWidget extends StatelessWidget {
                             defaultTargetPlatform == TargetPlatform.macOS)
                         ? CupertinoIcons.eye_slash
                         : FontAwesomeIcons.eyeSlash,
+                color: Theme.of(context).colorScheme.onBackground,
                 size: 20.0,
               )),
         ));

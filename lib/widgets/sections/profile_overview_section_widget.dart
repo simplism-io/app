@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../models/agent_model.dart';
 import '../headers/profile_header_widget.dart';
 
 class ProfileOverviewSectionWidget extends StatelessWidget {
-  final AgentModel? profile;
+  final dynamic agent;
   final Uint8List? avatarBytes;
-  const ProfileOverviewSectionWidget(
-      {super.key, this.profile, this.avatarBytes});
+  const ProfileOverviewSectionWidget({super.key, this.agent, this.avatarBytes});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +36,7 @@ class ProfileOverviewSectionWidget extends StatelessWidget {
         //   style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
         // ),
         const SizedBox(height: 20),
-        Text(profile!.email),
+        Text(agent!.email),
       ],
     );
   }

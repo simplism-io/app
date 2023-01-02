@@ -11,8 +11,7 @@ import '../../services/snackbar_service.dart';
 
 class CreateOrganisationButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  const CreateOrganisationButtonWidget(
-      {super.key, required this.formKey});
+  const CreateOrganisationButtonWidget({super.key, required this.formKey});
 
   @override
   State<CreateOrganisationButtonWidget> createState() =>
@@ -37,8 +36,7 @@ class _CreateOrganisationButtonWidgetState
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
                   final result = await AgentService()
-                      .createOrganisationAndAgentProcedure(
-                          FormService.organisation);
+                      .createAgentProcedure(FormService.organisation);
                   if (result == true) {
                     if (!mounted) return;
                     SnackBarService().successSnackBar(
@@ -82,8 +80,7 @@ class _CreateOrganisationButtonWidgetState
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
                   final result = await AgentService()
-                      .createOrganisationAndAgentProcedure(
-                          FormService.organisation);
+                      .createAgentProcedure(FormService.organisation);
                   if (result == true) {
                     if (!mounted) return;
                     SnackBarService().successSnackBar(

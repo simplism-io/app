@@ -40,7 +40,7 @@ class _MessageSectionWidgetState extends State<MessageSectionWidget> {
                       margin: const EdgeInsets.symmetric(
                           vertical: 5, horizontal: 15),
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                         child: Row(
                           children: [
                             messages[index]['channels']['channel'] == 'Email'

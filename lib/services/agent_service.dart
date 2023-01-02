@@ -4,6 +4,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'organisation_service.dart';
+
 final supabase = Supabase.instance.client;
 
 class AgentService extends ChangeNotifier {
@@ -33,65 +35,41 @@ class AgentService extends ChangeNotifier {
         .update({'name': name}).match({'id': supabase.auth.currentUser!.id});
   }
 
-  Future createOrganisation(organisation) async {
-    return await supabase
-        .from('organisations')
-        .insert({'organisation': organisation});
-  }
-
-  Future getOrganisation(organisation) async {
-    return await supabase
-        .from('organisations')
-        .select('id')
-        .eq('organisation', organisation)
-        .single();
-  }
-
   Future createAgent(userId, organizationId) async {
     return await supabase
         .from('agents')
         .insert({'id': userId, 'organisation_id': organizationId});
   }
 
-  Future updateOrganisationIdInUserMetaData(organisationId) async {
-    final UserResponse result = await supabase.auth.updateUser(
-      UserAttributes(
-        data: {'organisation_id': organisationId},
-      ),
-    );
-    if (EmailValidator.validate(result.user!.email!)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Future createOrganisationAndAgentProcedure(organisation) async {
+  Future createAgentProcedure(organisation) async {
     try {
       if (kDebugMode) {
         print('Trying to save organisation ');
       }
-      final resultCreateOrganisation = await createOrganisation(organisation);
+      final resultCreateOrganisation =
+          await OrganisationService().createOrganisation(organisation);
       if (resultCreateOrganisation == null) {
-        final resultSelectOrganisation = await getOrganisation(organisation);
+        final resultSelectOrganisation =
+            await OrganisationService().getOrganisation(organisation);
         if (resultSelectOrganisation != null) {
-          final updateAgentMetaData = await updateOrganisationIdInUserMetaData(
-              resultSelectOrganisation['id']);
+          final updateAgentMetaData = await OrganisationService()
+              .updateOrganisationIdInUserMetaData(
+                  resultSelectOrganisation['id']);
           if (updateAgentMetaData == true) {
             final resultCreateAgent = await createAgent(
                 supabase.auth.currentUser!.id, resultSelectOrganisation['id']);
             if (resultCreateAgent == null) {
               return true;
             } else {
-              await deleteOrganisation(organisation);
+              await OrganisationService().deleteOrganisation(organisation);
               return false;
             }
           } else {
-            await deleteOrganisation(organisation);
+            await OrganisationService().deleteOrganisation(organisation);
             return false;
           }
         } else {
-          await deleteOrganisation(organisation);
+          await OrganisationService().deleteOrganisation(organisation);
           return false;
         }
       } else {
@@ -105,21 +83,16 @@ class AgentService extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteOrganisation(organisation) async {
-    await supabase
-        .from('organisations')
-        .delete()
-        .match({'organisation': organisation});
-  }
-
   Future signUpUsingEmailAndPassword({organisation, email, password}) async {
     try {
       if (kDebugMode) {
         print('Trying to sign up');
       }
-      final resultCreateOrganisation = await createOrganisation(organisation);
+      final resultCreateOrganisation =
+          await OrganisationService().createOrganisation(organisation);
       if (resultCreateOrganisation == null) {
-        final resultSelectOrganisation = await getOrganisation(organisation);
+        final resultSelectOrganisation =
+            await OrganisationService().getOrganisation(organisation);
         if (resultSelectOrganisation != null) {
           AuthResponse result = await supabase.auth.signUp(
             email: email,
@@ -131,15 +104,15 @@ class AgentService extends ChangeNotifier {
             if (resultCreateAgent == null) {
               return true;
             } else {
-              await deleteOrganisation(organisation);
+              await OrganisationService().deleteOrganisation(organisation);
               return false;
             }
           } else {
-            await deleteOrganisation(organisation);
+            await OrganisationService().deleteOrganisation(organisation);
             return false;
           }
         } else {
-          await deleteOrganisation(organisation);
+          await OrganisationService().deleteOrganisation(organisation);
           return false;
         }
       } else {

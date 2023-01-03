@@ -8,7 +8,7 @@ class EmailIconWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-        child: Icon(FontAwesomeIcons.viber,
+        child: Icon(FontAwesomeIcons.telegram,
             color: Theme.of(context).colorScheme.onBackground));
   }
 }

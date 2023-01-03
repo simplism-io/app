@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../services/localization_service.dart';
+import '../icons/chevron_right_icon_widget.dart';
 import '../screens/public/features._screen_widget.dart';
 
 class FeaturesDrawerLinkWidget extends StatelessWidget {
@@ -12,8 +12,13 @@ class FeaturesDrawerLinkWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
-      child: Row(children: [
-        Text(
+      child: ListTile(
+        onTap: () => {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const FeaturesScreenWidget(),
+          )),
+        },
+        title: Text(
             LocalizationService.of(context)?.translate('features_link_label') ??
                 '',
             style: TextStyle(
@@ -22,23 +27,8 @@ class FeaturesDrawerLinkWidget extends StatelessWidget {
                   ? Theme.of(context).colorScheme.primary
                   : Theme.of(context).colorScheme.onBackground,
             )),
-        const Spacer(),
-        IconButton(
-          icon: Icon(
-            FontAwesomeIcons.circleChevronRight,
-            color: highlight == true
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.onBackground,
-          ),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const FeaturesScreenWidget(),
-              ),
-            );
-          },
-        ),
-      ]),
+        trailing: const ChevronRightIconWidget(),
+      ),
     );
   }
 }

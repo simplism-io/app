@@ -21,9 +21,25 @@ class MessageService extends ChangeNotifier {
 
   getMessages() async {
     messages = await supabase.from('messages').select('''
-    id, subject, created, channels:channel_id (channel)
+    id, subject, body, created, channels:channel_id (channel)
   ''').eq('organisation_id', supabase.auth.currentSession!.user.userMetadata!['organisation_id']);
 
     notifyListeners();
+  }
+
+  Future sendEmailMessage() async {
+    return true;
+  }
+
+  Future sendViberMessage() async {
+    return true;
+  }
+
+  Future sendWhatsAppMessage() async {
+    return true;
+  }
+
+  Future sendTelegramMessage() async {
+    return true;
   }
 }

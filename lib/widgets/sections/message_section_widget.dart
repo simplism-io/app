@@ -25,17 +25,17 @@ class _MessageSectionWidgetState extends State<MessageSectionWidget> {
     List<dynamic> messages =
         Provider.of<MessageService>(context, listen: true).messages;
 
-    return Column(
-      children: [
-        messages.isEmpty
-            ? const LoaderSpinnerWidget()
-            : ListView.builder(
-                reverse: true,
-                shrinkWrap: true,
-                scrollDirection: Axis.vertical,
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  return Card(
+    return messages.isEmpty
+        ? const LoaderSpinnerWidget()
+        : ListView.builder(
+            reverse: true,
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            itemCount: messages.length,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  Card(
                       color: Theme.of(context).colorScheme.surface,
                       margin: const EdgeInsets.symmetric(
                           vertical: 5, horizontal: 15),
@@ -52,9 +52,27 @@ class _MessageSectionWidgetState extends State<MessageSectionWidget> {
                             ),
                           ],
                         ),
-                      ));
-                }),
-      ],
-    );
+                      )),
+                  Card(
+                      // color: Theme.of(context).colorScheme.surface,
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 5, horizontal: 15),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        child: Row(
+                          children: [
+                            Text(
+                              messages[index]["body"] ?? '',
+                              style: const TextStyle(fontSize: 15),
+                            ),
+                          ],
+                        ),
+                      )),
+                  ElevatedButton(
+                      onPressed: () => {MessageService().sendEmailMessage()},
+                      child: Text('Reply'))
+                ],
+              );
+            });
   }
 }

@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../buttons/signout_drawer_button_widget.dart';
 import '../../drop_downs/language_drawer_dropdown_widget.dart';
 import '../../headers/private_end_drawer_header_widget.dart';
 import '../../icons/private_drawer_icon_widget.dart';
 import '../../icons/private_end_drawer_icon_widget.dart';
 import '../../links/logo_header_link_widget.dart';
 import '../../links/profile_drawer_link_widget.dart';
-import '../../links/signout_drawer_link_widget.dart';
 import '../../switchers/biometrics_drawer_switcher_widget.dart';
 import '../../switchers/theme_drawer_switcher_widget.dart';
 
@@ -90,7 +90,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
           const ThemeDrawerSwitcherWidget(),
           const BiometricsDrawerSwitcherWidget(),
           const SizedBox(height: 50),
-          const SignOutDrawerLink()
+          const SignOutDrawerButtonWidget()
         ],
       ),
     );

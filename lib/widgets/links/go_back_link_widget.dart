@@ -1,3 +1,4 @@
+import 'package:base/widgets/icons/chevron_left_icon_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -17,11 +18,8 @@ class GoBackLinkWidget extends StatelessWidget {
       visibleWhen: const [Condition.largerThan(name: MOBILE)],
       child: Builder(builder: (context) {
         return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
-                icon: Icon(FontAwesomeIcons.circleChevronLeft,
-                    color: Theme.of(context).colorScheme.onBackground),
+            TextButton.icon(
                 onPressed: () async {
                   if (removeState == true) {
                     Navigator.of(context, rootNavigator: true)
@@ -32,11 +30,9 @@ class GoBackLinkWidget extends StatelessWidget {
                   } else {
                     Navigator.pop(context);
                   }
-                }),
-            const SizedBox(
-              width: 5,
-            ),
-            Text(label)
+                },
+                icon: const ChevronLeftIconWidget(),
+                label: Text(label))
           ],
         );
       }),

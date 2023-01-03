@@ -12,7 +12,8 @@ class PrivateEndDrawerHeaderWidget extends StatelessWidget {
         color: Theme.of(context).colorScheme.secondary,
       ),
       child: Text(
-          LocalizationService.of(context)?.translate('settings_header') ?? '',
+          LocalizationService.of(context)?.translate('settings_header_label') ??
+              '',
           style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)),
     );
   }

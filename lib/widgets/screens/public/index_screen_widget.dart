@@ -35,16 +35,13 @@ class _IndexScreenWidgetState extends State<IndexScreenWidget> {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
-        children: [
-          const PublicDrawerHeaderWidget(),
-          const SizedBox(height: 20.0),
-          const FeaturesDrawerLinkWidget(highlight: false),
-          Divider(color: Theme.of(context).colorScheme.onBackground),
-          const PricingDrawerLinkWidget(highlight: false),
-          Divider(color: Theme.of(context).colorScheme.onBackground),
-          const FaqDrawerLinkWidget(highlight: false),
-          Divider(color: Theme.of(context).colorScheme.onBackground),
-          const AboutDrawerLinkWidget(highlight: false)
+        children: const [
+          PublicDrawerHeaderWidget(),
+          SizedBox(height: 20.0),
+          FeaturesDrawerLinkWidget(highlight: false),
+          PricingDrawerLinkWidget(highlight: false),
+          FaqDrawerLinkWidget(highlight: false),
+          AboutDrawerLinkWidget(highlight: false)
         ],
       ),
     );

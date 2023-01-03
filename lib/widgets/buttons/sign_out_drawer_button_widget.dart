@@ -18,7 +18,8 @@ class SignOutDrawerButtonWidget extends StatelessWidget {
           await AgentService().signOut()
         },
         title: Text(
-            LocalizationService.of(context)?.translate('contact_link_label') ??
+            LocalizationService.of(context)
+                    ?.translate('sign_out_button_label') ??
                 '',
             style: TextStyle(
                 fontWeight: FontWeight.bold,

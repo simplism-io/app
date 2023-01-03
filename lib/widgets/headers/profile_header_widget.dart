@@ -7,7 +7,8 @@ class ProfileHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-        LocalizationService.of(context)?.translate('profile_header') ?? '',
+        LocalizationService.of(context)?.translate('profile_header_label') ??
+            '',
         style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold));
   }
 }

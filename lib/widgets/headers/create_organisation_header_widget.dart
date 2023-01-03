@@ -9,7 +9,7 @@ class CreateOrganisationHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
         LocalizationService.of(context)
-                ?.translate('create_organisation_header') ??
+                ?.translate('create_organisation_header_label') ??
             '',
         style: TextStyle(
             fontSize: 25, color: Theme.of(context).colorScheme.onBackground));

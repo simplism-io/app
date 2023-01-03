@@ -12,19 +12,22 @@ class BiometricsDrawerSwitcherWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return defaultTargetPlatform == TargetPlatform.iOS ||
             defaultTargetPlatform == TargetPlatform.android
-        ? Consumer<BiometricService>(
-            builder: (context, localAuthentication, child) => SwitchListTile(
-              activeColor: Theme.of(context).colorScheme.primary,
-              title: Text(
-                LocalizationService.of(context)
-                        ?.translate('biometrics_switcher_label') ??
-                    '',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+        ? Padding(
+            padding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0),
+            child: Consumer<BiometricService>(
+              builder: (context, localAuthentication, child) => SwitchListTile(
+                activeColor: Theme.of(context).colorScheme.primary,
+                title: Text(
+                  LocalizationService.of(context)
+                          ?.translate('biometrics_switcher_label') ??
+                      '',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                onChanged: (value) {
+                  localAuthentication.toggleBiometrics();
+                },
+                value: localAuthentication.biometrics,
               ),
-              onChanged: (value) {
-                localAuthentication.toggleBiometrics();
-              },
-              value: localAuthentication.biometrics,
             ),
           )
         : Container();

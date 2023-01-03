@@ -12,7 +12,8 @@ class PublicDrawerHeaderWidget extends StatelessWidget {
         color: Theme.of(context).colorScheme.secondary,
       ),
       child: Text(
-          LocalizationService.of(context)?.translate('public_menu_header') ??
+          LocalizationService.of(context)
+                  ?.translate('public_menu_header_label') ??
               '',
           style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)),
     );

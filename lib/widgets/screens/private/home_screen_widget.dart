@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../buttons/signout_drawer_button_widget.dart';
+import '../../buttons/sign_out_drawer_button_widget.dart';
 import '../../drop_downs/language_drawer_dropdown_widget.dart';
 import '../../headers/private_end_drawer_header_widget.dart';
 import '../../icons/private_drawer_icon_widget.dart';

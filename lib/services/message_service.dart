@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
@@ -20,6 +20,9 @@ class MessageService extends ChangeNotifier {
           table: 'messages',
           filter: 'organisation_id=eq.$organisationId'),
       (payload, [ref]) async {
+        if (kDebugMode) {
+          print('New incoming message');
+        }
         await getMessages();
       },
     ).subscribe();
@@ -42,6 +45,7 @@ class MessageService extends ChangeNotifier {
 
     if (resultCreateMessage != null) {
       //SWITCH BASE BASED ON CHANNEL
+      final newMessageId = resultCreateMessage;
 
       final originalEmail = await supabase
           .from('emails')
@@ -49,16 +53,23 @@ class MessageService extends ChangeNotifier {
           .eq('message_id', messageId)
           .single();
 
-      print(originalEmail);
       if (originalEmail != null) {
-        final email = createEmail(messageId, originalEmail['email_address_id'],
-            originalEmail['mailbox_id']);
-        print(email);
+        final email = createEmail(newMessageId,
+            originalEmail['email_address_id'], originalEmail['mailbox_id']);
+        if (email != null) {
+          if (kDebugMode) {
+            print('Transaction complete');
+          }
+        }
       } else {
-        print('originalEmail is null');
+        if (kDebugMode) {
+          print('originalEmail is null');
+        }
       }
     } else {
-      print('resultCreateMessage is null');
+      if (kDebugMode) {
+        print('resultCreateMessage is null');
+      }
     }
   }
 
@@ -86,16 +97,20 @@ class MessageService extends ChangeNotifier {
     }
   }
 
-  Future createEmail(messageId, emailAddressId, mailboxId) async {
-    final List<Map<String, dynamic>> email = await supabase
+  Future createEmail(newMessageId, emailAddressId, mailboxId) async {
+    final email = await supabase
         .from('emails')
         .insert({
-          'message_id': messageId,
+          'message_id': newMessageId,
           'email_address_id': emailAddressId,
           'mailbox_id': mailboxId,
         })
         .select()
         .single();
-    return email;
+
+    if (email != null) {
+      return email['id'];
+    }
+    return null;
   }
 }

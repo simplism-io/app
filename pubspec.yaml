@@ -41,9 +41,9 @@ flutter:
     - assets/i18n/nl.json
   # example:
   fonts:
-  - family: OpenSans
-    fonts:
-      - asset: assets/fonts/OpenSans-Regular.ttf
-  - family: OpenSansExtraBold
-    fonts:
-      - asset: assets/fonts/OpenSans-ExtraBold.ttf
+    - family: OpenSans
+      fonts:
+        - asset: assets/fonts/OpenSans-Regular.ttf
+    - family: OpenSansExtraBold
+      fonts:
+        - asset: assets/fonts/OpenSans-ExtraBold.ttf

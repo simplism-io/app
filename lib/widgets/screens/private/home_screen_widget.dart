@@ -1,4 +1,4 @@
-import 'package:base/widgets/sections/message_section_widget.dart';
+import 'package:base/widgets/sections/inbox_section_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -70,7 +70,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
 
   rightSection() {
     return const ResponsiveRowColumnItem(
-        rowFlex: 2, child: MessageSectionWidget());
+        rowFlex: 2, child: InboxSectionWidget());
   }
 
   drawer() {
@@ -114,17 +114,15 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
         backgroundColor: Theme.of(context).colorScheme.background,
         actions: const [PrivateEndDrawerWidget()],
       ),
-      body: SingleChildScrollView(
-        child: ResponsiveRowColumn(
-          layout: ResponsiveWrapper.of(context).isSmallerThan(TABLET)
-              ? ResponsiveRowColumnType.COLUMN
-              : ResponsiveRowColumnType.ROW,
-          rowMainAxisAlignment: MainAxisAlignment.start,
-          rowCrossAxisAlignment: CrossAxisAlignment.start,
-          rowPadding: const EdgeInsets.all(20),
-          columnPadding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
-          children: [leftSection(), rightSection()],
-        ),
+      body: ResponsiveRowColumn(
+        layout: ResponsiveWrapper.of(context).isSmallerThan(TABLET)
+            ? ResponsiveRowColumnType.COLUMN
+            : ResponsiveRowColumnType.ROW,
+        rowMainAxisAlignment: MainAxisAlignment.start,
+        rowCrossAxisAlignment: CrossAxisAlignment.start,
+        rowPadding: const EdgeInsets.all(20),
+        columnPadding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+        children: [leftSection(), rightSection()],
       ),
       drawer: drawer(),
       endDrawer: endDrawer(),

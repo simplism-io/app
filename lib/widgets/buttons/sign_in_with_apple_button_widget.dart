@@ -7,8 +7,8 @@ import '../../services/localization_service.dart';
 import '../../services/agent_service.dart';
 import '../../services/snackbar_service.dart';
 
-class SignInWithGoogleButtonWidget extends StatelessWidget {
-  const SignInWithGoogleButtonWidget({super.key});
+class SignInWithAppleButtonWidget extends StatelessWidget {
+  const SignInWithAppleButtonWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class SignInWithGoogleButtonWidget extends StatelessWidget {
           ? CupertinoButton(
               onPressed: () async {
                 try {
-                  AgentService().signInUsingGoogle();
+                  AgentService().signInUsingApple();
                 } catch (e) {
                   SnackBarService()
                       .errorSnackBar('general_error_snackbar_label', context);
@@ -33,7 +33,7 @@ class SignInWithGoogleButtonWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(5.0),
                 child: Text(
                   LocalizationService.of(context)
-                          ?.translate('sign_in_google_button_label') ??
+                          ?.translate('sign_in_apple_button_label') ??
                       '',
                   style: TextStyle(
                       color: Theme.of(context).colorScheme.onSecondary,
@@ -56,7 +56,7 @@ class SignInWithGoogleButtonWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(15.0),
                 child: Text(
                   LocalizationService.of(context)
-                          ?.translate('sign_in_google_button_label') ??
+                          ?.translate('sign_in_apple_button_label') ??
                       '',
                   style: TextStyle(
                       color: Theme.of(context).colorScheme.onSecondary,

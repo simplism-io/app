@@ -75,8 +75,7 @@ class _InboxSectionWidgetState extends State<InboxSectionWidget> {
                                       ? const EmailIconWidget()
                                       : Container(),
                                   Text(
-                                    messages[index]["subject"].capitalize() ??
-                                        '',
+                                    messages[index]["subject"] ?? '',
                                     style: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold),
@@ -112,15 +111,6 @@ class _InboxSectionWidgetState extends State<InboxSectionWidget> {
                                       ],
                                     ),
                                     const SizedBox(height: 5),
-                                    Row(
-                                      children: const [
-                                        Spacer(),
-                                        Padding(
-                                            padding:
-                                                EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                            child: ReplyMessageFormWidget()),
-                                      ],
-                                    )
                                   ],
                                 )
                               ],

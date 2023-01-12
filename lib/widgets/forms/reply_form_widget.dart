@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../buttons/create_organisation_button_widget.dart';
+import '../buttons/reply_message_button_widget.dart';
 import '../form_fields/reply_form_field_widget.dart';
 
 class ReplyMessageFormWidget extends StatefulWidget {
@@ -17,14 +17,24 @@ class _CreateOrganisationFormWidgetState extends State<ReplyMessageFormWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      //color: Theme.of(context).colorScheme.onSurface,
       child: Form(
           key: formKey,
           child: Column(
             children: <Widget>[
-              const ReplyMessageFormFieldWidget(),
+              Row(
+                children: const [
+                  //ReplyMessageFormFieldWidget(),
+                ],
+              ),
+              Expanded(
+                child: Row(
+                  children: const [
+                    Spacer(),
+                    //ReplyMessageButtonWidget(formKey: formKey),
+                  ],
+                ),
+              ),
               const SizedBox(height: 15.0),
-              CreateOrganisationButtonWidget(formKey: formKey),
             ],
           )),
     );

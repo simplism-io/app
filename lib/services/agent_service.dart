@@ -126,6 +126,22 @@ class AgentService extends ChangeNotifier {
     }
   }
 
+  Future<void> signInUsingApple() async {
+    try {
+      if (kDebugMode) {
+        print('Trying to sign in');
+      }
+      await supabase.auth.signInWithOAuth(
+        Provider.apple,
+        redirectTo: kIsWeb ? null : 'io.supabase.starter://login-callback/',
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
   Future<void> signInUsingGoogle() async {
     try {
       if (kDebugMode) {

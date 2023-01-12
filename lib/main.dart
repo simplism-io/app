@@ -20,10 +20,7 @@ import 'widgets/screens/public/biometric_screen_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await dotenv.load(fileName: ".env");
-
-  //HiveLocalStorage.encryptionKey = dotenv.env["SUPABASE_SECURE_KEY"];
   await Supabase.initialize(
     url: kDebugMode
         ? dotenv.env['SUPABASE_URL_DEBUG']!
@@ -32,7 +29,6 @@ Future<void> main() async {
         ? dotenv.env['SUPABASE_KEY_DEBUG']!
         : dotenv.env['SUPABASE_KEY_PROD']!,
   );
-
   runApp(const App());
 }
 

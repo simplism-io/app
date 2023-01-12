@@ -18,8 +18,8 @@ class _ReplyMessageFormFieldWidgetState
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: ResponsiveValue(context, defaultValue: 963.0, valueWhen: const [
-        Condition.largerThan(name: MOBILE, value: 963.0),
+      width: ResponsiveValue(context, defaultValue: 960.0, valueWhen: const [
+        Condition.largerThan(name: MOBILE, value: 960.0),
         Condition.smallerThan(name: TABLET, value: 300.0)
       ]).value,
       child: Padding(

@@ -38,11 +38,7 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                           bool success = await AgentService()
                               .signInUsingEmailAndPassword(
                                   FormService.email, FormService.password);
-                          if (success == true) {
-                            if (!mounted) return;
-                            SnackBarService().successSnackBar(
-                                'sign_in_snackbar_label', context);
-                          } else {
+                          if (success == false) {
                             if (!mounted) return;
                             setState(() => {loader = false});
                             SnackBarService().errorSnackBar(
@@ -76,11 +72,7 @@ class _SignInUpButtonWidgetState extends State<SignInUpButtonWidget> {
                           bool success = await AgentService()
                               .signInUsingEmailAndPassword(
                                   FormService.email, FormService.password);
-                          if (success == true) {
-                            if (!mounted) return;
-                            SnackBarService().successSnackBar(
-                                'sign_in_snackbar_label', context);
-                          } else {
+                          if (success == false) {
                             if (!mounted) return;
                             setState(() => {loader = false});
                             SnackBarService().errorSnackBar(

@@ -7,7 +7,6 @@ import '../../services/localization_service.dart';
 
 class ReplyMessageButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-
   const ReplyMessageButtonWidget({super.key, required this.formKey});
 
   @override

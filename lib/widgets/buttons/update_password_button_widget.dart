@@ -5,7 +5,8 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../../services/user_service.dart';
+import '../../services/agent_service.dart';
+import '../../services/snackbar_service.dart';
 
 class UpdatePasswordButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -34,41 +35,21 @@ class _UpdatePasswordButtonWidgetState
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  final response = await UserService()
+                  final response = await AgentService()
                       .updatePassword(FormService.newPassword);
                   setState(() => loader = false);
                   if (response == true) {
                     if (!mounted) return;
-                    final snackBar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      content: Text(
-                          LocalizationService.of(context)?.translate(
-                                  'update_password_snackbar_label') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onBackground,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    SnackBarService().successSnackBar(
+                        'update_password_snackbar_label', context);
                     Navigator.pop(context);
                   } else {
                     setState(() {
                       loader = false;
                     });
                     if (!mounted) return;
-                    final errorSnackbar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.error,
-                      content: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('general_error_snackbar_label') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onError,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(errorSnackbar);
+                    SnackBarService()
+                        .errorSnackBar('general_error_snackbar_label', context);
                   }
                 } else {
                   setState(() {
@@ -97,41 +78,21 @@ class _UpdatePasswordButtonWidgetState
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  final response = await UserService()
+                  final response = await AgentService()
                       .updatePassword(FormService.newPassword);
                   setState(() => loader = false);
                   if (response == true) {
                     if (!mounted) return;
-                    final snackBar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      content: Text(
-                          LocalizationService.of(context)?.translate(
-                                  'update_password_snackbar_label') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    SnackBarService().successSnackBar(
+                        'update_password_snackbar_label', context);
                     Navigator.pop(context);
                   } else {
                     setState(() {
                       loader = false;
                     });
                     if (!mounted) return;
-                    final errorSnackbar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.error,
-                      content: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('general_error_snackbar_label') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(errorSnackbar);
+                    SnackBarService().errorSnackBar(
+                        'authentication_error_snackbar_label', context);
                   }
                 } else {
                   setState(() {

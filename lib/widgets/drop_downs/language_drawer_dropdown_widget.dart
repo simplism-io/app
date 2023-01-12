@@ -13,28 +13,26 @@ class LanguageDrawerDropdownWidget extends StatelessWidget {
     return Consumer<InternationalizationService>(
       builder: (context, internationalization, child) => Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 20, 0),
-          child: Row(children: [
-            Text(
-                LocalizationService.of(context)!
-                    .translate('language_dropdown_label')!,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            const Spacer(),
-            DropdownButton<String>(
-              underline:
-                  Container(color: Theme.of(context).colorScheme.background),
-              value: internationalization.selectedItem,
-              onChanged: (String? newValue) {
-                internationalization.changeLanguage(Locale(newValue!));
-              },
-              items: internationalization.languages
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            )
-          ])),
+          child: ListTile(
+              title: Text(
+                  LocalizationService.of(context)!
+                      .translate('language_dropdown_label')!,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              trailing: DropdownButton<String>(
+                underline:
+                    Container(color: Theme.of(context).colorScheme.background),
+                value: internationalization.selectedItem,
+                onChanged: (String? newValue) {
+                  internationalization.changeLanguage(Locale(newValue!));
+                },
+                items: internationalization.languages
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ))),
     );
   }
 }

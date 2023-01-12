@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../models/profile_model.dart';
 import '../buttons/update_password_button_widget.dart';
 import '../form_fields/new_password_again_form_field_widget.dart';
 import '../form_fields/new_password_form_field_widget.dart';
 import '../headers/update_password_header_widget.dart';
 
 class UpdatePasswordFormWidget extends StatefulWidget {
-  final ProfileModel? profile;
-
-  const UpdatePasswordFormWidget({super.key, this.profile});
+  const UpdatePasswordFormWidget({super.key});
 
   @override
   State<UpdatePasswordFormWidget> createState() =>
@@ -18,7 +15,6 @@ class UpdatePasswordFormWidget extends StatefulWidget {
 
 class _UpdatePasswordFormWidgetState extends State<UpdatePasswordFormWidget> {
   final formKey = GlobalKey<FormState>();
-  bool loader = false;
 
   @override
   Widget build(BuildContext context) {

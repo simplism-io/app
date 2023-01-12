@@ -10,6 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'services/form_service.dart';
+import 'services/message_service.dart';
 import 'services/theme_service.dart';
 import 'services/biometric_service.dart';
 import 'services/internationalization_service.dart';
@@ -19,15 +20,15 @@ import 'widgets/screens/public/biometric_screen_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await dotenv.load(fileName: ".env");
-
-  HiveLocalStorage.encryptionKey = dotenv.env["SUPABASE_SECURE_KEY"];
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_KEY']!,
+    url: kDebugMode
+        ? dotenv.env['SUPABASE_URL_DEBUG']!
+        : dotenv.env['SUPABASE_URL_PROD']!,
+    anonKey: kDebugMode
+        ? dotenv.env['SUPABASE_KEY_DEBUG']!
+        : dotenv.env['SUPABASE_KEY_PROD']!,
   );
-
   runApp(const App());
 }
 
@@ -42,6 +43,7 @@ class App extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => BiometricService()),
           ChangeNotifierProvider(create: (_) => InternationalizationService()),
           ChangeNotifierProvider(create: (_) => FormService()),
+          ChangeNotifierProvider(create: (_) => MessageService()),
         ],
         child: Consumer3<ThemeService, InternationalizationService,
                 BiometricService>(

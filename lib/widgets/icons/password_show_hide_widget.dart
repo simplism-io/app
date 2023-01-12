@@ -6,8 +6,8 @@ import 'package:provider/provider.dart';
 
 import '../../services/form_service.dart';
 
-class PasswordEyeSlashIconWidget extends StatelessWidget {
-  const PasswordEyeSlashIconWidget({super.key});
+class PasswordShowHideIconWidget extends StatelessWidget {
+  const PasswordShowHideIconWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +26,7 @@ class PasswordEyeSlashIconWidget extends StatelessWidget {
                             defaultTargetPlatform == TargetPlatform.macOS)
                         ? CupertinoIcons.eye_slash
                         : FontAwesomeIcons.eyeSlash,
+                color: Theme.of(context).colorScheme.onBackground,
                 size: 20.0,
               )),
         ));

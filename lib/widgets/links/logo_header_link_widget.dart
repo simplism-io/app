@@ -17,7 +17,8 @@ class LogoHeaderLinkWidget extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
           child: TextButton(
             child: Text(
-              LocalizationService.of(context)?.translate('brand_header') ?? '',
+              LocalizationService.of(context)?.translate('logo_header_label') ??
+                  '',
               style: TextStyle(
                   fontSize: ResponsiveValue(context,
                       defaultValue: 30.0,

@@ -8,7 +8,8 @@ class SignInUpHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-        LocalizationService.of(context)?.translate('sign_in_up_card_header') ??
+        LocalizationService.of(context)
+                ?.translate('sign_in_up_card_header_label') ??
             '',
         textAlign: TextAlign.center,
         style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold));

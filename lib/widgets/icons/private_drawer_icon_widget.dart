@@ -21,7 +21,7 @@ class PrivateDrawerIconWidget extends StatelessWidget {
                         defaultTargetPlatform == TargetPlatform.macOS)
                     ? CupertinoIcons.chevron_right
                     : FontAwesomeIcons.chevronRight,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
               onPressed: () {
                 Scaffold.of(context).openDrawer();

@@ -8,7 +8,8 @@ class FeaturesHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-        LocalizationService.of(context)?.translate('features_header') ?? '',
+        LocalizationService.of(context)?.translate('features_header_label') ??
+            '',
         style: TextStyle(
             fontSize: 25, color: Theme.of(context).colorScheme.onBackground));
   }

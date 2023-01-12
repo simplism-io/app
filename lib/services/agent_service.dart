@@ -4,11 +4,11 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/profile_model.dart';
+import 'organisation_service.dart';
 
 final supabase = Supabase.instance.client;
 
-class UserService extends ChangeNotifier {
+class AgentService extends ChangeNotifier {
   Future signInUsingEmailAndPassword(email, password) async {
     try {
       if (kDebugMode) {
@@ -29,15 +29,49 @@ class UserService extends ChangeNotifier {
     }
   }
 
-  Future signUpUsingEmailAndPassword({email, password}) async {
+  Future createAgentName(name) async {
+    return await supabase
+        .from('agents')
+        .update({'name': name}).match({'id': supabase.auth.currentUser!.id});
+  }
+
+  Future createAgent(userId, organizationId) async {
+    return await supabase
+        .from('agents')
+        .insert({'id': userId, 'organisation_id': organizationId});
+  }
+
+  Future createAgentProcedure(organisation) async {
     try {
       if (kDebugMode) {
-        print('Trying to sign up');
+        print('Trying to save organisation ');
       }
-      AuthResponse result =
-          await supabase.auth.signUp(email: email, password: password);
-      if (EmailValidator.validate(result.user!.email!)) {
-        return true;
+      final resultCreateOrganisation =
+          await OrganisationService().createOrganisation(organisation);
+      if (resultCreateOrganisation == null) {
+        final resultSelectOrganisation =
+            await OrganisationService().getOrganisation(organisation);
+        if (resultSelectOrganisation != null) {
+          final updateAgentMetaData = await OrganisationService()
+              .updateOrganisationIdInUserMetaData(
+                  resultSelectOrganisation['id']);
+          if (updateAgentMetaData == true) {
+            final resultCreateAgent = await createAgent(
+                supabase.auth.currentUser!.id, resultSelectOrganisation['id']);
+            if (resultCreateAgent == null) {
+              return true;
+            } else {
+              await OrganisationService().deleteOrganisation(organisation);
+              return false;
+            }
+          } else {
+            await OrganisationService().deleteOrganisation(organisation);
+            return false;
+          }
+        } else {
+          await OrganisationService().deleteOrganisation(organisation);
+          return false;
+        }
       } else {
         return false;
       }
@@ -46,6 +80,65 @@ class UserService extends ChangeNotifier {
         print(e);
       }
       return false;
+    }
+  }
+
+  Future signUpUsingEmailAndPassword({organisation, email, password}) async {
+    try {
+      if (kDebugMode) {
+        print('Trying to sign up');
+      }
+      final resultCreateOrganisation =
+          await OrganisationService().createOrganisation(organisation);
+      if (resultCreateOrganisation == null) {
+        final resultSelectOrganisation =
+            await OrganisationService().getOrganisation(organisation);
+        if (resultSelectOrganisation != null) {
+          AuthResponse result = await supabase.auth.signUp(
+            email: email,
+            password: password,
+          );
+          if (EmailValidator.validate(result.user!.email!)) {
+            final resultCreateAgent = await createAgent(
+                result.user!.id, resultSelectOrganisation[0]['id']);
+            if (resultCreateAgent == null) {
+              return true;
+            } else {
+              await OrganisationService().deleteOrganisation(organisation);
+              return false;
+            }
+          } else {
+            await OrganisationService().deleteOrganisation(organisation);
+            return false;
+          }
+        } else {
+          await OrganisationService().deleteOrganisation(organisation);
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return false;
+    }
+  }
+
+  Future<void> signInUsingApple() async {
+    try {
+      if (kDebugMode) {
+        print('Trying to sign in');
+      }
+      await supabase.auth.signInWithOAuth(
+        Provider.apple,
+        redirectTo: kIsWeb ? null : 'io.supabase.starter://login-callback/',
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -168,13 +261,11 @@ class UserService extends ChangeNotifier {
     }
   }
 
-  Future loadProfile() async {
-    return ProfileModel.fromMap(
-        map: await supabase
-            .from('profiles')
-            .select()
-            .eq('id', supabase.auth.currentUser!.id)
-            .single(),
-        emailFromAuth: supabase.auth.currentUser!.email!);
+  Future loadAgent() async {
+    return await supabase
+        .from('agents')
+        .select()
+        .eq('id', supabase.auth.currentUser!.id)
+        .single();
   }
 }

@@ -15,11 +15,11 @@ class GoBackIconWidget extends StatelessWidget {
       child: Builder(builder: (context) {
         return IconButton(
           icon: Icon(
-            (defaultTargetPlatform == TargetPlatform.iOS ||
-                    defaultTargetPlatform == TargetPlatform.macOS)
-                ? CupertinoIcons.chevron_left
-                : FontAwesomeIcons.chevronLeft,
-          ),
+              (defaultTargetPlatform == TargetPlatform.iOS ||
+                      defaultTargetPlatform == TargetPlatform.macOS)
+                  ? CupertinoIcons.chevron_left
+                  : FontAwesomeIcons.chevronLeft,
+              color: Theme.of(context).colorScheme.onBackground),
           onPressed: () {
             Navigator.pop(context);
           },

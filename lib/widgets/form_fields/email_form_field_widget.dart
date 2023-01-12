@@ -4,7 +4,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../icons/email_envelope_icon_widget.dart';
+import '../icons/email_icon_widget.dart';
 
 class EmailFormFieldWidget extends StatefulWidget {
   final String email;
@@ -47,7 +47,7 @@ class _EmailFormfieldWidgetState extends State<EmailFormFieldWidget> {
             labelStyle: const TextStyle(
               fontSize: 15,
             ), //label style
-            prefixIcon: const EmailEnvelopeIconWidget(),
+            prefixIcon: const EmailIconWidget(),
           ),
           textAlign: TextAlign.left,
           initialValue: widget.email,

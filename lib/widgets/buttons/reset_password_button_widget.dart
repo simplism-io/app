@@ -3,14 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../../services/user_service.dart';
+import '../../services/agent_service.dart';
+import '../../services/snackbar_service.dart';
 
 class ResetPasswordButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  final String? email;
-  const ResetPasswordButtonWidget(
-      {super.key, required this.formKey, this.email});
+  const ResetPasswordButtonWidget({super.key, required this.formKey});
 
   @override
   State<ResetPasswordButtonWidget> createState() =>
@@ -33,21 +33,10 @@ class _ResetPasswordButtonWidgetState extends State<ResetPasswordButtonWidget> {
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  await UserService().resetPassword(widget.email);
+                  await AgentService().resetPassword(FormService.email);
                   if (!mounted) return;
-                  final resetPasswordSnackbar = SnackBar(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    content: Text(
-                        LocalizationService.of(context)
-                                ?.translate('reset_password_snackbar_label') ??
-                            '',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        )),
-                  );
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(resetPasswordSnackbar);
+                  SnackBarService().successSnackBar(
+                      'reset_password_snackbar_label', context);
                 } else {
                   setState(() {
                     loader = false;
@@ -75,21 +64,10 @@ class _ResetPasswordButtonWidgetState extends State<ResetPasswordButtonWidget> {
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  await UserService().resetPassword(widget.email);
+                  await AgentService().resetPassword(FormService.email);
                   if (!mounted) return;
-                  final resetPasswordSnackbar = SnackBar(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    content: Text(
-                        LocalizationService.of(context)
-                                ?.translate('reset_password_snackbar_label') ??
-                            '',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        )),
-                  );
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(resetPasswordSnackbar);
+                  SnackBarService().successSnackBar(
+                      'reset_password_snackbar_label', context);
                 } else {
                   setState(() {
                     loader = false;

@@ -1,14 +1,14 @@
+import 'package:base/widgets/screens/bouncer_widget.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../main.dart';
-import '../../models/profile_model.dart';
 import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
-import '../../services/user_service.dart';
+import '../../services/agent_service.dart';
+import '../../services/snackbar_service.dart';
 import '../screens/private/profile_screen_widget.dart';
 
 class UpdateProfileButtonWidget extends StatefulWidget {
@@ -36,39 +36,26 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  final response = await UserService().updateProfileProcedure(
-                      FormService.fullName,
-                      FormService.email,
-                      FormService.avatar);
+                  final response = await AgentService().updateProfileProcedure(
+                      FormService.name, FormService.email, FormService.avatar);
                   if (response == true) {
-                    ProfileModel? newProfile =
-                        await UserService().loadProfile();
+                    final updatedAgent = await AgentService().loadAgent();
                     if (!mounted) return;
-                    final snackBar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      content: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('update_profile_snackbar') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    if (EmailValidator.validate(newProfile!.email)) {
+                    SnackBarService().successSnackBar(
+                        'update_profile_snackbar_label', context);
+                    if (EmailValidator.validate(updatedAgent!.email)) {
                       if (!mounted) return;
                       Navigator.of(context, rootNavigator: true)
                           .pushAndRemoveUntil(
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      ProfileScreenWidget(profile: newProfile)),
+                                      ProfileScreenWidget(agent: updatedAgent)),
                               (route) => false);
                     } else {
                       Navigator.of(context, rootNavigator: true)
                           .pushAndRemoveUntil(
                               MaterialPageRoute(
-                                  builder: (context) => const App()),
+                                  builder: (context) => const BouncerWidget()),
                               (route) => false);
                     }
                   } else {
@@ -77,18 +64,8 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                     });
                     if (!mounted) return;
                     setState(() => {loader = false});
-                    final errorSnackbar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.error,
-                      content: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('general_error_snackbar_label') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onError,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(errorSnackbar);
+                    SnackBarService().errorSnackBar(
+                        'authentication_error_snackbar_label', context);
                   }
                 } else {
                   setState(() {
@@ -117,39 +94,26 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
               onPressed: () async {
                 if (widget.formKey.currentState!.validate()) {
                   setState(() => loader = true);
-                  final response = await UserService().updateProfileProcedure(
-                      FormService.fullName,
-                      FormService.email,
-                      FormService.avatar);
+                  final response = await AgentService().updateProfileProcedure(
+                      FormService.name, FormService.email, FormService.avatar);
                   if (response == true) {
-                    ProfileModel? newProfile =
-                        await UserService().loadProfile();
+                    final newProfile = await AgentService().loadAgent();
                     if (!mounted) return;
-                    final snackBar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      content: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('update_profile_snackbar') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    SnackBarService().successSnackBar(
+                        'update_profile_snackbar_label', context);
                     if (EmailValidator.validate(newProfile!.email)) {
                       if (!mounted) return;
                       Navigator.of(context, rootNavigator: true)
                           .pushAndRemoveUntil(
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      ProfileScreenWidget(profile: newProfile)),
+                                      ProfileScreenWidget(agent: newProfile)),
                               (route) => false);
                     } else {
                       Navigator.of(context, rootNavigator: true)
                           .pushAndRemoveUntil(
                               MaterialPageRoute(
-                                  builder: (context) => const App()),
+                                  builder: (context) => const BouncerWidget()),
                               (route) => false);
                     }
                   } else {
@@ -158,18 +122,8 @@ class _UpdateProfileButtonWidgetState extends State<UpdateProfileButtonWidget> {
                     });
                     if (!mounted) return;
                     setState(() => {loader = false});
-                    final errorSnackbar = SnackBar(
-                      backgroundColor: Theme.of(context).colorScheme.error,
-                      content: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('general_error_snackbar_label') ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onError,
-                          )),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(errorSnackbar);
+                    SnackBarService().errorSnackBar(
+                        'authentication_error_snackbar_label', context);
                   }
                 } else {
                   setState(() {

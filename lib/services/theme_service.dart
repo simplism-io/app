@@ -15,7 +15,7 @@ ThemeData light = ThemeData(
     onBackground: Color.fromARGB(255, 77, 77, 77),
     error: Colors.red,
     onError: Colors.white,
-    surface: Color.fromARGB(255, 241, 241, 241),
+    surface: Color.fromARGB(255, 247, 246, 246),
     onSurface: Color.fromARGB(255, 77, 77, 77),
   ),
   fontFamily: 'OpenSans',

@@ -56,6 +56,7 @@ class MessageService extends ChangeNotifier {
       if (originalEmail != null) {
         final email = createEmail(newMessageId,
             originalEmail['email_address_id'], originalEmail['mailbox_id']);
+        // ignore: unnecessary_null_comparison
         if (email != null) {
           if (kDebugMode) {
             print('Transaction complete');
@@ -110,7 +111,8 @@ class MessageService extends ChangeNotifier {
 
     if (email != null) {
       return email['id'];
+    } else {
+      return null;
     }
-    return null;
   }
 }

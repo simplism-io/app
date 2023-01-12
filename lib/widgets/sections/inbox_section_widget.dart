@@ -1,3 +1,4 @@
+import 'package:base/widgets/forms/reply_form_widget.dart';
 import 'package:base/widgets/icons/email_icon_widget.dart';
 import 'package:base/widgets/loaders/loader_spinner_widget.dart';
 import 'package:flutter/material.dart';
@@ -61,11 +62,12 @@ class _InboxSectionWidgetState extends State<InboxSectionWidget> {
                     child: messages[index]['incoming'] == true
                         ? Card(
                             color: Theme.of(context).colorScheme.surface,
+                            elevation: 0,
                             margin: const EdgeInsets.symmetric(
                                 vertical: 5, horizontal: 15),
                             child: Padding(
                               padding:
-                                  const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                  const EdgeInsets.fromLTRB(15, 10, 10, 10),
                               child: Row(
                                 children: [
                                   messages[index]['channels']['channel'] ==
@@ -73,8 +75,11 @@ class _InboxSectionWidgetState extends State<InboxSectionWidget> {
                                       ? const EmailIconWidget()
                                       : Container(),
                                   Text(
-                                    messages[index]["subject"] ?? '',
-                                    style: const TextStyle(fontSize: 15),
+                                    messages[index]["subject"].capitalize() ??
+                                        '',
+                                    style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
@@ -83,11 +88,12 @@ class _InboxSectionWidgetState extends State<InboxSectionWidget> {
                   ),
                   showBody[index] == true
                       ? Card(
-                          // color: Theme.of(context).colorScheme.surface,
+                          color: Theme.of(context).colorScheme.surface,
+                          elevation: 0,
                           margin: const EdgeInsets.symmetric(
                               vertical: 5, horizontal: 15),
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                            padding: const EdgeInsets.fromLTRB(15, 10, 10, 10),
                             child: Column(
                               children: [
                                 Row(
@@ -98,20 +104,23 @@ class _InboxSectionWidgetState extends State<InboxSectionWidget> {
                                     ),
                                   ],
                                 ),
-                                Row(
+                                Column(
                                   children: [
-                                    const Spacer(),
-                                    ElevatedButton(
-                                        onPressed: () async => {
-                                              await MessageService()
-                                                  .sendMessageProcedure(
-                                                      messages[index]['id'],
-                                                      messages[index]
-                                                          ['channel_id'],
-                                                      'testSubject',
-                                                      'testMessage')
-                                            },
-                                        child: const Text('Reply')),
+                                    Row(
+                                      children: const [
+                                        ReplyMessageFormWidget()
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Row(
+                                      children: const [
+                                        Spacer(),
+                                        Padding(
+                                            padding:
+                                                EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                            child: ReplyMessageFormWidget()),
+                                      ],
+                                    )
                                   ],
                                 )
                               ],

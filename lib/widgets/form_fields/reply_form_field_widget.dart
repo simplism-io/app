@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
 
 class ReplyMessageFormFieldWidget extends StatefulWidget {
@@ -23,8 +22,11 @@ class _ReplyMessageFormFieldWidgetState
         Condition.smallerThan(name: TABLET, value: 300.0)
       ]).value,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10, 0.0),
+        padding: const EdgeInsets.fromLTRB(15.0, 0.0, 15, 0.0),
         child: TextFormField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            minLines: 3,
             decoration: InputDecoration(
               focusedBorder: InputBorder.none,
               border: InputBorder.none,
@@ -34,6 +36,7 @@ class _ReplyMessageFormFieldWidgetState
             ),
             textCapitalization: TextCapitalization.words,
             textAlign: TextAlign.left,
+            style: const TextStyle(fontSize: 14),
             autofocus: true,
             validator: (String? value) {
               //print(value.length);
@@ -44,8 +47,8 @@ class _ReplyMessageFormFieldWidgetState
                   : null;
             },
             onChanged: (val) {
-              setState(
-                  () => {FormService.subject = '', FormService.body = val});
+              // setState(
+              //     () => {FormService.subject = '', FormService.body = val});
             }),
       ),
     );

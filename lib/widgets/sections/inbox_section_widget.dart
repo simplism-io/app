@@ -49,76 +49,73 @@ class _InboxSectionWidgetState extends State<InboxSectionWidget> {
 
     return messages.isEmpty
         ? const LoaderSpinnerWidget()
-        : ListView.builder(
-            reverse: true,
-            shrinkWrap: true,
-            scrollDirection: Axis.vertical,
-            itemCount: messages.length,
-            itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  GestureDetector(
-                    onTap: () => toggleBody(index),
-                    child: messages[index]['incoming'] == true
-                        ? Card(
-                            color: Theme.of(context).colorScheme.surface,
-                            elevation: 0,
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 15),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(15, 10, 10, 10),
-                              child: Row(
-                                children: [
-                                  messages[index]['channels']['channel'] ==
-                                          'Email'
-                                      ? const EmailIconWidget()
-                                      : Container(),
-                                  Text(
-                                    messages[index]["subject"] ?? '',
-                                    style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ))
-                        : Container(),
-                  ),
-                  showBody[index] == true
-                      ? Card(
-                          color: Theme.of(context).colorScheme.surface,
-                          elevation: 0,
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 5, horizontal: 15),
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(15, 10, 10, 10),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      messages[index]["body"] ?? '',
-                                      style: const TextStyle(fontSize: 15),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Row(
-                                      children: const [
-                                        ReplyMessageFormWidget()
+        : SingleChildScrollView(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () => toggleBody(index),
+                          child: messages[index]['incoming'] == true
+                              ? Card(
+                                  color: Theme.of(context).colorScheme.surface,
+                                  elevation: 0,
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        15, 10, 10, 10),
+                                    child: Row(
+                                      children: [
+                                        messages[index]['channels']
+                                                    ['channel'] ==
+                                                'Email'
+                                            ? const EmailIconWidget()
+                                            : Container(),
+                                        Text(
+                                          messages[index]["subject"] ?? '',
+                                          style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold),
+                                        ),
                                       ],
                                     ),
-                                    const SizedBox(height: 5),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ))
-                      : Container(),
-                ],
-              );
-            });
+                                  ))
+                              : Container(),
+                        ),
+                        showBody[index] == true
+                            ? Card(
+                                color: Theme.of(context).colorScheme.surface,
+                                elevation: 0,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(15, 10, 10, 10),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            messages[index]["body"] ?? '',
+                                            style:
+                                                const TextStyle(fontSize: 15),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 5)
+                                    ],
+                                  ),
+                                ))
+                            : Container(),
+                        showBody[index] == true
+                            ? ReplyMessageFormWidget()
+                            : Container()
+                      ],
+                    );
+                  }),
+            ),
+          );
   }
 }

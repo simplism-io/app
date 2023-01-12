@@ -7,36 +7,38 @@ class ReplyMessageFormWidget extends StatefulWidget {
   const ReplyMessageFormWidget({super.key});
 
   @override
-  State<ReplyMessageFormWidget> createState() =>
-      _CreateOrganisationFormWidgetState();
+  State<ReplyMessageFormWidget> createState() => _ReplyMessageFormWidgetState();
 }
 
-class _CreateOrganisationFormWidgetState extends State<ReplyMessageFormWidget> {
+class _ReplyMessageFormWidgetState extends State<ReplyMessageFormWidget> {
   final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Form(
-          key: formKey,
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: const [
-                  //ReplyMessageFormFieldWidget(),
+    return Column(
+      children: [
+        Card(
+          color: Theme.of(context).colorScheme.surface,
+          elevation: 0,
+          child: Form(
+              key: formKey,
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: const [
+                      ReplyMessageFormFieldWidget(),
+                    ],
+                  ),
                 ],
-              ),
-              Expanded(
-                child: Row(
-                  children: const [
-                    Spacer(),
-                    //ReplyMessageButtonWidget(formKey: formKey),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 15.0),
-            ],
-          )),
+              )),
+        ),
+        Row(
+          children: [
+            const Spacer(),
+            ReplyMessageButtonWidget(formKey: formKey),
+          ],
+        ),
+      ],
     );
   }
 }

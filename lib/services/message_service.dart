@@ -60,16 +60,19 @@ class MessageService extends ChangeNotifier {
         if (email != null) {
           if (kDebugMode) {
             print('Transaction complete');
+            return true;
           }
         }
       } else {
         if (kDebugMode) {
           print('originalEmail is null');
+          return false;
         }
       }
     } else {
       if (kDebugMode) {
         print('resultCreateMessage is null');
+        return false;
       }
     }
   }

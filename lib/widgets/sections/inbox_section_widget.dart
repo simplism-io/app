@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
+import '../../services/form_service.dart';
 import '../../services/message_service.dart';
 
 class InboxSectionWidget extends StatefulWidget {
@@ -40,7 +41,7 @@ class _InboxSectionWidgetState extends State<InboxSectionWidget> {
     List<dynamic> messages =
         Provider.of<MessageService>(context, listen: true).messages;
 
-    toggleBody(index) {
+    toggleBody(index, messages) {
       setState(() {
         showBody[index] = !showBody[index];
       });
@@ -60,7 +61,7 @@ class _InboxSectionWidgetState extends State<InboxSectionWidget> {
                     return Column(
                       children: [
                         GestureDetector(
-                          onTap: () => toggleBody(index),
+                          onTap: () => toggleBody(index, messages),
                           child: messages[index]['incoming'] == true
                               ? Card(
                                   color: Theme.of(context).colorScheme.surface,
@@ -110,7 +111,7 @@ class _InboxSectionWidgetState extends State<InboxSectionWidget> {
                                 ))
                             : Container(),
                         showBody[index] == true
-                            ? ReplyMessageFormWidget()
+                            ? ReplyMessageFormWidget(message: messages[index])
                             : Container()
                       ],
                     );

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:base/widgets/screens/bouncer_widget.dart';
 import 'package:flutter/material.dart';
 
 class FormService extends ChangeNotifier {
@@ -11,7 +12,6 @@ class FormService extends ChangeNotifier {
   static String? newPassword;
   static String? newPasswordAgain;
   static Uint8List? avatarBytes;
-  static String? subject;
   static String? body;
 
   late bool _signup;

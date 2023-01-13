@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import '../../services/form_service.dart';
 import '../../services/localization_service.dart';
 
 class ReplyMessageFormFieldWidget extends StatefulWidget {
@@ -39,16 +40,14 @@ class _ReplyMessageFormFieldWidgetState
             style: const TextStyle(fontSize: 14),
             autofocus: true,
             validator: (String? value) {
-              //print(value.length);
               return (value != null && value.length < 2)
                   ? LocalizationService.of(context)
-                          ?.translate('invalid_name_message') ??
+                          ?.translate('invalid_reply_message') ??
                       ''
                   : null;
             },
             onChanged: (val) {
-              // setState(
-              //     () => {FormService.subject = '', FormService.body = val});
+              setState(() => {FormService.body = val});
             }),
       ),
     );

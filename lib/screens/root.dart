@@ -1,0 +1,71 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../constants/loaders/loader_spinner_widget.dart';
+import '../services/agent_service.dart';
+import 'private/create_agent_name_screen.dart';
+import 'private/create_organisation_screen.dart';
+import 'private/inbox_screen.dart';
+import 'public/index_screen.dart';
+
+final supabase = Supabase.instance.client;
+
+class Root extends StatefulWidget {
+  const Root({super.key});
+
+  @override
+  State<Root> createState() => _RootState();
+}
+
+class _RootState extends State<Root> {
+  Session? session;
+  StreamSubscription<AuthState>? authSubscription;
+
+  @override
+  void initState() {
+    authSubscription = supabase.auth.onAuthStateChange.listen((response) {
+      if (kDebugMode) {
+        print('AuthEvent recorded');
+      }
+      setState(() {
+        session = response.session;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    authSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    session = supabase.auth.currentSession;
+    return session == null
+        ? const IndexScreen()
+        : FutureBuilder(
+            builder: (ctx, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  final agent = snapshot.data!;
+                  if (agent['name'] == null || agent['name'] == '') {
+                    return const CreateAgentNameScreen();
+                  }
+                  return InboxScreen(agent: agent);
+                }
+                if (!snapshot.hasData) {
+                  return const CreateOrganisationScreen();
+                }
+              }
+              return const LoaderSpinnerWidget();
+            },
+            future: AgentService().loadAgent(),
+          );
+  }
+}

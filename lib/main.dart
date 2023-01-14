@@ -9,14 +9,13 @@ import 'package:responsive_framework/utils/scroll_behavior.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'services/form_service.dart';
 import 'services/message_service.dart';
 import 'services/theme_service.dart';
 import 'services/biometric_service.dart';
 import 'services/internationalization_service.dart';
 import 'services/localization_service.dart';
-import 'widgets/screens/bouncer_widget.dart';
-import 'widgets/screens/public/biometric_screen_widget.dart';
+import 'screens/root.dart';
+import 'screens/public/biometric_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +41,6 @@ class App extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => ThemeService()),
           ChangeNotifierProvider(create: (_) => BiometricService()),
           ChangeNotifierProvider(create: (_) => InternationalizationService()),
-          ChangeNotifierProvider(create: (_) => FormService()),
           ChangeNotifierProvider(create: (_) => MessageService()),
         ],
         child: Consumer3<ThemeService, InternationalizationService,
@@ -84,9 +82,9 @@ class App extends StatelessWidget {
                                       TargetPlatform.android) &&
                               (kDebugMode == false))
                           ? localAuthentication.biometrics == true
-                              ? const BiometricScreenWidget()
-                              : const BouncerWidget()
-                          : const BouncerWidget())));
+                              ? const BiometricScreen()
+                              : const Root()
+                          : const Root())));
         }));
   }
 }

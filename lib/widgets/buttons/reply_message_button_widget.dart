@@ -36,15 +36,18 @@ class _ReplyMessageButtonWidgetState extends State<ReplyMessageButtonWidget> {
                     onPressed: () async {
                       if (widget.formKey.currentState!.validate()) {
                         setState(() => loader = true);
-                        await MessageService().sendMessageProcedure(
-                            widget.message['id'],
-                            widget.message['channel_id'],
-                            widget.message['subject'],
-                            FormService.body);
-                      } else {
-                        setState(() {
-                          loader = false;
-                        });
+                        final result = await MessageService()
+                            .sendMessageProcedure(
+                                widget.message['id'],
+                                widget.message['channel_id'],
+                                widget.message['subject'],
+                                FormService.body);
+                        if (result == true) {
+                          setState(() => loader = false);
+                          if (!mounted) return;
+                          SnackBarService().successSnackBar(
+                              'reply_message_snackbar_label', context);
+                        }
                       }
                     },
                     color: Theme.of(context).colorScheme.primary,
@@ -75,6 +78,7 @@ class _ReplyMessageButtonWidgetState extends State<ReplyMessageButtonWidget> {
                                 widget.message['subject'],
                                 FormService.body);
                         if (result == true) {
+                          setState(() => loader = false);
                           if (!mounted) return;
                           SnackBarService().successSnackBar(
                               'reply_message_snackbar_label', context);

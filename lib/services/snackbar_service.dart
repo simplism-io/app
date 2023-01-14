@@ -13,7 +13,7 @@ class SnackBarService {
                 color: Theme.of(context).colorScheme.onPrimary,
               )),
     );
-    return ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+    ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
   }
 
   errorSnackBar(localization, context) {

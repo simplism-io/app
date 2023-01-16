@@ -30,98 +30,148 @@ class AgentService extends ChangeNotifier {
   }
 
   Future createAgentName(name) async {
-    return await supabase
+    final agent = await supabase
         .from('agents')
-        .update({'name': name}).match({'id': supabase.auth.currentUser!.id});
+        .update({'name': name})
+        .match({'id': supabase.auth.currentUser!.id})
+        .select()
+        .single();
+
+    if (agent != null) {
+      return agent.id;
+    } else {
+      return null;
+    }
   }
 
-  Future createAgent(userId, organizationId) async {
-    return await supabase
+  Future createAgent(userId, organizationId, isAdmin) async {
+    final agent = await supabase
         .from('agents')
-        .insert({'id': userId, 'organisation_id': organizationId});
+        .insert({
+          'id': userId,
+          'organisation_id': organizationId,
+          'is_admin': isAdmin
+        })
+        .select()
+        .single();
+
+    if (agent != null) {
+      return agent['id'];
+    } else {
+      return null;
+    }
+  }
+
+  Future createAgentMetaData(organisationId, isAdmin) async {
+    final UserResponse result = await supabase.auth.updateUser(
+      UserAttributes(
+        data: {'organisation_id': organisationId, 'is_admin': isAdmin},
+      ),
+    );
+
+    print(supabase.auth.currentSession!.user.userMetadata!['organisation_id']);
+    print(result.user!.userMetadata!['organisation_id']);
+    //print(supabase.auth.currentSession!.user.userMetadata!['is_admin']);
+
+    if (EmailValidator.validate(result.user!.email!)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future createAgentProcedure(organisation) async {
+    bool error = false;
+
     try {
       if (kDebugMode) {
         print('Trying to save organisation ');
       }
-      final resultCreateOrganisation =
+      final organisationId =
           await OrganisationService().createOrganisation(organisation);
-      if (resultCreateOrganisation == null) {
-        final resultSelectOrganisation =
-            await OrganisationService().getOrganisation(organisation);
-        if (resultSelectOrganisation != null) {
-          final updateAgentMetaData = await OrganisationService()
-              .updateOrganisationIdInUserMetaData(
-                  resultSelectOrganisation['id']);
-          if (updateAgentMetaData == true) {
-            final resultCreateAgent = await createAgent(
-                supabase.auth.currentUser!.id, resultSelectOrganisation['id']);
-            if (resultCreateAgent == null) {
-              return true;
-            } else {
-              await OrganisationService().deleteOrganisation(organisation);
-              return false;
+      if (organisationId != null) {
+        final resultCreateAgentMetaData =
+            await createAgentMetaData(organisationId, true);
+        if (resultCreateAgentMetaData == true) {
+          final agentId = await createAgent(
+              supabase.auth.currentUser!.id, organisationId, true);
+          if (agentId != null) {
+            if (kDebugMode) {
+              print('Succesfully created agent');
             }
           } else {
             await OrganisationService().deleteOrganisation(organisation);
-            return false;
+            error = true;
           }
         } else {
           await OrganisationService().deleteOrganisation(organisation);
-          return false;
+          error = true;
         }
       } else {
-        return false;
+        error = true;
       }
     } catch (e) {
       if (kDebugMode) {
         print(e);
       }
+    }
+    if (error == false) {
+      return true;
+    } else {
       return false;
     }
   }
 
   Future signUpUsingEmailAndPassword({organisation, email, password}) async {
+    bool error = false;
     try {
       if (kDebugMode) {
         print('Trying to sign up');
       }
-      final resultCreateOrganisation =
+      final organisationId =
           await OrganisationService().createOrganisation(organisation);
-      if (resultCreateOrganisation == null) {
-        final resultSelectOrganisation =
-            await OrganisationService().getOrganisation(organisation);
-        if (resultSelectOrganisation != null) {
-          AuthResponse result = await supabase.auth.signUp(
+      if (organisationId != null) {
+        AuthResponse result = await supabase.auth.signUp(
             email: email,
             password: password,
-          );
-          if (EmailValidator.validate(result.user!.email!)) {
-            final resultCreateAgent = await createAgent(
-                result.user!.id, resultSelectOrganisation[0]['id']);
-            if (resultCreateAgent == null) {
-              return true;
+            data: {'organisation_id': organisationId, 'is_admin': true});
+        if (EmailValidator.validate(result.user!.email!)) {
+          final resultCreateAgentMetaData =
+              await createAgentMetaData(organisationId, true);
+          if (resultCreateAgentMetaData == true) {
+            final agentId =
+                await createAgent(result.user!.id, organisationId, true);
+            if (agentId != null) {
+              if (kDebugMode) {
+                print('Transaction complete');
+              }
             } else {
               await OrganisationService().deleteOrganisation(organisation);
-              return false;
+              error = true;
             }
           } else {
-            await OrganisationService().deleteOrganisation(organisation);
-            return false;
+            //await OrganisationService().deleteOrganisation(organisation);
+            error = true;
           }
         } else {
-          await OrganisationService().deleteOrganisation(organisation);
-          return false;
+          print('3');
+
+          // await OrganisationService().deleteOrganisation(organisation);
+          error = true;
         }
       } else {
-        return false;
+        print('4');
+        error = true;
       }
     } catch (e) {
       if (kDebugMode) {
         print(e);
       }
+    }
+
+    if (error == false) {
+      return true;
+    } else {
       return false;
     }
   }
@@ -199,14 +249,14 @@ class AgentService extends ChangeNotifier {
     }
   }
 
-  Future updateProfile(id, fullName, avatar) async {
+  Future updateAgent(id, name, avatar) async {
     try {
       if (kDebugMode) {
         print('Trying to update profile');
       }
       return await supabase
-          .from('profiles')
-          .update({'full_name': fullName, 'avatar': avatar}).match({'id': id});
+          .from('agents')
+          .update({'name': name, 'avatar': avatar}).match({'id': id});
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -215,7 +265,7 @@ class AgentService extends ChangeNotifier {
     }
   }
 
-  Future updateProfileProcedure(fullName, email, avatar) async {
+  Future updateAgentProcedure(name, email, avatar) async {
     try {
       if (kDebugMode) {
         print('Trying to update email and profile procedure');
@@ -223,7 +273,7 @@ class AgentService extends ChangeNotifier {
       UserResponse emailUpdate =
           await updateEmail(supabase.auth.currentUser!.id, email);
       final profileUpdate =
-          await updateProfile(supabase.auth.currentUser!.id, fullName, avatar);
+          await updateAgent(supabase.auth.currentUser!.id, name, avatar);
       if (EmailValidator.validate(emailUpdate.user!.email!) &&
           profileUpdate == null) {
         return true;

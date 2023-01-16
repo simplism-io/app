@@ -41,6 +41,7 @@ class MessageService extends ChangeNotifier {
     subject,
     body,
   ) async {
+    bool error = false;
     final resultCreateMessage = await createMessage(channelId, subject, body);
 
     if (resultCreateMessage != null) {
@@ -64,13 +65,20 @@ class MessageService extends ChangeNotifier {
         }
       } else {
         if (kDebugMode) {
+          error = true;
           print('originalEmail is null');
         }
       }
     } else {
+      error = true;
       if (kDebugMode) {
         print('resultCreateMessage is null');
       }
+    }
+    if (error == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 

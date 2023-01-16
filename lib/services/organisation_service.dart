@@ -1,21 +1,20 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
 
 class OrganisationService {
-  Future createOrganisation(organisation) async {
-    return await supabase
+  Future createOrganisation(organisationName) async {
+    final organisation = await supabase
         .from('organisations')
-        .insert({'organisation': organisation});
-  }
-
-  Future getOrganisation(organisation) async {
-    return await supabase
-        .from('organisations')
-        .select('id')
-        .eq('organisation', organisation)
+        .insert({'organisation': organisationName})
+        .select()
         .single();
+
+    if (organisation != null) {
+      return organisation["id"];
+    } else {
+      return null;
+    }
   }
 
   Future<void> deleteOrganisation(organisation) async {
@@ -23,18 +22,5 @@ class OrganisationService {
         .from('organisations')
         .delete()
         .match({'organisation': organisation});
-  }
-
-  Future updateOrganisationIdInUserMetaData(organisationId) async {
-    final UserResponse result = await supabase.auth.updateUser(
-      UserAttributes(
-        data: {'organisation_id': organisationId},
-      ),
-    );
-    if (EmailValidator.validate(result.user!.email!)) {
-      return true;
-    } else {
-      return false;
-    }
   }
 }

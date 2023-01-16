@@ -24,13 +24,13 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
   final formKey = GlobalKey<FormState>();
   bool loader = false;
 
-  late bool obscureText;
-
   String? newPassword;
   String? newPasswordAgain;
 
+  bool obscureText = true;
+
   toggleObscure() {
-    obscureText = !obscureText;
+    setState(() => obscureText = !obscureText);
   }
 
   @override
@@ -41,16 +41,35 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
       setState(() => loader = false);
       if (response == true) {
         if (!mounted) return;
-        // SnackBarService()
-        //     .successSnackBar('update_password_snackbar_label', context);
-        // Navigator.pop(context);
+        final snackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('update_password_snackbar_label') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
         setState(() {
           loader = false;
         });
         if (!mounted) return;
-        // SnackBarService()
-        //     .errorSnackBar('general_error_snackbar_label', context);
+        final snackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.error,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('general_error_snackbar_label') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onError,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
 

@@ -51,7 +51,7 @@
   "reply_message_hinttext": "Your reply",
   "reply_message_snackbar_label": "Your message has been sent",
   "reset_password_button_label": "Reset password",
-  "reset_password_header": "Reset password",
+  "reset_password_header_label": "Reset password",
   "reset_password_link_label": "Reset password",
   "reset_password_snackbar_label": "Please check you email to reset your password",
   "select_avatar_label": "Select an avatar",

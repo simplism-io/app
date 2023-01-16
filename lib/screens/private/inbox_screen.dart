@@ -18,7 +18,7 @@ import '../../constants/icons/private_end_drawer_icon_widget.dart';
 import '../../constants/links/logo_header_link.dart';
 import '../../constants/loaders/loader_spinner_widget.dart';
 import '../../services/theme_service.dart';
-import 'profile_screen.dart';
+import 'agent_screen.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -90,8 +90,7 @@ class _InboxScreenState extends State<InboxScreen> {
                 onTap: () => {
                   Navigator.of(context, rootNavigator: true).push(
                     MaterialPageRoute(
-                        builder: (context) =>
-                            ProfileScreen(agent: widget.agent)),
+                        builder: (context) => AgentScreen(agent: widget.agent)),
                   )
                 },
                 title: Text(
@@ -164,6 +163,12 @@ class _InboxScreenState extends State<InboxScreen> {
                       value: localAuthentication.biometrics,
                     ),
                   ),
+                )
+              : Container(),
+          supabase.auth.currentSession!.user.userMetadata!['as_admin'] == true
+              ? ListTile(
+                  title: Text('ADMIN',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                 )
               : Container(),
           const SizedBox(height: 50),

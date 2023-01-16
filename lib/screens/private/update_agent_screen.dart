@@ -14,21 +14,21 @@ import '../../services/agent_service.dart';
 import '../../services/localization_service.dart';
 import '../../constants/links/go_back_link.dart';
 import '../root.dart';
-import 'profile_screen.dart';
+import 'agent_screen.dart';
 
 final supabase = Supabase.instance.client;
 
-class UpdateProfileScreen extends StatefulWidget {
+class UpdateAgentScreen extends StatefulWidget {
   final dynamic agent;
   final Uint8List? avatarBytes;
-  const UpdateProfileScreen({Key? key, this.agent, this.avatarBytes})
+  const UpdateAgentScreen({Key? key, this.agent, this.avatarBytes})
       : super(key: key);
 
   @override
-  State<UpdateProfileScreen> createState() => _UpdateProfileScreenState();
+  State<UpdateAgentScreen> createState() => _UpdateAgentScreenState();
 }
 
-class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
+class _UpdateAgentScreenState extends State<UpdateAgentScreen> {
   final formKey = GlobalKey<FormState>();
   bool loader = false;
 
@@ -63,17 +63,27 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     Future<void> submit() async {
       setState(() => loader = true);
       final response =
-          await AgentService().updateProfileProcedure(name, email, avatar);
+          await AgentService().updateAgentProcedure(name, email, avatar);
       if (response == true) {
         final newProfile = await AgentService().loadAgent();
         if (!mounted) return;
-        // SnackBarService()
-        //     .successSnackBar('update_profile_snackbar_label', context);
+        final snackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('update_profile_snackbar_label') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         if (EmailValidator.validate(newProfile!.email)) {
           if (!mounted) return;
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
               MaterialPageRoute(
-                  builder: (context) => ProfileScreen(agent: newProfile)),
+                  builder: (context) => AgentScreen(agent: newProfile)),
               (route) => false);
         } else {
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
@@ -86,8 +96,18 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         });
         if (!mounted) return;
         setState(() => {loader = false});
-        // SnackBarService()
-        //     .errorSnackBar('authentication_error_snackbar_label', context);
+        final snackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.error,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('authentication_error_snackbar_label') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onError,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
 

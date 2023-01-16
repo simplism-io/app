@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,26 +13,25 @@ import '../../services/localization_service.dart';
 import '../../constants/links/go_back_link.dart';
 import '../../constants/loaders/loader_spinner_widget.dart';
 import 'update_password_screen.dart';
-import 'update_profile_screen.dart';
+import 'update_agent_screen.dart';
 
 final supabase = Supabase.instance.client;
 
 // ignore: must_be_immutable
-class ProfileScreen extends StatelessWidget {
+class AgentScreen extends StatelessWidget {
   final dynamic agent;
-  ProfileScreen({
+  AgentScreen({
     super.key,
     required this.agent,
   });
 
-  final formKeyForm = GlobalKey<FormState>();
   final bool loading = false;
   XFile? avatarFile;
   Uint8List? avatarBytes;
 
   @override
   Widget build(BuildContext context) {
-    // avatarBytes = base64Decode(agent!.avatar);
+    avatarBytes = base64Decode(agent!.avatar);
 
     return loading
         ? const LoaderSpinnerWidget()
@@ -134,7 +135,7 @@ class ProfileScreen extends StatelessWidget {
                                               Navigator.of(context)
                                                   .push(MaterialPageRoute(
                                                 builder: (context) =>
-                                                    UpdateProfileScreen(
+                                                    UpdateAgentScreen(
                                                         agent: agent,
                                                         avatarBytes:
                                                             avatarBytes),
@@ -169,7 +170,7 @@ class ProfileScreen extends StatelessWidget {
                                                   Navigator.of(context)
                                                       .push(MaterialPageRoute(
                                                     builder: (context) =>
-                                                        UpdateProfileScreen(
+                                                        UpdateAgentScreen(
                                                             agent: agent,
                                                             avatarBytes:
                                                                 avatarBytes),

@@ -45,18 +45,18 @@ class _IndexScreenState extends State<IndexScreen> {
   bool reset = false;
   bool signup = false;
 
-  bool obscureText = false;
+  bool obscureText = true;
 
   toggleObscure() {
-    obscureText = !obscureText;
+    setState(() => obscureText = !obscureText);
   }
 
   toggleReset() {
-    reset = !reset;
+    setState(() => reset = !reset);
   }
 
   toggleSignUp() {
-    signup = !signup;
+    setState(() => signup = !signup);
   }
 
   drawer() {
@@ -77,6 +77,115 @@ class _IndexScreenState extends State<IndexScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> submitSignUp() async {
+      setState(() => loader = true);
+      bool result = await AgentService().signUpUsingEmailAndPassword(
+          organisation: organisation, email: email, password: password);
+      if (result == true) {
+        setState(() => loader = false);
+        if (!mounted) return;
+        final snackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('sign_up_snackbar_label') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        setState(() => loader = false);
+        if (!mounted) return;
+        final snackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.error,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('general_error_snackbar_label') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onError,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+
+    Future<void> submitSignIn() async {
+      setState(() => loader = true);
+      bool success =
+          await AgentService().signInUsingEmailAndPassword(email, password);
+      if (success == true) {
+        setState(() => {loader = false});
+        if (!mounted) return;
+        final snackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('sign_in_snackbar_label') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        if (!mounted) return;
+        final snackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.error,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('authentication_error_snackbar_label') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onError,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+
+    Future<void> submitResetPassword() async {
+      setState(() => loader = true);
+      await AgentService().resetPassword(email);
+      if (!mounted) return;
+      final snackBar = SnackBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        content: Text(
+            LocalizationService.of(context)
+                    ?.translate('reset_password_snackbar_label') ??
+                '',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+            )),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+
+    Future<void> submitAppleSignIn() async {
+      try {
+        AgentService().signInUsingApple();
+      } catch (e) {
+        // SnackBarService().errorSnackBar('general_error_snackbar_label',
+        //     context);
+      }
+    }
+
+    Future<void> submitGoogleSignIn() async {
+      try {
+        AgentService().signInUsingGoogle();
+      } catch (e) {
+        // SnackBarService().errorSnackBar('general_error_snackbar_label',
+        //     context);
+      }
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -272,13 +381,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                                               ? CupertinoButton(
                                                                   onPressed:
                                                                       () async {
-                                                                    try {
-                                                                      AgentService()
-                                                                          .signInUsingApple();
-                                                                    } catch (e) {
-                                                                      // SnackBarService().errorSnackBar('general_error_snackbar_label',
-                                                                      //     context);
-                                                                    }
+                                                                    submitAppleSignIn();
                                                                   },
                                                                   color: Theme.of(
                                                                           context)
@@ -305,13 +408,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                                               : ElevatedButton(
                                                                   onPressed:
                                                                       () async {
-                                                                    try {
-                                                                      AgentService()
-                                                                          .signInUsingGoogle();
-                                                                    } catch (e) {
-                                                                      // SnackBarService().errorSnackBar('general_error_snackbar_label',
-                                                                      //     context);
-                                                                    }
+                                                                    submitAppleSignIn();
                                                                   },
                                                                   style: ElevatedButton.styleFrom(
                                                                       backgroundColor: Theme.of(
@@ -369,14 +466,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                                         ? CupertinoButton(
                                                             onPressed:
                                                                 () async {
-                                                              try {
-                                                                AgentService()
-                                                                    .signInUsingGoogle();
-                                                              } catch (e) {
-                                                                // SnackBarService().errorSnackBar(
-                                                                //     'general_error_snackbar_label',
-                                                                //     context);
-                                                              }
+                                                              submitGoogleSignIn();
                                                             },
                                                             color: Theme.of(
                                                                     context)
@@ -406,14 +496,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                                         : ElevatedButton(
                                                             onPressed:
                                                                 () async {
-                                                              try {
-                                                                AgentService()
-                                                                    .signInUsingGoogle();
-                                                              } catch (e) {
-                                                                // SnackBarService().errorSnackBar(
-                                                                //     'general_error_snackbar_label',
-                                                                //     context);
-                                                              }
+                                                              submitGoogleSignIn();
                                                             },
                                                             style: ElevatedButton.styleFrom(
                                                                 backgroundColor: Theme.of(
@@ -473,84 +556,89 @@ class _IndexScreenState extends State<IndexScreen> {
                                                   signup == true
                                                       ? Column(
                                                           children: [
-                                                            TextFormField(
-                                                                decoration:
-                                                                    InputDecoration(
-                                                                  border: const OutlineInputBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.all(
-                                                                              Radius.circular(5))),
-                                                                  labelText: LocalizationService.of(
-                                                                              context)
-                                                                          ?.translate(
-                                                                              'organisation_input_label') ??
-                                                                      '',
-                                                                  labelStyle:
-                                                                      const TextStyle(
-                                                                    fontSize:
-                                                                        15,
-                                                                  ), //label style
-                                                                  prefixIcon:
-                                                                      const OrganisationIcon(),
-                                                                  hintText: LocalizationService.of(
-                                                                              context)
-                                                                          ?.translate(
-                                                                              'organisation_input_label') ??
-                                                                      '',
-                                                                  focusedBorder:
-                                                                      OutlineInputBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            5.0),
-                                                                    borderSide:
-                                                                        BorderSide(
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .colorScheme
-                                                                          .primary,
-                                                                      width:
-                                                                          2.0,
-                                                                    ),
-                                                                  ),
-                                                                  enabledBorder:
-                                                                      OutlineInputBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            5.0),
-                                                                    borderSide:
-                                                                        BorderSide(
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .colorScheme
-                                                                          .secondary,
-                                                                      width:
-                                                                          1.0,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .left,
-                                                                autofocus: true,
-                                                                validator:
-                                                                    (String?
-                                                                        value) {
-                                                                  //print(value.length);
-                                                                  return (value !=
-                                                                              null &&
-                                                                          value.length <
-                                                                              2)
-                                                                      ? LocalizationService.of(context)
-                                                                              ?.translate('invalid_organisation_message') ??
-                                                                          ''
-                                                                      : null;
-                                                                },
-                                                                onChanged:
-                                                                    (val) {
-                                                                  setState(() =>
-                                                                      organisation =
-                                                                          val);
-                                                                }),
+                                                            SizedBox(
+                                                              width: ResponsiveValue(
+                                                                  context,
+                                                                  defaultValue:
+                                                                      300.0,
+                                                                  valueWhen: const [
+                                                                    Condition.largerThan(
+                                                                        name:
+                                                                            MOBILE,
+                                                                        value:
+                                                                            300.0),
+                                                                    Condition.smallerThan(
+                                                                        name:
+                                                                            TABLET,
+                                                                        value: double
+                                                                            .infinity)
+                                                                  ]).value,
+                                                              child:
+                                                                  TextFormField(
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        border: const OutlineInputBorder(
+                                                                            borderRadius:
+                                                                                BorderRadius.all(Radius.circular(5))),
+                                                                        labelText:
+                                                                            LocalizationService.of(context)?.translate('organisation_input_label') ??
+                                                                                '',
+                                                                        labelStyle:
+                                                                            const TextStyle(
+                                                                          fontSize:
+                                                                              15,
+                                                                        ), //label style
+                                                                        prefixIcon:
+                                                                            const OrganisationIcon(),
+                                                                        hintText:
+                                                                            LocalizationService.of(context)?.translate('organisation_input_label') ??
+                                                                                '',
+                                                                        focusedBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(5.0),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.primary,
+                                                                            width:
+                                                                                2.0,
+                                                                          ),
+                                                                        ),
+                                                                        enabledBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(5.0),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary,
+                                                                            width:
+                                                                                1.0,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .left,
+                                                                      autofocus:
+                                                                          true,
+                                                                      validator:
+                                                                          (String?
+                                                                              value) {
+                                                                        //print(value.length);
+                                                                        return (value != null && value.length < 2)
+                                                                            ? LocalizationService.of(context)?.translate('invalid_organisation_message') ??
+                                                                                ''
+                                                                            : null;
+                                                                      },
+                                                                      onChanged:
+                                                                          (val) {
+                                                                        setState(() =>
+                                                                            organisation =
+                                                                                val);
+                                                                      }),
+                                                            ),
                                                             const SizedBox(
                                                                 height: 15.0),
                                                           ],
@@ -652,116 +740,111 @@ class _IndexScreenState extends State<IndexScreen> {
                                                                 value: double
                                                                     .infinity)
                                                           ]).value,
-                                                      child:
-                                                  TextFormField(
-                                                      obscureText: obscureText,
-                                                      decoration:
-                                                          InputDecoration(
-                                                        hintText: LocalizationService
-                                                                    .of(context)
-                                                                ?.translate(
-                                                                    'password_input_hinttext') ??
-                                                            '',
-                                                        focusedBorder:
-                                                            OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      5.0),
-                                                          borderSide:
-                                                              BorderSide(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .primary,
-                                                            width: 2.0,
-                                                          ),
-                                                        ),
-                                                        enabledBorder:
-                                                            OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      5.0),
-                                                          borderSide:
-                                                              BorderSide(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .secondary,
-                                                            width: 1.0,
-                                                          ),
-                                                        ),
-                                                        border: const OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            5))),
-                                                        labelText: LocalizationService
-                                                                    .of(context)
-                                                                ?.translate(
-                                                                    'password_input_label') ??
-                                                            '',
-                                                        labelStyle:
-                                                            const TextStyle(
-                                                          fontSize: 15,
-                                                        ), //label style
-                                                        prefixIcon:
-                                                            const PasswordIcon(),
-                                                        suffixIcon: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  0, 0, 15, 0),
-                                                          child: IconButton(
-                                                              onPressed: () =>
-                                                                  toggleObscure(),
-                                                              icon: Icon(
-                                                                obscureText ==
-                                                                        true
-                                                                    ? (defaultTargetPlatform == TargetPlatform.iOS ||
-                                                                            defaultTargetPlatform ==
-                                                                                TargetPlatform
-                                                                                    .macOS)
-                                                                        ? CupertinoIcons
-                                                                            .eye
-                                                                        : FontAwesomeIcons
-                                                                            .eye
-                                                                    : (defaultTargetPlatform == TargetPlatform.iOS ||
-                                                                            defaultTargetPlatform ==
-                                                                                TargetPlatform
-                                                                                    .macOS)
-                                                                        ? CupertinoIcons
-                                                                            .eye_slash
-                                                                        : FontAwesomeIcons
-                                                                            .eyeSlash,
+                                                      child: TextFormField(
+                                                          obscureText:
+                                                              obscureText,
+                                                          decoration:
+                                                              InputDecoration(
+                                                            hintText: LocalizationService.of(
+                                                                        context)
+                                                                    ?.translate(
+                                                                        'password_input_hinttext') ??
+                                                                '',
+                                                            focusedBorder:
+                                                                OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          5.0),
+                                                              borderSide:
+                                                                  BorderSide(
                                                                 color: Theme.of(
                                                                         context)
                                                                     .colorScheme
-                                                                    .onBackground,
-                                                                size: 20.0,
-                                                              )),
-                                                        ),
-                                                      ),
-                                                      textAlign: TextAlign.left,
-                                                      autofocus: true,
-                                                      validator:
-                                                          (String? value) {
-                                                        return (value != null &&
-                                                                value.length <
-                                                                    2)
-                                                            ? LocalizationService.of(
+                                                                    .primary,
+                                                                width: 2.0,
+                                                              ),
+                                                            ),
+                                                            enabledBorder:
+                                                                OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          5.0),
+                                                              borderSide:
+                                                                  BorderSide(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary,
+                                                                width: 1.0,
+                                                              ),
+                                                            ),
+                                                            border: const OutlineInputBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            5))),
+                                                            labelText: LocalizationService.of(
                                                                         context)
                                                                     ?.translate(
-                                                                        'invalid_password_message') ??
-                                                                ''
-                                                            : null;
-                                                      },
-                                                      onChanged: (val) {
-                                                        setState(() =>
-                                                            password = val);
-                                                      })),
+                                                                        'password_input_label') ??
+                                                                '',
+                                                            labelStyle:
+                                                                const TextStyle(
+                                                              fontSize: 15,
+                                                            ), //label style
+                                                            prefixIcon:
+                                                                const PasswordIcon(),
+                                                            suffixIcon: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .fromLTRB(
+                                                                      0,
+                                                                      0,
+                                                                      15,
+                                                                      0),
+                                                              child: IconButton(
+                                                                  onPressed: () =>
+                                                                      toggleObscure(),
+                                                                  icon: Icon(
+                                                                    obscureText ==
+                                                                            true
+                                                                        ? (defaultTargetPlatform == TargetPlatform.iOS ||
+                                                                                defaultTargetPlatform == TargetPlatform.macOS)
+                                                                            ? CupertinoIcons.eye
+                                                                            : FontAwesomeIcons.eye
+                                                                        : (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS)
+                                                                            ? CupertinoIcons.eye_slash
+                                                                            : FontAwesomeIcons.eyeSlash,
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .onBackground,
+                                                                    size: 20.0,
+                                                                  )),
+                                                            ),
+                                                          ),
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          autofocus: true,
+                                                          validator:
+                                                              (String? value) {
+                                                            return (value !=
+                                                                        null &&
+                                                                    value.length <
+                                                                        2)
+                                                                ? LocalizationService.of(
+                                                                            context)
+                                                                        ?.translate(
+                                                                            'invalid_password_message') ??
+                                                                    ''
+                                                                : null;
+                                                          },
+                                                          onChanged: (val) {
+                                                            setState(() =>
+                                                                password = val);
+                                                          })),
                                                   const SizedBox(height: 15.0),
                                                   SizedBox(
                                                     width: ResponsiveValue(
@@ -789,29 +872,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                                                   if (formKey
                                                                       .currentState!
                                                                       .validate()) {
-                                                                    setState(() =>
-                                                                        loader =
-                                                                            true);
-                                                                    bool
-                                                                        success =
-                                                                        await AgentService().signInUsingEmailAndPassword(
-                                                                            email,
-                                                                            password);
-                                                                    if (success ==
-                                                                        false) {
-                                                                      setState(
-                                                                          () =>
-                                                                              {
-                                                                                loader = false
-                                                                              });
-                                                                      if (!mounted) {
-                                                                        return;
-                                                                      }
-
-                                                                      // SnackBarService().errorSnackBar(
-                                                                      //     'authentication_error_snackbar_label',
-                                                                      //     context);
-                                                                    }
+                                                                    submitSignIn();
                                                                   } else {
                                                                     setState(
                                                                         () => {
@@ -847,26 +908,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                                                   if (formKey
                                                                       .currentState!
                                                                       .validate()) {
-                                                                    setState(() =>
-                                                                        loader =
-                                                                            true);
-                                                                    bool
-                                                                        success =
-                                                                        await AgentService().signInUsingEmailAndPassword(
-                                                                            email,
-                                                                            password);
-                                                                    if (success ==
-                                                                        false) {
-                                                                      if (!mounted) {
-                                                                        return;
-                                                                      }
-                                                                      setState(
-                                                                          () =>
-                                                                              {
-                                                                                loader = false
-                                                                              });
-                                                                      // SnackBarService().errorSnackBar('authentication_error_snackbar_label', context);
-                                                                    }
+                                                                    submitSignIn();
                                                                   } else {
                                                                     setState(
                                                                         () => {
@@ -917,24 +959,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                                                   if (formKey
                                                                       .currentState!
                                                                       .validate()) {
-                                                                    setState(() =>
-                                                                        loader =
-                                                                            true);
-                                                                    bool success = await AgentService().signUpUsingEmailAndPassword(
-                                                                        email:
-                                                                            email,
-                                                                        password:
-                                                                            password);
-                                                                    if (success ==
-                                                                        true) {
-                                                                      if (!mounted) {
-                                                                        return;
-                                                                      }
-                                                                      setState(() =>
-                                                                          loader =
-                                                                              false);
-                                                                      // SnackBarService().successSnackBar('sign_up_snackbar_label', context);
-                                                                    }
+                                                                    submitSignUp();
                                                                   } else {
                                                                     setState(
                                                                         () {
@@ -971,26 +996,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                                                   if (formKey
                                                                       .currentState!
                                                                       .validate()) {
-                                                                    setState(() =>
-                                                                        loader =
-                                                                            true);
-                                                                    bool success = await AgentService().signUpUsingEmailAndPassword(
-                                                                        organisation:
-                                                                            organisation,
-                                                                        email:
-                                                                            email,
-                                                                        password:
-                                                                            password);
-                                                                    if (success ==
-                                                                        true) {
-                                                                      if (!mounted) {
-                                                                        return;
-                                                                      }
-                                                                      setState(() =>
-                                                                          loader =
-                                                                              false);
-                                                                      // SnackBarService().successSnackBar('sign_up_snackbar_label', context);
-                                                                    }
+                                                                    submitSignUp();
                                                                   } else {
                                                                     setState(
                                                                         () {
@@ -1180,71 +1186,85 @@ class _IndexScreenState extends State<IndexScreen> {
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                   const SizedBox(height: 40.0),
-                                                  TextFormField(
-                                                      decoration:
-                                                          InputDecoration(
-                                                              hintText: LocalizationService
-                                                                          .of(
-                                                                              context)
-                                                                      ?.translate(
-                                                                          'email_input_hinttext') ??
-                                                                  '',
-                                                              focusedBorder:
-                                                                  OutlineInputBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            5.0),
-                                                                borderSide:
-                                                                    BorderSide(
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .primary,
-                                                                  width: 2.0,
+                                                  SizedBox(
+                                                    width: ResponsiveValue(
+                                                        context,
+                                                        defaultValue: 300.0,
+                                                        valueWhen: const [
+                                                          Condition.largerThan(
+                                                              name: MOBILE,
+                                                              value: 300.0),
+                                                          Condition.smallerThan(
+                                                              name: TABLET,
+                                                              value: double
+                                                                  .infinity)
+                                                        ]).value,
+                                                    child: TextFormField(
+                                                        decoration:
+                                                            InputDecoration(
+                                                                hintText: LocalizationService.of(
+                                                                            context)
+                                                                        ?.translate(
+                                                                            'email_input_hinttext') ??
+                                                                    '',
+                                                                focusedBorder:
+                                                                    OutlineInputBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5.0),
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .primary,
+                                                                    width: 2.0,
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              enabledBorder:
-                                                                  OutlineInputBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            5.0),
-                                                                borderSide:
-                                                                    BorderSide(
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .secondary,
-                                                                  width: 1.0,
+                                                                enabledBorder:
+                                                                    OutlineInputBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5.0),
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary,
+                                                                    width: 1.0,
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              labelText: LocalizationService.of(
-                                                                          context)
-                                                                      ?.translate(
-                                                                          'email_input_label') ??
-                                                                  '',
-                                                              labelStyle:
-                                                                  const TextStyle(
-                                                                fontSize: 15,
-                                                              ), //label style
-                                                              prefixIcon:
-                                                                  const EmailIcon()),
-                                                      textAlign: TextAlign.left,
-                                                      initialValue: email,
-                                                      autofocus: true,
-                                                      validator:
-                                                          (String? value) {
-                                                        return !EmailValidator
-                                                                .validate(
-                                                                    value!)
-                                                            ? 'Please provide a valid email.'
-                                                            : null;
-                                                      },
-                                                      onChanged: (val) {
-                                                        setState(
-                                                            () => email = val);
-                                                      }),
+                                                                labelText: LocalizationService.of(
+                                                                            context)
+                                                                        ?.translate(
+                                                                            'email_input_label') ??
+                                                                    '',
+                                                                labelStyle:
+                                                                    const TextStyle(
+                                                                  fontSize: 15,
+                                                                ), //label style
+                                                                prefixIcon:
+                                                                    const EmailIcon()),
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        initialValue: email,
+                                                        autofocus: true,
+                                                        validator:
+                                                            (String? value) {
+                                                          return !EmailValidator
+                                                                  .validate(
+                                                                      value!)
+                                                              ? 'Please provide a valid email.'
+                                                              : null;
+                                                        },
+                                                        onChanged: (val) {
+                                                          setState(() =>
+                                                              email = val);
+                                                        }),
+                                                  ),
                                                   const SizedBox(height: 15.0),
                                                   SizedBox(
                                                     width: ResponsiveValue(
@@ -1271,19 +1291,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                                               if (formKey
                                                                   .currentState!
                                                                   .validate()) {
-                                                                setState(() =>
-                                                                    loader =
-                                                                        true);
-                                                                await AgentService()
-                                                                    .resetPassword(
-                                                                        email);
-                                                                if (!mounted) {
-                                                                  return;
-                                                                }
-                                                                // SnackBarService()
-                                                                //     .successSnackBar(
-                                                                //         'reset_password_snackbar_label',
-                                                                //         context);
+                                                                submitResetPassword();
                                                               } else {
                                                                 setState(() {
                                                                   loader =
@@ -1324,17 +1332,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                                               if (formKey
                                                                   .currentState!
                                                                   .validate()) {
-                                                                setState(() =>
-                                                                    loader =
-                                                                        true);
-                                                                await AgentService()
-                                                                    .resetPassword(
-                                                                        email);
-                                                                if (!mounted) {
-                                                                  return;
-                                                                }
-                                                                // SnackBarService().successSnackBar(
-                                                                //     'reset_password_snackbar_label', context);
+                                                                submitResetPassword();
                                                               } else {
                                                                 setState(() {
                                                                   loader =

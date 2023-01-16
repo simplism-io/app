@@ -77,9 +77,9 @@ class _CreateOrganisationScreenState extends State<CreateOrganisationScreen> {
             Center(
               child: SizedBox(
                 width: ResponsiveValue(context,
-                    defaultValue: 450.0,
+                    defaultValue: 300.0,
                     valueWhen: const [
-                      Condition.largerThan(name: MOBILE, value: 450.0),
+                      Condition.largerThan(name: MOBILE, value: 300.0),
                       Condition.smallerThan(
                           name: TABLET, value: double.infinity)
                     ]).value,

@@ -136,26 +136,18 @@ class AgentService extends ChangeNotifier {
             password: password,
             data: {'organisation_id': organisationId, 'is_admin': true});
         if (EmailValidator.validate(result.user!.email!)) {
-          final resultCreateAgentMetaData =
-              await createAgentMetaData(organisationId, true);
-          if (resultCreateAgentMetaData == true) {
-            final agentId =
-                await createAgent(result.user!.id, organisationId, true);
-            if (agentId != null) {
-              if (kDebugMode) {
-                print('Transaction complete');
-              }
-            } else {
-              await OrganisationService().deleteOrganisation(organisation);
-              error = true;
+          final agentId =
+              await createAgent(result.user!.id, organisationId, true);
+          if (agentId != null) {
+            if (kDebugMode) {
+              print('Transaction complete');
             }
           } else {
-            //await OrganisationService().deleteOrganisation(organisation);
+            await OrganisationService().deleteOrganisation(organisation);
             error = true;
           }
         } else {
           print('3');
-
           // await OrganisationService().deleteOrganisation(organisation);
           error = true;
         }

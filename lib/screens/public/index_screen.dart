@@ -82,7 +82,10 @@ class _IndexScreenState extends State<IndexScreen> {
       bool result = await AgentService().signUpUsingEmailAndPassword(
           organisation: organisation, email: email, password: password);
       if (result == true) {
-        setState(() => loader = false);
+        setState(() {
+          loader = false;
+          toggleSignUp();
+        });
         if (!mounted) return;
         final snackBar = SnackBar(
           backgroundColor: Theme.of(context).colorScheme.primary,

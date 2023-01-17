@@ -84,6 +84,26 @@ class _InboxScreenState extends State<InboxScreen> {
                     fontSize: 25.0, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 20.0),
+          supabase.auth.currentSession!.user.userMetadata!['is_admin'] == true
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+                  child: ListTile(
+                    onTap: () => {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                AgentScreen(agent: widget.agent)),
+                      )
+                    },
+                    title: Text(
+                        LocalizationService.of(context)
+                                ?.translate('admin_drawer_link_label') ??
+                            '',
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    trailing: const ChevronRightIcon(),
+                  ))
+              : Container(),
+          const SizedBox(height: 5.0),
           Padding(
               padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
               child: ListTile(
@@ -163,12 +183,6 @@ class _InboxScreenState extends State<InboxScreen> {
                       value: localAuthentication.biometrics,
                     ),
                   ),
-                )
-              : Container(),
-          supabase.auth.currentSession!.user.userMetadata!['as_admin'] == true
-              ? ListTile(
-                  title: Text('ADMIN',
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
                 )
               : Container(),
           const SizedBox(height: 50),
@@ -263,7 +277,12 @@ class _InboxScreenState extends State<InboxScreen> {
           ResponsiveRowColumnItem(
               rowFlex: 2,
               child: messages.isEmpty
-                  ? const LoaderSpinnerWidget()
+                  ? Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text(LocalizationService.of(context)
+                              ?.translate('no_data_message') ??
+                          ''),
+                    )
                   : SingleChildScrollView(
                       child: SizedBox(
                         height: MediaQuery.of(context).size.height,

@@ -60,7 +60,13 @@ class _RootState extends State<Root> {
                   return InboxScreen(agent: agent);
                 }
                 if (!snapshot.hasData) {
-                  return const CreateOrganisationScreen();
+                  if (supabase.auth.currentSession!.user
+                          .userMetadata!['organisation_id'] !=
+                      null) {
+                    return const CreateOrganisationScreen();
+                  } else {
+                    return const IndexScreen();
+                  }
                 }
               }
               return const LoaderSpinnerWidget();

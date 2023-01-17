@@ -38,9 +38,9 @@ class AgentService extends ChangeNotifier {
         .single();
 
     if (agent != null) {
-      return agent.id;
+      return true;
     } else {
-      return null;
+      return false;
     }
   }
 
@@ -68,11 +68,6 @@ class AgentService extends ChangeNotifier {
         data: {'organisation_id': organisationId, 'is_admin': isAdmin},
       ),
     );
-
-    print(supabase.auth.currentSession!.user.userMetadata!['organisation_id']);
-    print(result.user!.userMetadata!['organisation_id']);
-    //print(supabase.auth.currentSession!.user.userMetadata!['is_admin']);
-
     if (EmailValidator.validate(result.user!.email!)) {
       return true;
     } else {
@@ -304,6 +299,7 @@ class AgentService extends ChangeNotifier {
   }
 
   Future loadAgent() async {
+    await Future.delayed(const Duration(seconds: 3));
     return await supabase
         .from('agents')
         .select()

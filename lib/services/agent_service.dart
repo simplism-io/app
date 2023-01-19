@@ -142,12 +142,10 @@ class AgentService extends ChangeNotifier {
             error = true;
           }
         } else {
-          print('3');
-          // await OrganisationService().deleteOrganisation(organisation);
+          await OrganisationService().deleteOrganisation(organisation);
           error = true;
         }
       } else {
-        print('4');
         error = true;
       }
     } catch (e) {
@@ -155,7 +153,6 @@ class AgentService extends ChangeNotifier {
         print(e);
       }
     }
-
     if (error == false) {
       return true;
     } else {

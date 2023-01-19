@@ -16,8 +16,8 @@ import '../../services/message_service.dart';
 import '../../constants/icons/private_drawer_icon.dart';
 import '../../constants/icons/private_end_drawer_icon_widget.dart';
 import '../../constants/links/logo_header_link.dart';
-import '../../constants/loaders/loader_spinner_widget.dart';
 import '../../services/theme_service.dart';
+import 'admin_screen.dart';
 import 'agent_screen.dart';
 
 final supabase = Supabase.instance.client;
@@ -91,8 +91,7 @@ class _InboxScreenState extends State<InboxScreen> {
                     onTap: () => {
                       Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
-                            builder: (context) =>
-                                AgentScreen(agent: widget.agent)),
+                            builder: (context) => const AdminScreen()),
                       )
                     },
                     title: Text(
@@ -280,7 +279,7 @@ class _InboxScreenState extends State<InboxScreen> {
                   ? Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Text(LocalizationService.of(context)
-                              ?.translate('no_data_message') ??
+                              ?.translate('no_data_message_messages') ??
                           ''),
                     )
                   : SingleChildScrollView(

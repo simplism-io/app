@@ -123,19 +123,6 @@ class _IndexScreenState extends State<IndexScreen> {
           await AgentService().signInUsingEmailAndPassword(email, password);
       if (success == true) {
         setState(() => {loader = false});
-        if (!mounted) return;
-        final snackBar = SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          content: Text(
-              LocalizationService.of(context)
-                      ?.translate('sign_in_snackbar_label') ??
-                  '',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-              )),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
         if (!mounted) return;
         final snackBar = SnackBar(

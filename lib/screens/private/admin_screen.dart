@@ -1,13 +1,10 @@
-import 'package:base/screens/private/inbox_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/localization_service.dart';
-import '../../services/mailbox_service.dart';
 import 'email/mailbox_overview_screen.dart';
 
 class AdminScreen extends StatefulWidget {

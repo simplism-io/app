@@ -74,7 +74,7 @@ class _InboxScreenState extends State<InboxScreen> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
+              color: Theme.of(context).colorScheme.surface,
             ),
             child: Text(
                 LocalizationService.of(context)

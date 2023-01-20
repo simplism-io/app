@@ -10,8 +10,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../main.dart';
 import '../../services/localization_service.dart';
-import '../../constants/links/go_back_link.dart';
 import '../../constants/loaders/loader_spinner_widget.dart';
+import '../root.dart';
 import 'update_password_screen.dart';
 import 'update_agent_screen.dart';
 
@@ -31,7 +31,7 @@ class AgentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    avatarBytes = base64Decode(agent!.avatar);
+    avatarBytes = base64Decode(agent!['avatar']);
 
     return loading
         ? const LoaderSpinnerWidget()
@@ -73,7 +73,8 @@ class AgentScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Card(
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: Theme.of(context).colorScheme.surface,
+                          elevation: 0,
                           child: Padding(
                             padding: const EdgeInsets.all(40.0),
                             child: Column(
@@ -107,21 +108,24 @@ class AgentScreen extends StatelessWidget {
                                                 BorderRadius.circular(20),
                                             child: Image.memory(avatarBytes!))),
                                     const SizedBox(height: 50.0),
-                                    // Text(
-                                    //   profile!.name,
-                                    //   style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                                    // ),
+                                    Text(
+                                      agent['name'],
+                                      style: const TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                     const SizedBox(height: 20),
-                                    Text(agent!.email),
+                                    Text(supabase.auth.currentUser?.email! ??
+                                        ''),
                                   ],
                                 ),
                                 const SizedBox(height: 30),
                                 SizedBox(
                                     width: ResponsiveValue(context,
-                                        defaultValue: 300.0,
+                                        defaultValue: 360.0,
                                         valueWhen: const [
                                           Condition.largerThan(
-                                              name: MOBILE, value: 300.0),
+                                              name: MOBILE, value: 360.0),
                                           Condition.smallerThan(
                                               name: TABLET,
                                               value: double.infinity)
@@ -179,10 +183,10 @@ class AgentScreen extends StatelessWidget {
                                 const SizedBox(height: 10),
                                 SizedBox(
                                     width: ResponsiveValue(context,
-                                        defaultValue: 300.0,
+                                        defaultValue: 360.0,
                                         valueWhen: const [
                                           Condition.largerThan(
-                                              name: MOBILE, value: 300.0),
+                                              name: MOBILE, value: 360.0),
                                           Condition.smallerThan(
                                               name: TABLET,
                                               value: double.infinity)
@@ -232,17 +236,35 @@ class AgentScreen extends StatelessWidget {
                                                         UpdatePasswordScreen(
                                                             agent: agent),
                                                   ))
-                                                }))
+                                                })),
+                                const SizedBox(height: 30),
+                                Center(
+                                  child: TextButton(
+                                      style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: const Size(50, 30),
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                          alignment: Alignment.centerLeft),
+                                      onPressed: () => {
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pushAndRemoveUntil(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const Root()),
+                                                    (route) => false)
+                                          },
+                                      child: Text(
+                                          LocalizationService.of(context)
+                                                  ?.translate(
+                                                      'go_back_link_label') ??
+                                              '')),
+                                ),
                               ],
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        GoBackLink(
-                            removeState: true,
-                            label: LocalizationService.of(context)
-                                    ?.translate('go_back_home_link_label') ??
-                                ''),
                       ],
                     ),
                   ),

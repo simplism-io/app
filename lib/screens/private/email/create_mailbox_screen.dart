@@ -1,3 +1,5 @@
+import 'package:base/constants/icons/email_icon.dart';
+import 'package:base/constants/icons/imap_icon.dart';
 import 'package:base/screens/private/email/mailbox_overview_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -6,6 +8,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../../constants/icons/password_icon.dart';
+import '../../../constants/icons/port_icon.dart';
+import '../../../constants/icons/smtp_icon.dart';
 import '../../../services/localization_service.dart';
 import '../../../services/mailbox_service.dart';
 
@@ -22,9 +26,10 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
 
   String? email;
   String? password;
-
-  String? imap;
-  String? smtp;
+  String? imapUrl;
+  String? imapPort;
+  String? smtpUrl;
+  String? smtpPort;
 
   bool obscureText = true;
 
@@ -36,8 +41,8 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
   Widget build(BuildContext context) {
     Future<void> submit() async {
       setState(() => loader = true);
-      final result =
-          await MailBoxService().createMailbox(email, password, imap, smtp);
+      final result = await MailBoxService()
+          .createMailbox(email, password, imapUrl, imapPort, smtpUrl, smtpPort);
       if (result == true) {
         if (!mounted) return;
         final snackBar = SnackBar(
@@ -142,159 +147,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                               children: [
                                 SizedBox(
                                   width: ResponsiveValue(context,
-                                      defaultValue: 300.0,
-                                      valueWhen: const [
-                                        Condition.largerThan(
-                                            name: MOBILE, value: 360.0),
-                                        Condition.smallerThan(
-                                            name: TABLET,
-                                            value: double.infinity)
-                                      ]).value,
-                                  child: TextFormField(
-                                      decoration: InputDecoration(
-                                        border: const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5))),
-                                        labelText:
-                                            LocalizationService.of(context)
-                                                    ?.translate(
-                                                        'imap_input_label') ??
-                                                '',
-                                        labelStyle: const TextStyle(
-                                          fontSize: 15,
-                                        ), //label style
-                                        prefixIcon: Icon(
-                                            (defaultTargetPlatform ==
-                                                        TargetPlatform.iOS ||
-                                                    defaultTargetPlatform ==
-                                                        TargetPlatform.macOS)
-                                                ? CupertinoIcons.smiley
-                                                : FontAwesomeIcons.faceLaugh,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onBackground),
-                                        hintText: LocalizationService.of(
-                                                    context)
-                                                ?.translate(
-                                                    'imap_input_hinttext') ??
-                                            '',
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                          borderSide: BorderSide(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            width: 2.0,
-                                          ),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                          borderSide: BorderSide(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            width: 1.0,
-                                          ),
-                                        ),
-                                      ),
-                                      textAlign: TextAlign.left,
-                                      autofocus: true,
-                                      validator: (String? value) {
-                                        //print(value.length);
-                                        return (value != null &&
-                                                value.length < 2)
-                                            ? LocalizationService.of(context)
-                                                    ?.translate(
-                                                        'invalid_imap_message') ??
-                                                ''
-                                            : null;
-                                      },
-                                      onChanged: (val) {
-                                        setState(() => imap = val);
-                                      }),
-                                ),
-                                const SizedBox(height: 15),
-                                SizedBox(
-                                  width: ResponsiveValue(context,
-                                      defaultValue: 300.0,
-                                      valueWhen: const [
-                                        Condition.largerThan(
-                                            name: MOBILE, value: 360.0),
-                                        Condition.smallerThan(
-                                            name: TABLET,
-                                            value: double.infinity)
-                                      ]).value,
-                                  child: TextFormField(
-                                      decoration: InputDecoration(
-                                        border: const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5))),
-                                        labelText:
-                                            LocalizationService.of(context)
-                                                    ?.translate(
-                                                        'smtp_input_label') ??
-                                                '',
-                                        labelStyle: const TextStyle(
-                                          fontSize: 15,
-                                        ), //label style
-                                        prefixIcon: Icon(
-                                            (defaultTargetPlatform ==
-                                                        TargetPlatform.iOS ||
-                                                    defaultTargetPlatform ==
-                                                        TargetPlatform.macOS)
-                                                ? CupertinoIcons.smiley
-                                                : FontAwesomeIcons.faceLaugh,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onBackground),
-                                        hintText: LocalizationService.of(
-                                                    context)
-                                                ?.translate(
-                                                    'smtp_input_hinttext') ??
-                                            '',
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                          borderSide: BorderSide(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            width: 2.0,
-                                          ),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                          borderSide: BorderSide(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            width: 1.0,
-                                          ),
-                                        ),
-                                      ),
-                                      textAlign: TextAlign.left,
-                                      autofocus: true,
-                                      validator: (String? value) {
-                                        //print(value.length);
-                                        return (value != null &&
-                                                value.length < 2)
-                                            ? LocalizationService.of(context)
-                                                    ?.translate(
-                                                        'invalid_smtp_message') ??
-                                                ''
-                                            : null;
-                                      },
-                                      onChanged: (val) {
-                                        setState(() => smtp = val);
-                                      }),
-                                ),
-                                const SizedBox(height: 15),
-                                SizedBox(
-                                  width: ResponsiveValue(context,
-                                      defaultValue: 300.0,
+                                      defaultValue: 360.0,
                                       valueWhen: const [
                                         Condition.largerThan(
                                             name: MOBILE, value: 360.0),
@@ -315,16 +168,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                         labelStyle: const TextStyle(
                                           fontSize: 15,
                                         ), //label style
-                                        prefixIcon: Icon(
-                                            (defaultTargetPlatform ==
-                                                        TargetPlatform.iOS ||
-                                                    defaultTargetPlatform ==
-                                                        TargetPlatform.macOS)
-                                                ? CupertinoIcons.smiley
-                                                : FontAwesomeIcons.faceLaugh,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onBackground),
+                                        prefixIcon: const EmailIcon(),
                                         hintText: LocalizationService.of(
                                                     context)
                                                 ?.translate(
@@ -370,7 +214,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                 const SizedBox(height: 15.0),
                                 SizedBox(
                                     width: ResponsiveValue(context,
-                                        defaultValue: 300.0,
+                                        defaultValue: 360.0,
                                         valueWhen: const [
                                           Condition.largerThan(
                                               name: MOBILE, value: 360.0),
@@ -468,7 +312,275 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                 const SizedBox(height: 15),
                                 SizedBox(
                                   width: ResponsiveValue(context,
-                                      defaultValue: 300.0,
+                                      defaultValue: 360.0,
+                                      valueWhen: const [
+                                        Condition.largerThan(
+                                            name: MOBILE, value: 360.0),
+                                        Condition.smallerThan(
+                                            name: TABLET,
+                                            value: double.infinity)
+                                      ]).value,
+                                  child: TextFormField(
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5))),
+                                        labelText: LocalizationService.of(
+                                                    context)
+                                                ?.translate(
+                                                    'imap_url_input_label') ??
+                                            '',
+                                        labelStyle: const TextStyle(
+                                          fontSize: 15,
+                                        ), //label style
+                                        prefixIcon: const ImapIcon(),
+                                        hintText: LocalizationService.of(
+                                                    context)
+                                                ?.translate(
+                                                    'imap_url_input_hinttext') ??
+                                            '',
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            width: 2.0,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            width: 1.0,
+                                          ),
+                                        ),
+                                      ),
+                                      textAlign: TextAlign.left,
+                                      autofocus: true,
+                                      validator: (String? value) {
+                                        //print(value.length);
+                                        return (value != null &&
+                                                value.length < 2)
+                                            ? LocalizationService.of(context)
+                                                    ?.translate(
+                                                        'invalid_imap_url_message') ??
+                                                ''
+                                            : null;
+                                      },
+                                      onChanged: (val) {
+                                        setState(() => imapUrl = val);
+                                      }),
+                                ),
+                                const SizedBox(height: 15),
+                                SizedBox(
+                                  width: ResponsiveValue(context,
+                                      defaultValue: 360.0,
+                                      valueWhen: const [
+                                        Condition.largerThan(
+                                            name: MOBILE, value: 360.0),
+                                        Condition.smallerThan(
+                                            name: TABLET,
+                                            value: double.infinity)
+                                      ]).value,
+                                  child: TextFormField(
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5))),
+                                        labelText: LocalizationService.of(
+                                                    context)
+                                                ?.translate(
+                                                    'imap_port_input_label') ??
+                                            '',
+                                        labelStyle: const TextStyle(
+                                          fontSize: 15,
+                                        ), //label style
+                                        prefixIcon: const PortIcon(),
+                                        hintText: LocalizationService.of(
+                                                    context)
+                                                ?.translate(
+                                                    'imap_port_input_hinttext') ??
+                                            '',
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            width: 2.0,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            width: 1.0,
+                                          ),
+                                        ),
+                                      ),
+                                      textAlign: TextAlign.left,
+                                      autofocus: true,
+                                      validator: (String? value) {
+                                        //print(value.length);
+                                        return (value != null &&
+                                                value.length < 2)
+                                            ? LocalizationService.of(context)
+                                                    ?.translate(
+                                                        'invalid_imap_port_message') ??
+                                                ''
+                                            : null;
+                                      },
+                                      onChanged: (val) {
+                                        setState(() => imapPort = val);
+                                      }),
+                                ),
+                                const SizedBox(height: 15),
+                                SizedBox(
+                                  width: ResponsiveValue(context,
+                                      defaultValue: 360.0,
+                                      valueWhen: const [
+                                        Condition.largerThan(
+                                            name: MOBILE, value: 360.0),
+                                        Condition.smallerThan(
+                                            name: TABLET,
+                                            value: double.infinity)
+                                      ]).value,
+                                  child: TextFormField(
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5))),
+                                        labelText: LocalizationService.of(
+                                                    context)
+                                                ?.translate(
+                                                    'smtp_url_input_label') ??
+                                            '',
+                                        labelStyle: const TextStyle(
+                                          fontSize: 15,
+                                        ), //label style
+                                        prefixIcon: const SmtpIcon(),
+                                        hintText: LocalizationService.of(
+                                                    context)
+                                                ?.translate(
+                                                    'smtp_url_input_hinttext') ??
+                                            '',
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            width: 2.0,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            width: 1.0,
+                                          ),
+                                        ),
+                                      ),
+                                      textAlign: TextAlign.left,
+                                      autofocus: true,
+                                      validator: (String? value) {
+                                        //print(value.length);
+                                        return (value != null &&
+                                                value.length < 2)
+                                            ? LocalizationService.of(context)
+                                                    ?.translate(
+                                                        'invalid_smtp_url_message') ??
+                                                ''
+                                            : null;
+                                      },
+                                      onChanged: (val) {
+                                        setState(() => smtpUrl = val);
+                                      }),
+                                ),
+                                const SizedBox(height: 15),
+                                SizedBox(
+                                  width: ResponsiveValue(context,
+                                      defaultValue: 360.0,
+                                      valueWhen: const [
+                                        Condition.largerThan(
+                                            name: MOBILE, value: 360.0),
+                                        Condition.smallerThan(
+                                            name: TABLET,
+                                            value: double.infinity)
+                                      ]).value,
+                                  child: TextFormField(
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5))),
+                                        labelText: LocalizationService.of(
+                                                    context)
+                                                ?.translate(
+                                                    'smtp_port_input_label') ??
+                                            '',
+                                        labelStyle: const TextStyle(
+                                          fontSize: 15,
+                                        ), //label style
+                                        prefixIcon: const PortIcon(),
+                                        hintText: LocalizationService.of(
+                                                    context)
+                                                ?.translate(
+                                                    'smtp_port_input_hinttext') ??
+                                            '',
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            width: 2.0,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            width: 1.0,
+                                          ),
+                                        ),
+                                      ),
+                                      textAlign: TextAlign.left,
+                                      autofocus: true,
+                                      validator: (String? value) {
+                                        //print(value.length);
+                                        return (value != null &&
+                                                value.length < 2)
+                                            ? LocalizationService.of(context)
+                                                    ?.translate(
+                                                        'invalid_smtp_port_message') ??
+                                                ''
+                                            : null;
+                                      },
+                                      onChanged: (val) {
+                                        setState(() => smtpPort = val);
+                                      }),
+                                ),
+                                const SizedBox(height: 15),
+                                SizedBox(
+                                  width: ResponsiveValue(context,
+                                      defaultValue: 360.0,
                                       valueWhen: const [
                                         Condition.largerThan(
                                             name: MOBILE, value: 360.0),

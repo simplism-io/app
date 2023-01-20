@@ -9,7 +9,7 @@ class PublicMenuHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return DrawerHeader(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
+        color: Theme.of(context).colorScheme.surface,
       ),
       child: Text(
           LocalizationService.of(context)

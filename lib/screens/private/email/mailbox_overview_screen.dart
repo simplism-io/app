@@ -20,7 +20,7 @@ class MailboxOverviewScreen extends StatelessWidget {
         TextButton(
             style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
-                minimumSize: Size(50, 30),
+                minimumSize: const Size(50, 30),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 alignment: Alignment.centerLeft),
             onPressed: () => {
@@ -87,8 +87,8 @@ class MailboxOverviewScreen extends StatelessWidget {
             elevation: 0,
             backgroundColor: Theme.of(context).colorScheme.background),
         body: SingleChildScrollView(
-          child: Column(children: [
-            Center(
+          child: IntrinsicHeight(
+            child: Center(
                 child: SizedBox(
                     width: ResponsiveValue(context,
                         defaultValue: 450.0,
@@ -112,84 +112,78 @@ class MailboxOverviewScreen extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          header(),
-                                          SizedBox(
-                                              child: ListView.builder(
-                                                  shrinkWrap: true,
-                                                  scrollDirection:
-                                                      Axis.vertical,
-                                                  itemCount: mailboxes.length,
-                                                  itemBuilder:
-                                                      (BuildContext context,
-                                                          index) {
-                                                    return Row(
-                                                      children: [
-                                                        Text(mailboxes[index]
-                                                            ['email']),
-                                                        const Spacer(),
-                                                        IconButton(
-                                                          iconSize: 10,
-                                                          icon: const Icon(
-                                                            FontAwesomeIcons
-                                                                .pen,
-                                                          ),
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context,
-                                                                    rootNavigator:
-                                                                        true)
-                                                                .push(
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          const UpdateMailboxScreen()),
-                                                            );
-                                                          },
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  15.0,
-                                                                  5.0,
-                                                                  15.0,
-                                                                  0),
-                                                          child: Consumer<
-                                                              MailBoxService>(
-                                                            builder: (context,
-                                                                    mail,
-                                                                    child) =>
-                                                                SwitchListTile(
-                                                              activeColor: Theme
-                                                                      .of(context)
-                                                                  .colorScheme
-                                                                  .primary,
-                                                              title: Text(
-                                                                LocalizationService.of(
-                                                                            context)
-                                                                        ?.translate(
-                                                                            'dark_mode_switcher_label') ??
-                                                                    '',
-                                                                style: const TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                              ),
-                                                              onChanged:
-                                                                  (value) {
-                                                                mail.toggleEmail(
-                                                                    mailboxes[
-                                                                            index]
-                                                                        [
-                                                                        'email']);
-                                                              },
-                                                              value: mail.email,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  })),
+                                          ListView.builder(
+                                              shrinkWrap: true,
+                                              scrollDirection: Axis.vertical,
+                                              itemCount: mailboxes.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      index) {
+                                                return Row(
+                                                  children: [
+                                                    Text(mailboxes[index]
+                                                        ['email']),
+                                                    const Spacer(),
+                                                    IconButton(
+                                                      iconSize: 10,
+                                                      icon: const Icon(
+                                                        FontAwesomeIcons.pen,
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .push(
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  const UpdateMailboxScreen()),
+                                                        );
+                                                      },
+                                                    ),
+                                                    // Padding(
+                                                    //   padding:
+                                                    //       const EdgeInsets
+                                                    //               .fromLTRB(
+                                                    //           15.0,
+                                                    //           5.0,
+                                                    //           15.0,
+                                                    //           0),
+                                                    //   child: Consumer<
+                                                    //       MailBoxService>(
+                                                    //     builder: (context,
+                                                    //             mail,
+                                                    //             child) =>
+                                                    //         SwitchListTile(
+                                                    //       activeColor: Theme
+                                                    //               .of(context)
+                                                    //           .colorScheme
+                                                    //           .primary,
+                                                    //       title: Text(
+                                                    //         LocalizationService.of(
+                                                    //                     context)
+                                                    //                 ?.translate(
+                                                    //                     'dark_mode_switcher_label') ??
+                                                    //             '',
+                                                    //         style: const TextStyle(
+                                                    //             fontWeight:
+                                                    //                 FontWeight
+                                                    //                     .bold),
+                                                    //       ),
+                                                    //       onChanged:
+                                                    //           (value) {
+                                                    //         mail.toggleEmail(
+                                                    //             mailboxes[
+                                                    //                     index]
+                                                    //                 [
+                                                    //                 'email']);
+                                                    //       },
+                                                    //       value: mail.email,
+                                                    //     ),
+                                                    //   ),
+                                                    // ),
+                                                  ],
+                                                );
+                                              }),
                                           const SizedBox(height: 40),
                                           createMailboxLink()
                                         ]);
@@ -212,8 +206,8 @@ class MailboxOverviewScreen extends StatelessWidget {
                                 }
                               },
                               future: MailBoxService().loadMailboxes(),
-                            )))))
-          ]),
+                            ))))),
+          ),
         ));
   }
 }

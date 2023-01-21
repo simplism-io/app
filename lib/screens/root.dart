@@ -10,6 +10,7 @@ import '../services/agent_service.dart';
 import 'private/create_agent_name_screen.dart';
 import 'private/create_organisation_screen.dart';
 import 'private/inbox_screen.dart';
+import 'public/auth_screen.dart';
 import 'public/index_screen.dart';
 
 final supabase = Supabase.instance.client;
@@ -48,7 +49,10 @@ class _RootState extends State<Root> {
   Widget build(BuildContext context) {
     session = supabase.auth.currentSession;
     return session == null
-        ? const IndexScreen()
+        ? (defaultTargetPlatform == TargetPlatform.iOS ||
+                defaultTargetPlatform == TargetPlatform.android)
+            ? const AuthScreen()
+            : const IndexScreen()
         : FutureBuilder(
             builder: (ctx, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
@@ -65,7 +69,10 @@ class _RootState extends State<Root> {
                       null) {
                     return const CreateOrganisationScreen();
                   } else {
-                    return const IndexScreen();
+                    return (defaultTargetPlatform == TargetPlatform.iOS ||
+                            defaultTargetPlatform == TargetPlatform.android)
+                        ? const AuthScreen()
+                        : const IndexScreen();
                   }
                 }
               }

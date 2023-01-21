@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' as pv;
-import 'package:responsive_framework/responsive_framework.dart';
+import 'package:circle_flags/circle_flags.dart';
 
 import '../../services/internationalization_service.dart';
 
@@ -21,16 +21,17 @@ class LanguageHeaderDropdown extends StatelessWidget {
             items: internationalization.languages
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value,
-                    style: TextStyle(
-                        fontSize: ResponsiveValue(context,
-                            defaultValue: 15.0,
-                            valueWhen: const [
-                              Condition.smallerThan(name: DESKTOP, value: 15.0)
-                            ]).value,
-                        fontWeight: FontWeight.bold)),
-              );
+                  value: value,
+                  child: Row(
+                    children: [
+                      CircleFlag(
+                        value == 'en' ? 'gb' : value,
+                        size: 25,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(value.toUpperCase())
+                    ],
+                  ));
             }).toList(),
           )),
     );

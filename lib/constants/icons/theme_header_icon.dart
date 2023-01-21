@@ -37,15 +37,15 @@ class ThemeHeaderIcon extends StatelessWidget {
               )
             : Padding(
                 padding: EdgeInsets.fromLTRB(
-                    20,
-                    10,
+                    20.0,
+                    10.0,
                     ResponsiveValue(context,
                             defaultValue: 50.0,
                             valueWhen: const [
-                              Condition.smallerThan(name: TABLET, value: 0.0)
+                              Condition.smallerThan(name: TABLET, value: 10.0)
                             ]).value ??
                         50.0,
-                    0),
+                    0.0),
                 child: IconButton(
                     icon: Icon(
                         (defaultTargetPlatform == TargetPlatform.iOS ||

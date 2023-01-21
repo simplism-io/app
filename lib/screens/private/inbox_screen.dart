@@ -277,10 +277,21 @@ class _InboxScreenState extends State<InboxScreen> {
               rowFlex: 2,
               child: messages.isEmpty
                   ? Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Text(LocalizationService.of(context)
-                              ?.translate('no_data_message_messages') ??
-                          ''),
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                      child: Card(
+                        color: Theme.of(context).colorScheme.surface,
+                        elevation: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                          child: Row(
+                            children: [
+                              Text(LocalizationService.of(context)
+                                      ?.translate('no_data_message_messages') ??
+                                  ''),
+                            ],
+                          ),
+                        ),
+                      ),
                     )
                   : SingleChildScrollView(
                       child: SizedBox(

@@ -10,21 +10,15 @@ final supabase = Supabase.instance.client;
 
 class AgentService extends ChangeNotifier {
   Future signInUsingEmailAndPassword(email, password) async {
-    try {
-      if (kDebugMode) {
-        print('Trying to sign in');
-      }
-      AuthResponse result = await supabase.auth
-          .signInWithPassword(email: email, password: password);
-      if (EmailValidator.validate(result.user!.email!)) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+    if (kDebugMode) {
+      print('Trying to sign in');
+    }
+    AuthResponse result = await supabase.auth
+        .signInWithPassword(email: email, password: password);
+
+    if (EmailValidator.validate(result.user!.email!)) {
+      return true;
+    } else {
       return false;
     }
   }

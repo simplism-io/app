@@ -25,6 +25,7 @@ import '../../constants/links/pricing_drawer_link.dart';
 import '../../constants/links/pricing_header_link.dart';
 import '../../services/agent_service.dart';
 import '../../services/localization_service.dart';
+import '../root.dart';
 import 'index_screen.dart';
 
 final supabase = Supabase.instance.client;
@@ -105,10 +106,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
     Future<void> submitSignIn() async {
       setState(() => loader = true);
-      bool success =
+      bool result =
           await AgentService().signInUsingEmailAndPassword(email, password);
-      if (success == true) {
+      if (result == true) {
         setState(() => {loader = false});
+        if (!mounted) return;
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const Root()),
+            (route) => false);
       } else {
         if (!mounted) return;
         final snackBar = SnackBar(

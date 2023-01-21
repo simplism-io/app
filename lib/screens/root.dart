@@ -60,8 +60,9 @@ class _RootState extends State<Root> {
                   final agent = snapshot.data!;
                   if (agent['name'] == null || agent['name'] == '') {
                     return const CreateAgentNameScreen();
+                  } else {
+                    return InboxScreen(agent: agent);
                   }
-                  return InboxScreen(agent: agent);
                 }
                 if (!snapshot.hasData) {
                   if (supabase.auth.currentSession!.user
@@ -69,10 +70,12 @@ class _RootState extends State<Root> {
                       null) {
                     return const CreateOrganisationScreen();
                   } else {
-                    return (defaultTargetPlatform == TargetPlatform.iOS ||
-                            defaultTargetPlatform == TargetPlatform.android)
-                        ? const AuthScreen()
-                        : const IndexScreen();
+                    if ((defaultTargetPlatform == TargetPlatform.iOS ||
+                        defaultTargetPlatform == TargetPlatform.android)) {
+                      return const AuthScreen();
+                    } else {
+                      return const IndexScreen();
+                    }
                   }
                 }
               }

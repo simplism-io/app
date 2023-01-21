@@ -85,6 +85,8 @@
   "smtp_port_input_label": "SMTP poort",
   "smtp_port_input_hinttext": "SMTP poort (465, etc)",
   "sub_tagline": "Voor de cool kids die dingen maken",
+  "update_mailbox_button_label": "Email settings bijwerken",
+  "update_mailbox_header_label": "Wijzigingen opslaan",
   "update_password_button_label": "Wachtwoord bijwerken",
   "update_password_header_label": "Wachtwoord bijwerken",
   "update_password_snackbar_label": "Je wachtwoord is bijgewerkt",

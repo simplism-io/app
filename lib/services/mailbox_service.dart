@@ -33,35 +33,35 @@ class MailBoxService {
     }
   }
 
-  //   Future updateMailbox(id, email, password, imap, smtp) async {
-  //   try {
-  //     if (kDebugMode) {
-  //       print('Trying to update email');
-  //     }
-  //     return await supabase.auth.updateUser(
-  //       UserAttributes(
-  //         email: email,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     if (kDebugMode) {
-  //       print(e);
-  //     }
-  //     return false;
-  //   }
-  // }
+  Future updateMailbox(
+      id, email, password, imapUrl, imapPort, smtpUrl, smtpPort) async {
+    try {
+      if (kDebugMode) {
+        print('Trying to update mailbox');
+      }
+      final mailbox = await supabase
+          .from('mailboxes')
+          .update({
+            'email': email,
+            'password': password,
+            'imap_url': imapUrl,
+            'imap_port': imapPort,
+            'smtp_url': smtpUrl,
+            'smtp_port': smtpPort,
+          })
+          .match({'id': id})
+          .select()
+          .single();
 
-  Future toggleMailbox(id, value) async {
-    if (kDebugMode) {
-      print('Trying to update profile');
-    }
-    final mailbox = await supabase
-        .from('mailboxes')
-        .update({'active': value}).match({'id': id});
-
-    if (mailbox != null) {
-      return true;
-    } else {
+      if (mailbox != null) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }

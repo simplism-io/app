@@ -9,6 +9,7 @@ import 'package:responsive_framework/utils/scroll_behavior.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'services/mailbox_service.dart';
 import 'services/message_service.dart';
 import 'services/theme_service.dart';
 import 'services/biometric_service.dart';
@@ -42,6 +43,7 @@ class App extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => BiometricService()),
           ChangeNotifierProvider(create: (_) => InternationalizationService()),
           ChangeNotifierProvider(create: (_) => MessageService()),
+          ChangeNotifierProvider(create: (_) => MailBoxService()),
         ],
         child: Consumer3<ThemeService, InternationalizationService,
                 BiometricService>(
@@ -65,12 +67,12 @@ class App extends StatelessWidget {
               ],
               builder: (context, child) => ResponsiveWrapper.builder(
                     BouncingScrollWrapper.builder(context, child!),
-                    maxWidth: 1200,
+                    maxWidth: 1000,
                     minWidth: 450,
                     breakpoints: [
                       const ResponsiveBreakpoint.resize(450, name: MOBILE),
                       const ResponsiveBreakpoint.resize(800, name: TABLET),
-                      const ResponsiveBreakpoint.resize(1200, name: DESKTOP),
+                      const ResponsiveBreakpoint.resize(1000, name: DESKTOP),
                     ],
                     background: Container(
                         color: Theme.of(context).scaffoldBackgroundColor),

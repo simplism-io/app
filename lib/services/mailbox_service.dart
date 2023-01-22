@@ -3,13 +3,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
 
-class MailBoxService {
-  Future loadMailboxes() async {
+class MailBoxService extends ChangeNotifier {
+  Map? mailboxStatus;
+
+  Future loadMailBoxes() async {
     return await supabase.from('mailboxes').select().eq('organisation_id',
         supabase.auth.currentSession!.user.userMetadata!['organisation_id']);
   }
 
-  Future createMailbox(
+  Future createMailBox(
       email, password, imapUrl, imapPort, smtpUrl, smtpPort) async {
     final mailbox = await supabase
         .from('mailboxes')
@@ -33,8 +35,8 @@ class MailBoxService {
     }
   }
 
-  Future updateMailbox(
-      id, email, password, imapUrl, imapPort, smtpUrl, smtpPort) async {
+  Future updateMailBox(
+      id, email, password, imapUrl, imapPort, smtpUrl, smtpPort, active) async {
     try {
       if (kDebugMode) {
         print('Trying to update mailbox');
@@ -48,6 +50,7 @@ class MailBoxService {
             'imap_port': imapPort,
             'smtp_url': smtpUrl,
             'smtp_port': smtpPort,
+            'active': active
           })
           .match({'id': id})
           .select()

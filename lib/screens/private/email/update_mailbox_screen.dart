@@ -10,6 +10,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import '../../../constants/icons/password_icon.dart';
 import '../../../constants/icons/port_icon.dart';
 import '../../../constants/icons/smtp_icon.dart';
+import '../../../constants/icons/status_icon.dart';
 import '../../../services/localization_service.dart';
 import '../../../services/mailbox_service.dart';
 
@@ -40,10 +41,15 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var options = ['activate', 'inactive'];
+
+    String? selectedValue;
+    bool? active;
+
     Future<void> submit() async {
       setState(() => loader = true);
-      final result = await MailBoxService().updateMailbox(widget.mailbox['id'],
-          email, password, imapUrl, imapPort, smtpUrl, smtpPort);
+      final result = await MailBoxService().updateMailBox(widget.mailbox['id'],
+          email, password, imapUrl, imapPort, smtpUrl, smtpPort, active);
       if (result == true) {
         if (!mounted) return;
         final snackBar = SnackBar(
@@ -596,6 +602,77 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                         }),
                                   ),
                                   const SizedBox(height: 15),
+                                  DropdownButtonFormField(
+                                      items: options.map((String category) {
+                                        return new DropdownMenuItem(
+                                            value: category,
+                                            child: Row(
+                                              children: <Widget>[
+                                                Icon(Icons.star),
+                                                Text(category),
+                                              ],
+                                            ));
+                                      }).toList(),
+                                      onChanged: (newValue) {
+                                        setState(() => {
+                                              selectedValue = newValue,
+                                              active = selectedValue == 'active'
+                                                  ? true
+                                                  : false
+                                            });
+                                        print(active);
+                                        print(selectedValue);
+                                      },
+                                      value: selectedValue,
+                                      decoration: InputDecoration(
+                                          hintText: 'Mailbox status',
+                                          prefixIcon: const StatusIcon(),
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0)))),
+                                  // FormField<String>(
+                                  //   builder: (FormFieldState<String> state) {
+                                  //     return InputDecorator(
+                                  //       decoration: InputDecoration(
+                                  //           hintText: 'Mailbox status',
+                                  //           prefixIcon: const StatusIcon(),
+                                  //           border: OutlineInputBorder(
+                                  //               borderRadius:
+                                  //                   BorderRadius.circular(
+                                  //                       5.0))),
+                                  //       child: DropdownButtonHideUnderline(
+                                  //         child: DropdownButton<String?>(
+                                  //           value: selectedValue == ''
+                                  //               ? widget.mailbox['active'] ==
+                                  //                       true
+                                  //                   ? 'active'
+                                  //                   : 'inactive'
+                                  //               : selectedValue,
+                                  //           isDense: true,
+                                  //           onChanged: (String? newValue) {
+                                  //             setState(() {
+                                  //               selectedValue = newValue;
+                                  //               state.didChange(newValue);
+                                  //               active =
+                                  //                   selectedValue == 'active'
+                                  //                       ? true
+                                  //                       : false;
+                                  //             });
+                                  //             print(active);
+                                  //             print(selectedValue);
+                                  //           },
+                                  //           items: options.map((String value) {
+                                  //             return DropdownMenuItem<String>(
+                                  //               value: value,
+                                  //               child: Text(value),
+                                  //             );
+                                  //           }).toList(),
+                                  //         ),
+                                  //       ),
+                                  //     );
+                                  //   },
+                                  // ),
+                                  const SizedBox(height: 15),
                                   SizedBox(
                                     width: ResponsiveValue(context,
                                         defaultValue: 360.0,
@@ -627,6 +704,8 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                                       .mailbox['smtp_url'];
                                                   smtpPort ??= widget
                                                       .mailbox['smtp_port'];
+                                                  active ??=
+                                                      widget.mailbox['active'];
                                                 });
                                                 submit();
                                               } else {
@@ -674,6 +753,8 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                                       .mailbox['smtp_url'];
                                                   smtpPort ??= widget
                                                       .mailbox['smtp_port'];
+                                                  active ??=
+                                                      widget.mailbox['active'];
                                                 });
                                                 submit();
                                               } else {

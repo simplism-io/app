@@ -42,7 +42,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
     Future<void> submit() async {
       setState(() => loader = true);
       final result = await MailBoxService()
-          .createMailbox(email, password, imapUrl, imapPort, smtpUrl, smtpPort);
+          .createMailBox(email, password, imapUrl, imapPort, smtpUrl, smtpPort);
       if (result == true) {
         if (!mounted) return;
         final snackBar = SnackBar(

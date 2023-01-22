@@ -29,6 +29,9 @@ class MessageService extends ChangeNotifier {
   }
 
   getMessages() async {
+    if (kDebugMode) {
+      print('Trying to load messages');
+    }
     messages = await supabase.from('messages').select('''
     id, subject, body, incoming, created, channel_id, channels:channel_id (channel)
   ''').eq('organisation_id', organisationId);
@@ -41,6 +44,9 @@ class MessageService extends ChangeNotifier {
     subject,
     body,
   ) async {
+    if (kDebugMode) {
+      print('Trying to send message');
+    }
     bool error = false;
     final resultCreateMessage = await createMessage(channelId, subject, body);
 
@@ -87,6 +93,9 @@ class MessageService extends ChangeNotifier {
     subject,
     body,
   ) async {
+    if (kDebugMode) {
+      print('Trying to create message');
+    }
     final message = await supabase
         .from('messages')
         .insert({
@@ -107,6 +116,9 @@ class MessageService extends ChangeNotifier {
   }
 
   Future createEmail(newMessageId, emailAddressId, mailboxId) async {
+    if (kDebugMode) {
+      print('Trying to create email');
+    }
     final email = await supabase
         .from('emails')
         .insert({

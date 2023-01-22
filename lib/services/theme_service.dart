@@ -33,7 +33,7 @@ ThemeData dark = ThemeData(
     onBackground: Colors.white,
     error: Colors.red,
     onError: Colors.white,
-    surface: Color.fromARGB(255, 77, 77, 77),
+    surface: Color.fromARGB(255, 48, 48, 48),
     onSurface: Colors.white,
   ),
   fontFamily: 'OpenSans',

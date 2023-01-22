@@ -10,6 +10,7 @@ import '../services/agent_service.dart';
 import 'private/create_agent_name_screen.dart';
 import 'private/create_organisation_screen.dart';
 import 'private/inbox_screen.dart';
+import 'public/auth_screen.dart';
 import 'public/index_screen.dart';
 
 final supabase = Supabase.instance.client;
@@ -48,7 +49,10 @@ class _RootState extends State<Root> {
   Widget build(BuildContext context) {
     session = supabase.auth.currentSession;
     return session == null
-        ? const IndexScreen()
+        ? (defaultTargetPlatform == TargetPlatform.iOS ||
+                defaultTargetPlatform == TargetPlatform.android)
+            ? const AuthScreen()
+            : const IndexScreen()
         : FutureBuilder(
             builder: (ctx, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
@@ -56,11 +60,23 @@ class _RootState extends State<Root> {
                   final agent = snapshot.data!;
                   if (agent['name'] == null || agent['name'] == '') {
                     return const CreateAgentNameScreen();
+                  } else {
+                    return InboxScreen(agent: agent);
                   }
-                  return InboxScreen(agent: agent);
                 }
                 if (!snapshot.hasData) {
-                  return const CreateOrganisationScreen();
+                  if (supabase.auth.currentSession!.user
+                          .userMetadata!['organisation_id'] !=
+                      null) {
+                    return const CreateOrganisationScreen();
+                  } else {
+                    if ((defaultTargetPlatform == TargetPlatform.iOS ||
+                        defaultTargetPlatform == TargetPlatform.android)) {
+                      return const AuthScreen();
+                    } else {
+                      return const IndexScreen();
+                    }
+                  }
                 }
               }
               return const LoaderSpinnerWidget();

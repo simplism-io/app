@@ -12,13 +12,13 @@ class PrivateEndDrawer extends StatelessWidget {
     return Builder(
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+          padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
           child: IconButton(
             icon: Icon(
                 (defaultTargetPlatform == TargetPlatform.iOS ||
                         defaultTargetPlatform == TargetPlatform.macOS)
-                    ? CupertinoIcons.ellipsis_vertical
-                    : FontAwesomeIcons.ellipsisVertical,
+                    ? CupertinoIcons.bars
+                    : FontAwesomeIcons.bars,
                 color: Theme.of(context).colorScheme.onBackground),
             onPressed: () {
               Scaffold.of(context).openEndDrawer();

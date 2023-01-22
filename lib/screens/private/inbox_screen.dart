@@ -16,8 +16,8 @@ import '../../services/message_service.dart';
 import '../../constants/icons/private_drawer_icon.dart';
 import '../../constants/icons/private_end_drawer_icon_widget.dart';
 import '../../constants/links/logo_header_link.dart';
-import '../../constants/loaders/loader_spinner_widget.dart';
 import '../../services/theme_service.dart';
+import 'admin_screen.dart';
 import 'agent_screen.dart';
 
 final supabase = Supabase.instance.client;
@@ -74,7 +74,7 @@ class _InboxScreenState extends State<InboxScreen> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
+              color: Theme.of(context).colorScheme.surface,
             ),
             child: Text(
                 LocalizationService.of(context)
@@ -84,6 +84,25 @@ class _InboxScreenState extends State<InboxScreen> {
                     fontSize: 25.0, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 20.0),
+          supabase.auth.currentSession!.user.userMetadata!['is_admin'] == true
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+                  child: ListTile(
+                    onTap: () => {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                            builder: (context) => const AdminScreen()),
+                      )
+                    },
+                    title: Text(
+                        LocalizationService.of(context)
+                                ?.translate('admin_drawer_link_label') ??
+                            '',
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    trailing: const ChevronRightIcon(),
+                  ))
+              : Container(),
+          const SizedBox(height: 5.0),
           Padding(
               padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
               child: ListTile(
@@ -165,12 +184,6 @@ class _InboxScreenState extends State<InboxScreen> {
                   ),
                 )
               : Container(),
-          supabase.auth.currentSession!.user.userMetadata!['as_admin'] == true
-              ? ListTile(
-                  title: Text('ADMIN',
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                )
-              : Container(),
           const SizedBox(height: 50),
           Padding(
             padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
@@ -219,8 +232,8 @@ class _InboxScreenState extends State<InboxScreen> {
             : ResponsiveRowColumnType.ROW,
         rowMainAxisAlignment: MainAxisAlignment.start,
         rowCrossAxisAlignment: CrossAxisAlignment.start,
-        rowPadding: const EdgeInsets.all(20),
-        columnPadding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+        rowPadding: const EdgeInsets.all(20.0),
+        columnPadding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
         children: [
           ResponsiveRowColumnItem(
               child: ResponsiveVisibility(
@@ -263,7 +276,33 @@ class _InboxScreenState extends State<InboxScreen> {
           ResponsiveRowColumnItem(
               rowFlex: 2,
               child: messages.isEmpty
-                  ? const LoaderSpinnerWidget()
+                  ? Padding(
+                      padding: EdgeInsets.fromLTRB(
+                          0.0,
+                          0.0,
+                          ResponsiveValue(context,
+                              defaultValue: 0.0,
+                              valueWhen: [
+                                const Condition.largerThan(
+                                    name: MOBILE, value: 10.0)
+                              ]).value!,
+                          0.0),
+                      child: Card(
+                        color: Theme.of(context).colorScheme.surface,
+                        elevation: 0,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                          child: Row(
+                            children: [
+                              Text(LocalizationService.of(context)
+                                      ?.translate('no_data_message_messages') ??
+                                  ''),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
                   : SingleChildScrollView(
                       child: SizedBox(
                         height: MediaQuery.of(context).size.height,

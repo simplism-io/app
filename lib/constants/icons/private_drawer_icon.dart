@@ -14,13 +14,13 @@ class PrivateDrawerIcon extends StatelessWidget {
         visibleWhen: const [Condition.smallerThan(name: TABLET)],
         child: Builder(builder: (context) {
           return Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+            padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
             child: IconButton(
               icon: Icon(
                 (defaultTargetPlatform == TargetPlatform.iOS ||
                         defaultTargetPlatform == TargetPlatform.macOS)
-                    ? CupertinoIcons.chevron_right
-                    : FontAwesomeIcons.chevronRight,
+                    ? CupertinoIcons.collections
+                    : FontAwesomeIcons.folderTree,
                 color: Theme.of(context).colorScheme.onBackground,
               ),
               onPressed: () {

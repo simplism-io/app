@@ -65,7 +65,6 @@ class MailBoxService extends ChangeNotifier {
       if (kDebugMode) {
         print(e);
       }
-      return false;
     }
   }
 }

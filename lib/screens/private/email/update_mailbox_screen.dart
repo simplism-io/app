@@ -34,6 +34,7 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
   String? smtpPort;
 
   bool obscureText = true;
+  bool? active;
 
   toggleObscure() {
     setState(() => obscureText = !obscureText);
@@ -41,10 +42,9 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var options = ['activate', 'inactive'];
+    var options = ['active', 'inactive'];
 
     String? selectedValue;
-    bool? active;
 
     Future<void> submit() async {
       setState(() => loader = true);
@@ -56,7 +56,7 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
           backgroundColor: Theme.of(context).colorScheme.primary,
           content: Text(
               LocalizationService.of(context)
-                      ?.translate('create_mailbox_name_snackbar_label') ??
+                      ?.translate('update_mailbox_snackbar_label') ??
                   '',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -519,7 +519,6 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                         textAlign: TextAlign.left,
                                         autofocus: true,
                                         validator: (String? value) {
-                                          //print(value.length);
                                           return (value != null &&
                                                   value.length < 2)
                                               ? LocalizationService.of(context)
@@ -588,7 +587,6 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                         textAlign: TextAlign.left,
                                         autofocus: true,
                                         validator: (String? value) {
-                                          //print(value.length);
                                           return (value != null &&
                                                   value.length < 2)
                                               ? LocalizationService.of(context)
@@ -603,15 +601,9 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                   ),
                                   const SizedBox(height: 15),
                                   DropdownButtonFormField(
-                                      items: options.map((String category) {
-                                        return new DropdownMenuItem(
-                                            value: category,
-                                            child: Row(
-                                              children: <Widget>[
-                                                Icon(Icons.star),
-                                                Text(category),
-                                              ],
-                                            ));
+                                      items: options.map((String option) {
+                                        return DropdownMenuItem(
+                                            value: option, child: Text(option));
                                       }).toList(),
                                       onChanged: (newValue) {
                                         setState(() => {
@@ -620,58 +612,22 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                                   ? true
                                                   : false
                                             });
-                                        print(active);
-                                        print(selectedValue);
+                                        active = selectedValue == 'active'
+                                            ? true
+                                            : false;
                                       },
-                                      value: selectedValue,
+                                      value: selectedValue == null ||
+                                              selectedValue == ''
+                                          ? widget.mailbox['active'] == true
+                                              ? 'active'
+                                              : 'inactive'
+                                          : selectedValue,
                                       decoration: InputDecoration(
-                                          hintText: 'Mailbox status',
+                                          //hintText: 'Mailbox status',
                                           prefixIcon: const StatusIcon(),
                                           border: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(5.0)))),
-                                  // FormField<String>(
-                                  //   builder: (FormFieldState<String> state) {
-                                  //     return InputDecorator(
-                                  //       decoration: InputDecoration(
-                                  //           hintText: 'Mailbox status',
-                                  //           prefixIcon: const StatusIcon(),
-                                  //           border: OutlineInputBorder(
-                                  //               borderRadius:
-                                  //                   BorderRadius.circular(
-                                  //                       5.0))),
-                                  //       child: DropdownButtonHideUnderline(
-                                  //         child: DropdownButton<String?>(
-                                  //           value: selectedValue == ''
-                                  //               ? widget.mailbox['active'] ==
-                                  //                       true
-                                  //                   ? 'active'
-                                  //                   : 'inactive'
-                                  //               : selectedValue,
-                                  //           isDense: true,
-                                  //           onChanged: (String? newValue) {
-                                  //             setState(() {
-                                  //               selectedValue = newValue;
-                                  //               state.didChange(newValue);
-                                  //               active =
-                                  //                   selectedValue == 'active'
-                                  //                       ? true
-                                  //                       : false;
-                                  //             });
-                                  //             print(active);
-                                  //             print(selectedValue);
-                                  //           },
-                                  //           items: options.map((String value) {
-                                  //             return DropdownMenuItem<String>(
-                                  //               value: value,
-                                  //               child: Text(value),
-                                  //             );
-                                  //           }).toList(),
-                                  //         ),
-                                  //       ),
-                                  //     );
-                                  //   },
-                                  // ),
                                   const SizedBox(height: 15),
                                   SizedBox(
                                     width: ResponsiveValue(context,

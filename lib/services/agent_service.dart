@@ -72,42 +72,37 @@ class AgentService extends ChangeNotifier {
   Future createAgentProcedure(organisation) async {
     bool error = false;
 
-    try {
-      if (kDebugMode) {
-        print('Trying to save organisation ');
-      }
-      final organisationId =
-          await OrganisationService().createOrganisation(organisation);
-      if (organisationId != null) {
-        final resultCreateAgentMetaData =
-            await createAgentMetaData(organisationId, true);
-        if (resultCreateAgentMetaData == true) {
-          final agentId = await createAgent(
-              supabase.auth.currentUser!.id, organisationId, true);
-          if (agentId != null) {
-            if (kDebugMode) {
-              print('Succesfully created agent');
-            }
-          } else {
-            await OrganisationService().deleteOrganisation(organisation);
-            error = true;
+    if (kDebugMode) {
+      print('Trying to save organisation ');
+    }
+    final organisationId =
+        await OrganisationService().createOrganisation(organisation);
+    if (organisationId != null) {
+      final resultCreateAgentMetaData =
+          await createAgentMetaData(organisationId, true);
+      if (resultCreateAgentMetaData == true) {
+        final agentId = await createAgent(
+            supabase.auth.currentUser!.id, organisationId, true);
+        if (agentId != null) {
+          if (kDebugMode) {
+            print('Succesfully created agent');
           }
         } else {
           await OrganisationService().deleteOrganisation(organisation);
           error = true;
         }
       } else {
+        await OrganisationService().deleteOrganisation(organisation);
         error = true;
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-    if (error == false) {
-      return true;
     } else {
-      return false;
+      error = true;
+
+      if (error == false) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 
@@ -155,35 +150,23 @@ class AgentService extends ChangeNotifier {
   }
 
   Future<void> signInUsingApple() async {
-    try {
-      if (kDebugMode) {
-        print('Trying to sign in');
-      }
-      await supabase.auth.signInWithOAuth(
-        Provider.apple,
-        redirectTo: kIsWeb ? null : 'io.supabase.starter://login-callback/',
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+    if (kDebugMode) {
+      print('Trying to sign in');
     }
+    await supabase.auth.signInWithOAuth(
+      Provider.apple,
+      redirectTo: kIsWeb ? null : 'io.supabase.starter://login-callback/',
+    );
   }
 
   Future<void> signInUsingGoogle() async {
-    try {
-      if (kDebugMode) {
-        print('Trying to sign in');
-      }
-      await supabase.auth.signInWithOAuth(
-        Provider.google,
-        redirectTo: kIsWeb ? null : 'io.supabase.starter://login-callback/',
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+    if (kDebugMode) {
+      print('Trying to sign in');
     }
+    await supabase.auth.signInWithOAuth(
+      Provider.google,
+      redirectTo: kIsWeb ? null : 'io.supabase.starter://login-callback/',
+    );
   }
 
   Future<void> signOut() async {
@@ -210,81 +193,67 @@ class AgentService extends ChangeNotifier {
   }
 
   Future updateEmail(id, email) async {
-    try {
-      if (kDebugMode) {
-        print('Trying to update email');
-      }
-      return await supabase.auth.updateUser(
-        UserAttributes(
-          email: email,
-        ),
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+    if (kDebugMode) {
+      print('Trying to update email');
+    }
+    final result = await supabase.auth.updateUser(
+      UserAttributes(
+        email: email,
+      ),
+    );
+
+    if (EmailValidator.validate(result.user!.email!)) {
+      return true;
+    } else {
       return false;
     }
   }
 
   Future updateAgent(id, name, avatar) async {
-    try {
-      if (kDebugMode) {
-        print('Trying to update profile');
-      }
-      return await supabase
-          .from('agents')
-          .update({'name': name, 'avatar': avatar}).match({'id': id});
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+    if (kDebugMode) {
+      print('Trying to update profile');
+    }
+    final result = await supabase
+        .from('agents')
+        .update({'name': name, 'avatar': avatar})
+        .match({'id': id})
+        .select()
+        .single();
+
+    if (result != null) {
+      return true;
+    } else {
       return false;
     }
   }
 
   Future updateAgentProcedure(name, email, avatar) async {
-    try {
-      if (kDebugMode) {
-        print('Trying to update email and profile procedure');
-      }
-      UserResponse emailUpdate =
-          await updateEmail(supabase.auth.currentUser!.id, email);
-      final profileUpdate =
-          await updateAgent(supabase.auth.currentUser!.id, name, avatar);
-      if (EmailValidator.validate(emailUpdate.user!.email!) &&
-          profileUpdate == null) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+    if (kDebugMode) {
+      print('Trying to update email and profile procedure');
+    }
+    UserResponse emailUpdate =
+        await updateEmail(supabase.auth.currentUser!.id, email);
+    final profileUpdate =
+        await updateAgent(supabase.auth.currentUser!.id, name, avatar);
+    if (emailUpdate == true && profileUpdate == true) {
+      return true;
+    } else {
       return false;
     }
   }
 
   Future updatePassword(passwordNew) async {
-    try {
-      if (kDebugMode) {
-        print('Trying to update profile');
-      }
-      UserResponse result = await supabase.auth.updateUser(
-        UserAttributes(
-          password: passwordNew,
-        ),
-      );
-      if (EmailValidator.validate(result.user!.email!)) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+    if (kDebugMode) {
+      print('Trying to update profile');
+    }
+    UserResponse result = await supabase.auth.updateUser(
+      UserAttributes(
+        password: passwordNew,
+      ),
+    );
+    if (EmailValidator.validate(result.user!.email!)) {
+      return true;
+    } else {
       return false;
     }
   }

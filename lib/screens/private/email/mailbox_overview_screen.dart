@@ -145,7 +145,7 @@ class MailboxOverviewScreen extends StatelessWidget {
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
-                                                      20, 10, 25, 10),
+                                                      20, 10, 10, 10),
                                               child: Row(
                                                 children: [
                                                   Text(mailboxes[index]
@@ -175,8 +175,16 @@ class MailboxOverviewScreen extends StatelessWidget {
                                             ),
                                           );
                                         }),
-                                    const SizedBox(height: 5),
-                                    createMailboxLink()
+                                    Card(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
+                                        elevation: 0,
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              20, 20, 20, 20),
+                                          child: createMailboxLink(),
+                                        ))
                                   ]);
                             } else {
                               return Column(
@@ -187,7 +195,6 @@ class MailboxOverviewScreen extends StatelessWidget {
                                             ?.translate(
                                                 'no_data_message_mailboxes') ??
                                         ''),
-                                    const SizedBox(height: 5),
                                     createMailboxLink()
                                   ]);
                             }

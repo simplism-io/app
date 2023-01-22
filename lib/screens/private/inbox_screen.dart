@@ -232,8 +232,8 @@ class _InboxScreenState extends State<InboxScreen> {
             : ResponsiveRowColumnType.ROW,
         rowMainAxisAlignment: MainAxisAlignment.start,
         rowCrossAxisAlignment: CrossAxisAlignment.start,
-        rowPadding: const EdgeInsets.all(20),
-        columnPadding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+        rowPadding: const EdgeInsets.all(20.0),
+        columnPadding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
         children: [
           ResponsiveRowColumnItem(
               child: ResponsiveVisibility(
@@ -277,12 +277,22 @@ class _InboxScreenState extends State<InboxScreen> {
               rowFlex: 2,
               child: messages.isEmpty
                   ? Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                      padding: EdgeInsets.fromLTRB(
+                          0.0,
+                          0.0,
+                          ResponsiveValue(context,
+                              defaultValue: 0.0,
+                              valueWhen: [
+                                const Condition.largerThan(
+                                    name: MOBILE, value: 10.0)
+                              ]).value!,
+                          0.0),
                       child: Card(
                         color: Theme.of(context).colorScheme.surface,
                         elevation: 0,
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                          padding:
+                              const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                           child: Row(
                             children: [
                               Text(LocalizationService.of(context)

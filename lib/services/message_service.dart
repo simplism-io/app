@@ -28,7 +28,7 @@ class MessageService extends ChangeNotifier {
     ).subscribe();
   }
 
-  getMessages() async {
+  Future<void> getMessages() async {
     if (kDebugMode) {
       print('Trying to load messages');
     }

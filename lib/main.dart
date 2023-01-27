@@ -9,6 +9,7 @@ import 'package:responsive_framework/utils/scroll_behavior.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'services/error_service.dart';
 import 'services/mailbox_service.dart';
 import 'services/message_service.dart';
 import 'services/theme_service.dart';
@@ -44,6 +45,7 @@ class App extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => InternationalizationService()),
           ChangeNotifierProvider(create: (_) => MessageService()),
           ChangeNotifierProvider(create: (_) => MailBoxService()),
+          ChangeNotifierProvider(create: (_) => ErrorService()),
         ],
         child: Consumer3<ThemeService, InternationalizationService,
                 BiometricService>(

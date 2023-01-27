@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,11 +11,11 @@ import '../../constants/icons/chevron_right_icon.dart';
 import '../../constants/icons/email_icon.dart';
 import '../../services/agent_service.dart';
 import '../../services/biometric_service.dart';
+import '../../services/error_service.dart';
 import '../../services/internationalization_service.dart';
 import '../../services/localization_service.dart';
 import '../../services/message_service.dart';
 import '../../constants/icons/private_drawer_icon.dart';
-import '../../constants/icons/private_end_drawer_icon_widget.dart';
 import '../../constants/links/logo_header_link.dart';
 import '../../services/theme_service.dart';
 import 'admin_screen.dart';
@@ -32,6 +33,7 @@ class InboxScreen extends StatefulWidget {
 
 class _InboxScreenState extends State<InboxScreen> {
   Map<int, dynamic> showBody = {};
+  bool showSettings = true;
   final formKey = GlobalKey<FormState>();
   String? body;
   bool loader = false;
@@ -61,6 +63,12 @@ class _InboxScreenState extends State<InboxScreen> {
     return showBody[index];
   }
 
+  toggleShowSettings(value) {
+    setState(() {
+      showSettings = value;
+    });
+  }
+
   Uint8List? avatarBytes;
 
   drawer() {
@@ -69,149 +77,188 @@ class _InboxScreenState extends State<InboxScreen> {
 
   endDrawer() {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-            ),
-            child: Text(
-                LocalizationService.of(context)
-                        ?.translate('settings_header_label') ??
-                    '',
-                style: const TextStyle(
-                    fontSize: 25.0, fontWeight: FontWeight.bold)),
-          ),
-          const SizedBox(height: 20.0),
-          supabase.auth.currentSession!.user.userMetadata!['is_admin'] == true
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
-                  child: ListTile(
-                    onTap: () => {
-                      Navigator.of(context, rootNavigator: true).push(
-                        MaterialPageRoute(
-                            builder: (context) => const AdminScreen()),
-                      )
-                    },
-                    title: Text(
+        child: showSettings == true
+            ? ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                    child: Text(
                         LocalizationService.of(context)
-                                ?.translate('admin_drawer_link_label') ??
+                                ?.translate('settings_header_label') ??
                             '',
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    trailing: const ChevronRightIcon(),
-                  ))
-              : Container(),
-          const SizedBox(height: 5.0),
-          Padding(
-              padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
-              child: ListTile(
-                onTap: () => {
-                  Navigator.of(context, rootNavigator: true).push(
-                    MaterialPageRoute(
-                        builder: (context) => AgentScreen(agent: widget.agent)),
-                  )
-                },
-                title: Text(
-                    LocalizationService.of(context)
-                            ?.translate('profile_link_label') ??
-                        '',
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                trailing: const ChevronRightIcon(),
-              )),
-          const SizedBox(height: 5.0),
-          Consumer<InternationalizationService>(
-            builder: (context, internationalization, child) => Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 20, 0),
-                child: ListTile(
-                    title: Text(
-                        LocalizationService.of(context)!
-                            .translate('language_dropdown_label')!,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    trailing: DropdownButton<String>(
-                      underline: Container(
-                          color: Theme.of(context).colorScheme.background),
-                      value: internationalization.selectedItem,
-                      onChanged: (String? newValue) {
-                        internationalization.changeLanguage(Locale(newValue!));
-                      },
-                      items: internationalization.languages
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ))),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0),
-            child: Consumer<ThemeService>(
-              builder: (context, theme, child) => SwitchListTile(
-                activeColor: Theme.of(context).colorScheme.primary,
-                title: Text(
-                  LocalizationService.of(context)
-                          ?.translate('dark_mode_switcher_label') ??
-                      '',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                onChanged: (value) {
-                  theme.toggleTheme();
-                },
-                value: theme.darkTheme,
-              ),
-            ),
-          ),
-          defaultTargetPlatform == TargetPlatform.iOS ||
-                  defaultTargetPlatform == TargetPlatform.android
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0),
-                  child: Consumer<BiometricService>(
-                    builder: (context, localAuthentication, child) =>
-                        SwitchListTile(
-                      activeColor: Theme.of(context).colorScheme.primary,
-                      title: Text(
-                        LocalizationService.of(context)
-                                ?.translate('biometrics_switcher_label') ??
-                            '',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 25.0, fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(height: 20.0),
+                  supabase.auth.currentSession!.user
+                              .userMetadata!['is_admin'] ==
+                          true
+                      ? Padding(
+                          padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+                          child: ListTile(
+                            onTap: () => {
+                              Navigator.of(context, rootNavigator: true).push(
+                                MaterialPageRoute(
+                                    builder: (context) => const AdminScreen()),
+                              )
+                            },
+                            title: Text(
+                                LocalizationService.of(context)?.translate(
+                                        'admin_drawer_link_label') ??
+                                    '',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                            trailing: const ChevronRightIcon(),
+                          ))
+                      : Container(),
+                  const SizedBox(height: 5.0),
+                  Padding(
+                      padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+                      child: ListTile(
+                        onTap: () => {
+                          Navigator.of(context, rootNavigator: true).push(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AgentScreen(agent: widget.agent)),
+                          )
+                        },
+                        title: Text(
+                            LocalizationService.of(context)
+                                    ?.translate('profile_link_label') ??
+                                '',
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                        trailing: const ChevronRightIcon(),
+                      )),
+                  const SizedBox(height: 5.0),
+                  Consumer<InternationalizationService>(
+                    builder: (context, internationalization, child) => Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 20, 0),
+                        child: ListTile(
+                            title: Text(
+                                LocalizationService.of(context)!
+                                    .translate('language_dropdown_label')!,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                            trailing: DropdownButton<String>(
+                              underline: Container(
+                                  color:
+                                      Theme.of(context).colorScheme.background),
+                              value: internationalization.selectedItem,
+                              onChanged: (String? newValue) {
+                                internationalization
+                                    .changeLanguage(Locale(newValue!));
+                              },
+                              items: internationalization.languages
+                                  .map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ))),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0),
+                    child: Consumer<ThemeService>(
+                      builder: (context, theme, child) => SwitchListTile(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        title: Text(
+                          LocalizationService.of(context)
+                                  ?.translate('dark_mode_switcher_label') ??
+                              '',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        onChanged: (value) {
+                          theme.toggleTheme();
+                        },
+                        value: theme.darkTheme,
                       ),
-                      onChanged: (value) {
-                        localAuthentication.toggleBiometrics();
-                      },
-                      value: localAuthentication.biometrics,
                     ),
                   ),
-                )
-              : Container(),
-          const SizedBox(height: 50),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
-            child: ListTile(
-              onTap: () async => {
-                // SnackBarService()
-                //     .successSnackBar('sign_out_snackbar_label', context),
-                await AgentService().signOut()
-              },
-              title: Text(
-                  LocalizationService.of(context)
-                          ?.translate('sign_out_button_label') ??
-                      '',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onBackground)),
-              trailing: const ChevronRightIcon(),
-            ),
-          )
-        ],
-      ),
-    );
+                  defaultTargetPlatform == TargetPlatform.iOS ||
+                          defaultTargetPlatform == TargetPlatform.android
+                      ? Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0),
+                          child: Consumer<BiometricService>(
+                            builder: (context, localAuthentication, child) =>
+                                SwitchListTile(
+                              activeColor:
+                                  Theme.of(context).colorScheme.primary,
+                              title: Text(
+                                LocalizationService.of(context)?.translate(
+                                        'biometrics_switcher_label') ??
+                                    '',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              onChanged: (value) {
+                                localAuthentication.toggleBiometrics();
+                              },
+                              value: localAuthentication.biometrics,
+                            ),
+                          ),
+                        )
+                      : Container(),
+                  const SizedBox(height: 50),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+                    child: ListTile(
+                      onTap: () async => {
+                        // SnackBarService()
+                        //     .successSnackBar('sign_out_snackbar_label', context),
+                        await AgentService().signOut()
+                      },
+                      title: Text(
+                          LocalizationService.of(context)
+                                  ?.translate('sign_out_button_label') ??
+                              '',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Theme.of(context).colorScheme.onBackground)),
+                      trailing: const ChevronRightIcon(),
+                    ),
+                  )
+                ],
+              )
+            : ListView(padding: EdgeInsets.zero, children: [
+                DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                  ),
+                  child: Text(
+                      LocalizationService.of(context)
+                              ?.translate('alerts_header_label') ??
+                          '',
+                      style: const TextStyle(
+                          fontSize: 25.0, fontWeight: FontWeight.bold)),
+                ),
+                const SizedBox(height: 20.0),
+                Consumer<ErrorService>(
+                    builder: (context, mbErrors, child) => ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: mbErrors.mailbox_errors.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            height: 50,
+                            child: Center(child: Text('Error')),
+                          );
+                        }))
+              ]));
   }
 
   @override
   Widget build(BuildContext context) {
     List<dynamic> messages =
         pv.Provider.of<MessageService>(context, listen: true).messages;
+    // List<dynamic> mailbox_errors =
+    //     pv.Provider.of<ErrorService>(context, listen: true).mailbox_errors;
 
     return Scaffold(
       appBar: AppBar(
@@ -224,7 +271,42 @@ class _InboxScreenState extends State<InboxScreen> {
         titleSpacing: 0,
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.background,
-        actions: const [PrivateEndDrawer()],
+        actions: [
+          Builder(builder: (context) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+              child: IconButton(
+                icon: Icon(
+                    (defaultTargetPlatform == TargetPlatform.iOS ||
+                            defaultTargetPlatform == TargetPlatform.macOS)
+                        ? CupertinoIcons.bell
+                        : FontAwesomeIcons.bell,
+                    color: Theme.of(context).colorScheme.onBackground),
+                onPressed: () {
+                  toggleShowSettings(false);
+                  Scaffold.of(context).openEndDrawer();
+                },
+              ),
+            );
+          }),
+          Builder(builder: (context) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
+              child: IconButton(
+                icon: Icon(
+                    (defaultTargetPlatform == TargetPlatform.iOS ||
+                            defaultTargetPlatform == TargetPlatform.macOS)
+                        ? CupertinoIcons.bars
+                        : FontAwesomeIcons.bars,
+                    color: Theme.of(context).colorScheme.onBackground),
+                onPressed: () {
+                  toggleShowSettings(true);
+                  Scaffold.of(context).openEndDrawer();
+                },
+              ),
+            );
+          })
+        ],
       ),
       body: ResponsiveRowColumn(
         layout: ResponsiveWrapper.of(context).isSmallerThan(TABLET)
@@ -649,7 +731,7 @@ class _InboxScreenState extends State<InboxScreen> {
                                         )
                                       : Container()
                                 ],
-                              );
+                              ); //getMessages();
                             }),
                       ),
                     ))

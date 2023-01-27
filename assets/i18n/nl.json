@@ -4,6 +4,7 @@
   "auth_link_label": "Inloggen",
   "admin_drawer_link_label": "Admin",
   "admin_header_label": "Admin",
+  "alerts_header_label": "Meldingen",
   "authentication_error_snackbar_label": "Ongeldig email of wachtwoord",
   "biometrics_switcher_label": "Biometrische ontgrendeling",
   "change_avatar_button_label": "Verander avatar",

@@ -27,9 +27,9 @@ dependencies:
   circle_flags: ^1.0.3
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  test: ^1.22.2
   flutter_lints: ^2.0.1
+  path_provider: ^2.0.12
 
 # The following section is specific to Flutter packages.
 flutter:

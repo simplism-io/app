@@ -32,9 +32,18 @@ class MessageService extends ChangeNotifier {
     if (kDebugMode) {
       print('Trying to load messages');
     }
-    messages = await supabase.from('messages').select('''
-    id, subject, body, incoming, created, channel_id, channels:channel_id (channel)
-  ''').eq('organisation_id', organisationId);
+    //   messages = await supabase.from('messages').select('''
+    //   id, subject, body, incoming, created, channel_id, channels:channel_id (channel)
+    // ''').eq('organisation_id', organisationId);
+
+    messages = await supabase
+        .from('messages')
+        .select(
+            'id, subject, body, incoming, created, channel_id, channels(channel),emails(*), errors(*)')
+        .eq('organisation_id', organisationId);
+
+    //print(messages);
+
     notifyListeners();
   }
 

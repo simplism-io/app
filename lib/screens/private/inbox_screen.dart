@@ -11,11 +11,9 @@ import '../../constants/icons/chevron_right_icon.dart';
 import '../../constants/icons/email_icon.dart';
 import '../../services/agent_service.dart';
 import '../../services/biometric_service.dart';
-import '../../services/error_service.dart';
 import '../../services/internationalization_service.dart';
 import '../../services/localization_service.dart';
 import '../../services/message_service.dart';
-import '../../constants/icons/private_drawer_icon.dart';
 import '../../constants/links/logo_header_link.dart';
 import '../../services/theme_service.dart';
 import 'admin_screen.dart';
@@ -37,6 +35,7 @@ class _InboxScreenState extends State<InboxScreen> {
   final formKey = GlobalKey<FormState>();
   String? body;
   bool loader = false;
+  Uint8List? avatarBytes;
 
   @override
   initState() {
@@ -46,7 +45,7 @@ class _InboxScreenState extends State<InboxScreen> {
 
   @override
   Future<void> dispose() async {
-    //await supabase.removeAllChannels();
+    await supabase.removeAllChannels();
     super.dispose();
   }
 
@@ -63,222 +62,173 @@ class _InboxScreenState extends State<InboxScreen> {
     return showBody[index];
   }
 
-  toggleShowSettings(value) {
-    setState(() {
-      showSettings = value;
-    });
-  }
-
-  Uint8List? avatarBytes;
-
   drawer() {
     return const Drawer(child: Text('Text'));
   }
 
   endDrawer() {
-    return SizedBox(
-      width: showSettings == true
-          ? MediaQuery.of(context).size.width * 0.3
-          : MediaQuery.of(context).size.width *
-              0.50, // 75% of screen will be occupied
-      child: Drawer(
-          child: showSettings == true
-              ? ListView(
-                  padding: EdgeInsets.zero,
-                  children: [
-                    DrawerHeader(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                      ),
-                      child: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('settings_header_label') ??
-                              '',
-                          style: const TextStyle(
-                              fontSize: 25.0, fontWeight: FontWeight.bold)),
-                    ),
-                    const SizedBox(height: 20.0),
-                    supabase.auth.currentSession!.user
-                                .userMetadata!['is_admin'] ==
-                            true
-                        ? Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
-                            child: ListTile(
-                              onTap: () => {
-                                Navigator.of(context, rootNavigator: true).push(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const AdminScreen()),
-                                )
-                              },
-                              title: Text(
-                                  LocalizationService.of(context)?.translate(
-                                          'admin_drawer_link_label') ??
-                                      '',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              trailing: const ChevronRightIcon(),
-                            ))
-                        : Container(),
-                    const SizedBox(height: 5.0),
-                    Padding(
-                        padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
-                        child: ListTile(
-                          onTap: () => {
-                            Navigator.of(context, rootNavigator: true).push(
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      AgentScreen(agent: widget.agent)),
-                            )
-                          },
-                          title: Text(
-                              LocalizationService.of(context)
-                                      ?.translate('profile_link_label') ??
-                                  '',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          trailing: const ChevronRightIcon(),
-                        )),
-                    const SizedBox(height: 5.0),
-                    Consumer<InternationalizationService>(
-                      builder: (context, internationalization, child) =>
-                          Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 0, 20, 0),
-                              child: ListTile(
-                                  title: Text(
-                                      LocalizationService.of(context)!
-                                          .translate(
-                                              'language_dropdown_label')!,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                  trailing: DropdownButton<String>(
-                                    underline: Container(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .background),
-                                    value: internationalization.selectedItem,
-                                    onChanged: (String? newValue) {
-                                      internationalization
-                                          .changeLanguage(Locale(newValue!));
-                                    },
-                                    items: internationalization.languages
-                                        .map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
-                                      );
-                                    }).toList(),
-                                  ))),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0),
-                      child: Consumer<ThemeService>(
-                        builder: (context, theme, child) => SwitchListTile(
-                          activeColor: Theme.of(context).colorScheme.primary,
-                          title: Text(
-                            LocalizationService.of(context)
-                                    ?.translate('dark_mode_switcher_label') ??
-                                '',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          onChanged: (value) {
-                            theme.toggleTheme();
-                          },
-                          value: theme.darkTheme,
-                        ),
-                      ),
-                    ),
-                    defaultTargetPlatform == TargetPlatform.iOS ||
-                            defaultTargetPlatform == TargetPlatform.android
-                        ? Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0),
-                            child: Consumer<BiometricService>(
-                              builder: (context, localAuthentication, child) =>
-                                  SwitchListTile(
-                                activeColor:
-                                    Theme.of(context).colorScheme.primary,
-                                title: Text(
-                                  LocalizationService.of(context)?.translate(
-                                          'biometrics_switcher_label') ??
-                                      '',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onChanged: (value) {
-                                  localAuthentication.toggleBiometrics();
-                                },
-                                value: localAuthentication.biometrics,
-                              ),
-                            ),
-                          )
-                        : Container(),
-                    const SizedBox(height: 50),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
-                      child: ListTile(
-                        onTap: () async => {
-                          // SnackBarService()
-                          //     .successSnackBar('sign_out_snackbar_label', context),
-                          await AgentService().signOut()
-                        },
-                        title: Text(
-                            LocalizationService.of(context)
-                                    ?.translate('sign_out_button_label') ??
-                                '',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onBackground)),
-                        trailing: const ChevronRightIcon(),
-                      ),
+    return Drawer(
+        child: ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        DrawerHeader(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+          ),
+          child: Text(
+              LocalizationService.of(context)
+                      ?.translate('settings_header_label') ??
+                  '',
+              style:
+                  const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)),
+        ),
+        const SizedBox(height: 20.0),
+        supabase.auth.currentSession!.user.userMetadata!['is_admin'] == true
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+                child: ListTile(
+                  onTap: () => {
+                    Navigator.of(context, rootNavigator: true).push(
+                      MaterialPageRoute(
+                          builder: (context) => const AdminScreen()),
                     )
-                  ],
+                  },
+                  title: Text(
+                      LocalizationService.of(context)
+                              ?.translate('admin_drawer_link_label') ??
+                          '',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  trailing: const ChevronRightIcon(),
+                ))
+            : Container(),
+        const SizedBox(height: 5.0),
+        Padding(
+            padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+            child: ListTile(
+              onTap: () => {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                      builder: (context) => AgentScreen(agent: widget.agent)),
                 )
-              : ListView(padding: EdgeInsets.zero, children: [
-                  DrawerHeader(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
+              },
+              title: Text(
+                  LocalizationService.of(context)
+                          ?.translate('profile_link_label') ??
+                      '',
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              trailing: const ChevronRightIcon(),
+            )),
+        const SizedBox(height: 5.0),
+        Consumer<InternationalizationService>(
+          builder: (context, internationalization, child) => Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 20, 0),
+              child: ListTile(
+                  title: Text(
+                      LocalizationService.of(context)!
+                          .translate('language_dropdown_label')!,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  trailing: DropdownButton<String>(
+                    underline: Container(
+                        color: Theme.of(context).colorScheme.background),
+                    value: internationalization.selectedItem,
+                    onChanged: (String? newValue) {
+                      internationalization.changeLanguage(Locale(newValue!));
+                    },
+                    items: internationalization.languages
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ))),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0),
+          child: Consumer<ThemeService>(
+            builder: (context, theme, child) => SwitchListTile(
+              activeColor: Theme.of(context).colorScheme.primary,
+              title: Text(
+                LocalizationService.of(context)
+                        ?.translate('dark_mode_switcher_label') ??
+                    '',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onChanged: (value) {
+                theme.toggleTheme();
+              },
+              value: theme.darkTheme,
+            ),
+          ),
+        ),
+        defaultTargetPlatform == TargetPlatform.iOS ||
+                defaultTargetPlatform == TargetPlatform.android
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0),
+                child: Consumer<BiometricService>(
+                  builder: (context, localAuthentication, child) =>
+                      SwitchListTile(
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    title: Text(
+                      LocalizationService.of(context)
+                              ?.translate('biometrics_switcher_label') ??
+                          '',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    child: Text(
-                        LocalizationService.of(context)
-                                ?.translate('alerts_header_label') ??
-                            '',
-                        style: const TextStyle(
-                            fontSize: 25.0, fontWeight: FontWeight.bold)),
+                    onChanged: (value) {
+                      localAuthentication.toggleBiometrics();
+                    },
+                    value: localAuthentication.biometrics,
                   ),
-                  const SizedBox(height: 20.0),
-                  SizedBox(
-                    child: Consumer<ErrorService>(
-                        builder: (context, mailboxErrors, child) =>
-                            ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                padding: const EdgeInsets.all(8),
-                                itemCount: mailboxErrors.mailboxErrors.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return ListTile(
-                                      title: Text(
-                                          LocalizationService.of(context)
-                                                  ?.translate(mailboxErrors
-                                                          .mailboxErrors[index]
-                                                      ['error_localization']) ??
-                                              ''));
-                                })),
-                  )
-                ])),
-    );
+                ),
+              )
+            : Container(),
+        const SizedBox(height: 50),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+          child: ListTile(
+            onTap: () async => {await AgentService().signOut()},
+            title: Text(
+                LocalizationService.of(context)
+                        ?.translate('sign_out_button_label') ??
+                    '',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onBackground)),
+            trailing: const ChevronRightIcon(),
+          ),
+        )
+      ],
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    List<dynamic> messages =
-        pv.Provider.of<MessageService>(context, listen: true).messages;
-    // List<dynamic> mailboxErrors =
-    //     pv.Provider.of<ErrorService>(context, listen: true).mailboxErrors;
+    reply(message, index) async {
+      final result = await MessageService().sendMessageProcedure(
+          message['id'], message['channel_id'], message['subject'], body);
+      if (result == true) {
+        if (!mounted) {
+          return;
+        }
+        final successSnackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('reply_message_snackbar_label') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+        setState(() {
+          loader = false;
+          toggleBody(index);
+        });
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -286,29 +236,34 @@ class _InboxScreenState extends State<InboxScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const <Widget>[PrivateDrawerIcon(), LogoHeaderLink()],
+          children: <Widget>[
+            ResponsiveVisibility(
+                visible: false,
+                visibleWhen: const [Condition.smallerThan(name: TABLET)],
+                child: Builder(builder: (context) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
+                    child: IconButton(
+                      icon: Icon(
+                        (defaultTargetPlatform == TargetPlatform.iOS ||
+                                defaultTargetPlatform == TargetPlatform.macOS)
+                            ? CupertinoIcons.collections
+                            : FontAwesomeIcons.folderTree,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
+                  );
+                })),
+            const LogoHeaderLink()
+          ],
         ),
         titleSpacing: 0,
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.background,
         actions: [
-          Builder(builder: (context) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-              child: IconButton(
-                icon: Icon(
-                    (defaultTargetPlatform == TargetPlatform.iOS ||
-                            defaultTargetPlatform == TargetPlatform.macOS)
-                        ? CupertinoIcons.bell
-                        : FontAwesomeIcons.bell,
-                    color: Theme.of(context).colorScheme.onBackground),
-                onPressed: () {
-                  toggleShowSettings(false);
-                  Scaffold.of(context).openEndDrawer();
-                },
-              ),
-            );
-          }),
           Builder(builder: (context) {
             return Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
@@ -320,7 +275,6 @@ class _InboxScreenState extends State<InboxScreen> {
                         : FontAwesomeIcons.bars,
                     color: Theme.of(context).colorScheme.onBackground),
                 onPressed: () {
-                  toggleShowSettings(true);
                   Scaffold.of(context).openEndDrawer();
                 },
               ),
@@ -377,47 +331,57 @@ class _InboxScreenState extends State<InboxScreen> {
           )),
           ResponsiveRowColumnItem(
               rowFlex: 2,
-              child: messages.isEmpty
-                  ? Padding(
-                      padding: EdgeInsets.fromLTRB(
-                          0.0,
-                          0.0,
-                          ResponsiveValue(context,
-                              defaultValue: 0.0,
-                              valueWhen: [
-                                const Condition.largerThan(
-                                    name: MOBILE, value: 10.0)
-                              ]).value!,
-                          0.0),
-                      child: Card(
-                        color: Theme.of(context).colorScheme.surface,
-                        elevation: 0,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-                          child: Row(
-                            children: [
-                              Text(LocalizationService.of(context)
-                                      ?.translate('no_data_message_messages') ??
-                                  ''),
-                            ],
+              child: Consumer<MessageService>(
+                builder: (context, ms, child) => ms.messages.isEmpty
+                    ? Padding(
+                        padding: EdgeInsets.fromLTRB(
+                            0.0,
+                            0.0,
+                            ResponsiveValue(context,
+                                defaultValue: 0.0,
+                                valueWhen: [
+                                  const Condition.largerThan(
+                                      name: MOBILE, value: 10.0)
+                                ]).value!,
+                            0.0),
+                        child: Card(
+                          color: Theme.of(context).colorScheme.surface,
+                          elevation: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                                15.0, 10.0, 15.0, 10.0),
+                            child: Row(
+                              children: [
+                                Text(LocalizationService.of(context)?.translate(
+                                        'no_data_message_messages') ??
+                                    ''),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    )
-                  : SingleChildScrollView(
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            itemCount: messages.length,
-                            itemBuilder: (context, index) {
-                              return Column(
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount: ms.messages.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                  0.0,
+                                  0.0,
+                                  ResponsiveValue(context,
+                                      defaultValue: 0.0,
+                                      valueWhen: [
+                                        const Condition.largerThan(
+                                            name: MOBILE, value: 10.0)
+                                      ]).value!,
+                                  0.0),
+                              child: Column(
                                 children: [
                                   GestureDetector(
                                     onTap: () => toggleBody(index),
-                                    child: messages[index]['incoming'] == true
+                                    child: ms.messages[index]['incoming'] ==
+                                            true
                                         ? Card(
                                             color: Theme.of(context)
                                                 .colorScheme
@@ -429,15 +393,26 @@ class _InboxScreenState extends State<InboxScreen> {
                                                       15, 10, 10, 10),
                                               child: Row(
                                                 children: [
-                                                  messages[index]['channels']
+                                                  ms.messages[index]['channels']
                                                               ['channel'] ==
-                                                          'Email'
+                                                          'email'
                                                       ? const EmailIcon()
                                                       : Container(),
                                                   Text(
-                                                    messages[index]
-                                                            ["subject"] ??
-                                                        '',
+                                                    ms.messages[index]
+                                                                    ['channels']
+                                                                ['channel'] ==
+                                                            'alert'
+                                                        ? LocalizationService
+                                                                    .of(context)
+                                                                ?.translate(ms
+                                                                            .messages[
+                                                                        index][
+                                                                    "subject"]) ??
+                                                            ''
+                                                        : ms.messages[index]
+                                                                ["subject"] ??
+                                                            '',
                                                     style: const TextStyle(
                                                         fontSize: 15,
                                                         fontWeight:
@@ -462,8 +437,21 @@ class _InboxScreenState extends State<InboxScreen> {
                                                 Row(
                                                   children: [
                                                     Text(
-                                                      messages[index]["body"] ??
-                                                          '',
+                                                      ms.messages[index][
+                                                                      'channels']
+                                                                  ['channel'] ==
+                                                              'alert'
+                                                          ? LocalizationService.of(
+                                                                      context)
+                                                                  ?.translate(ms
+                                                                              .messages[
+                                                                          index]
+                                                                      [
+                                                                      "body"]) ??
+                                                              ''
+                                                          : ms.messages[index]
+                                                                  ["body"] ??
+                                                              '',
                                                       style: const TextStyle(
                                                           fontSize: 15),
                                                     ),
@@ -573,59 +561,10 @@ class _InboxScreenState extends State<InboxScreen> {
                                                                 setState(() =>
                                                                     loader =
                                                                         true);
-                                                                final result = await MessageService().sendMessageProcedure(
-                                                                    messages[
-                                                                            index]
-                                                                        ['id'],
-                                                                    messages[
-                                                                            index]
-                                                                        [
-                                                                        'channel_id'],
-                                                                    messages[
-                                                                            index]
-                                                                        [
-                                                                        'subject'],
-                                                                    body);
-                                                                if (result ==
-                                                                    true) {
-                                                                  if (!mounted) {
-                                                                    return;
-                                                                  }
-                                                                  final successSnackBar =
-                                                                      SnackBar(
-                                                                    backgroundColor: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .primary,
-                                                                    content: Text(
-                                                                        LocalizationService.of(context)?.translate('reply_message_snackbar_label') ??
-                                                                            '',
-                                                                        textAlign:
-                                                                            TextAlign
-                                                                                .center,
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color: Theme.of(context)
-                                                                              .colorScheme
-                                                                              .onPrimary,
-                                                                        )),
-                                                                  );
-                                                                  ScaffoldMessenger.of(
-                                                                          context)
-                                                                      .showSnackBar(
-                                                                          successSnackBar);
-                                                                  setState(() {
-                                                                    loader =
-                                                                        false;
-                                                                    toggleBody(
-                                                                        index);
-                                                                  });
-                                                                }
-                                                              } else {
-                                                                setState(() {
-                                                                  loader =
-                                                                      false;
-                                                                });
+                                                                reply(
+                                                                    ms.messages[
+                                                                        index],
+                                                                    index);
                                                               }
                                                             },
                                                             color: Theme.of(
@@ -664,54 +603,10 @@ class _InboxScreenState extends State<InboxScreen> {
                                                                 setState(() =>
                                                                     loader =
                                                                         true);
-                                                                final result = await MessageService().sendMessageProcedure(
-                                                                    messages[
-                                                                            index]
-                                                                        ['id'],
-                                                                    messages[
-                                                                            index]
-                                                                        [
-                                                                        'channel_id'],
-                                                                    messages[
-                                                                            index]
-                                                                        [
-                                                                        'subject'],
-                                                                    body);
-                                                                if (result ==
-                                                                    true) {
-                                                                  if (!mounted) {
-                                                                    return;
-                                                                  }
-                                                                  final successSnackBar =
-                                                                      SnackBar(
-                                                                    backgroundColor: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .primary,
-                                                                    content: Text(
-                                                                        LocalizationService.of(context)?.translate('reply_message_snackbar_label') ??
-                                                                            '',
-                                                                        textAlign:
-                                                                            TextAlign
-                                                                                .center,
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color: Theme.of(context)
-                                                                              .colorScheme
-                                                                              .onPrimary,
-                                                                        )),
-                                                                  );
-                                                                  ScaffoldMessenger.of(
-                                                                          context)
-                                                                      .showSnackBar(
-                                                                          successSnackBar);
-                                                                  setState(() {
-                                                                    loader =
-                                                                        false;
-                                                                    toggleBody(
-                                                                        index);
-                                                                  });
-                                                                }
+                                                                reply(
+                                                                    ms.messages[
+                                                                        index],
+                                                                    index);
                                                               } else {
                                                                 setState(() {
                                                                   loader =
@@ -751,10 +646,9 @@ class _InboxScreenState extends State<InboxScreen> {
                                         )
                                       : Container()
                                 ],
-                              ); //getMessages();
-                            }),
-                      ),
-                    ))
+                              )); //getMessages();
+                        }),
+              ))
         ],
       ),
       drawer: drawer(),

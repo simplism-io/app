@@ -5,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:provider/provider.dart' as pv;
 
+import '../../constants/icons/alert_icon.dart';
 import '../../constants/icons/chevron_right_icon.dart';
 import '../../constants/icons/email_icon.dart';
 import '../../services/agent_service.dart';
@@ -30,16 +30,15 @@ class InboxScreen extends StatefulWidget {
 }
 
 class _InboxScreenState extends State<InboxScreen> {
-  Map<int, dynamic> showBody = {};
+  Map<String, dynamic> showBody = {};
+  Map<String, dynamic> formKey = {};
   bool showSettings = true;
-  final formKey = GlobalKey<FormState>();
   String? body;
   bool loader = false;
   Uint8List? avatarBytes;
 
   @override
   initState() {
-    presetBodyToggles();
     super.initState();
   }
 
@@ -49,17 +48,38 @@ class _InboxScreenState extends State<InboxScreen> {
     super.dispose();
   }
 
-  presetBodyToggles() {
-    for (int index = 0; index <= 250; index++) {
-      showBody[index] = false;
+  toggleBody(id, value) {
+    print(showBody[id]);
+    setState(() {
+      if (showBody[id] == null) {
+        showBody[id] = value;
+      } else {
+        if (showBody[id] != value) {
+          showBody[id] = value;
+        } else {
+          showBody[id] = !value;
+        }
+      }
+    });
+    return showBody[id];
+  }
+
+  getIcon(channel) {
+    switch (channel) {
+      case 'email':
+        return const EmailIcon();
+      case 'alert':
+        return const AlertIcon();
     }
   }
 
-  toggleBody(index) {
-    setState(() {
-      showBody[index] = !showBody[index];
-    });
-    return showBody[index];
+  getFormKey(id) {
+    formKey[id] = GlobalKey<FormState>();
+    return formKey[id];
+  }
+
+  String truncateString(String data, int length) {
+    return (data.length >= length) ? '${data.substring(0, length)}...' : data;
   }
 
   drawer() {
@@ -225,7 +245,7 @@ class _InboxScreenState extends State<InboxScreen> {
         ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
         setState(() {
           loader = false;
-          toggleBody(index);
+          toggleBody(message['id'], false);
         });
       }
     }
@@ -294,16 +314,22 @@ class _InboxScreenState extends State<InboxScreen> {
           ResponsiveRowColumnItem(
               child: ResponsiveVisibility(
             hiddenWhen: const [Condition.smallerThan(name: TABLET)],
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10.0, 0, 0, 0),
-                  child: Row(
+            child: SizedBox(
+              width: 175,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
                       const SizedBox(height: 5),
-                      const Text('All Messages'),
+                      Card(
+                          color: Theme.of(context).colorScheme.surface,
+                          elevation: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: const Text('All Messages'),
+                          )),
                       Column(
                         children: [
                           const SizedBox(height: 4),
@@ -312,7 +338,7 @@ class _InboxScreenState extends State<InboxScreen> {
                               builder: (context) {
                                 return IconButton(
                                   icon: const Icon(
-                                    Icons.chevron_right,
+                                    Icons.chevron_left,
                                   ),
                                   onPressed: () {
                                     Scaffold.of(context).openDrawer();
@@ -325,8 +351,14 @@ class _InboxScreenState extends State<InboxScreen> {
                       ),
                     ],
                   ),
-                )
-              ],
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10.0, 0, 0, 0),
+                    child: SizedBox(
+                      child: Text('Other Mailbox'),
+                    ),
+                  )
+                ],
+              ),
             ),
           )),
           ResponsiveRowColumnItem(
@@ -379,7 +411,8 @@ class _InboxScreenState extends State<InboxScreen> {
                               child: Column(
                                 children: [
                                   GestureDetector(
-                                    onTap: () => toggleBody(index),
+                                    onTap: () => toggleBody(
+                                        ms.messages[index]['id'], true),
                                     child: ms.messages[index]['incoming'] ==
                                             true
                                         ? Card(
@@ -390,40 +423,60 @@ class _InboxScreenState extends State<InboxScreen> {
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
-                                                      15, 10, 10, 10),
+                                                      15, 10, 5, 10),
                                               child: Row(
                                                 children: [
-                                                  ms.messages[index]['channels']
-                                                              ['channel'] ==
-                                                          'email'
-                                                      ? const EmailIcon()
-                                                      : Container(),
+                                                  const SizedBox(
+                                                      width: 40,
+                                                      child: Text('avtr')),
                                                   Text(
                                                     ms.messages[index]
                                                                     ['channels']
                                                                 ['channel'] ==
                                                             'alert'
-                                                        ? LocalizationService
-                                                                    .of(context)
-                                                                ?.translate(ms
-                                                                            .messages[
-                                                                        index][
-                                                                    "subject"]) ??
-                                                            ''
-                                                        : ms.messages[index]
-                                                                ["subject"] ??
-                                                            '',
+                                                        ? truncateString(
+                                                            LocalizationService.of(
+                                                                        context)
+                                                                    ?.translate(
+                                                                        ms.messages[index]
+                                                                            [
+                                                                            "subject"]) ??
+                                                                '',
+                                                            ResponsiveValue(
+                                                                context,
+                                                                defaultValue:
+                                                                    20,
+                                                                valueWhen: [
+                                                                  const Condition
+                                                                          .largerThan(
+                                                                      name:
+                                                                          TABLET,
+                                                                      value:
+                                                                          50),
+                                                                  const Condition
+                                                                          .largerThan(
+                                                                      name:
+                                                                          MOBILE,
+                                                                      value: 30)
+                                                                ]).value!)
+                                                        : truncateString(
+                                                            ms.messages[index]
+                                                                ["subject"],
+                                                            15),
                                                     style: const TextStyle(
                                                         fontSize: 15,
                                                         fontWeight:
                                                             FontWeight.bold),
                                                   ),
+                                                  const Spacer(),
+                                                  getIcon(ms.messages[index]
+                                                      ['channels']['channel']),
                                                 ],
                                               ),
                                             ))
                                         : Container(),
                                   ),
-                                  showBody[index] == true
+                                  showBody[ms.messages[index]['id']] == true
                                       ? Card(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -462,7 +515,7 @@ class _InboxScreenState extends State<InboxScreen> {
                                             ),
                                           ))
                                       : Container(),
-                                  showBody[index] == true
+                                  showBody[ms.messages[index]['id']] == true
                                       ? Column(
                                           children: [
                                             Card(
@@ -481,14 +534,16 @@ class _InboxScreenState extends State<InboxScreen> {
                                                               double.infinity),
                                                       Condition.smallerThan(
                                                           name: TABLET,
-                                                          value: 300.0)
+                                                          value:
+                                                              double.infinity)
                                                     ]).value,
                                                 child: Padding(
                                                   padding:
                                                       const EdgeInsets.fromLTRB(
                                                           15.0, 0.0, 15, 0.0),
                                                   child: Form(
-                                                    key: formKey,
+                                                    key: getFormKey(ms
+                                                        .messages[index]['id']),
                                                     child: TextFormField(
                                                         keyboardType:
                                                             TextInputType
@@ -544,8 +599,11 @@ class _InboxScreenState extends State<InboxScreen> {
                                                   padding:
                                                       const EdgeInsets.fromLTRB(
                                                           5.0, 5.0, 5.0, 5.0),
-                                                  child: SizedBox(
-                                                    width: 150.0,
+                                                  child: ConstrainedBox(
+                                                    constraints:
+                                                        const BoxConstraints
+                                                                .tightFor(
+                                                            height: 50),
                                                     child: (defaultTargetPlatform ==
                                                                 TargetPlatform
                                                                     .iOS ||
@@ -555,7 +613,11 @@ class _InboxScreenState extends State<InboxScreen> {
                                                         ? CupertinoButton(
                                                             onPressed:
                                                                 () async {
-                                                              if (formKey
+                                                              if (getFormKey(
+                                                                      ms.messages[
+                                                                              index]
+                                                                          [
+                                                                          'id'])
                                                                   .currentState!
                                                                   .validate()) {
                                                                 setState(() =>
@@ -597,7 +659,11 @@ class _InboxScreenState extends State<InboxScreen> {
                                                         : ElevatedButton(
                                                             onPressed:
                                                                 () async {
-                                                              if (formKey
+                                                              if (getFormKey(
+                                                                      ms.messages[
+                                                                              index]
+                                                                          [
+                                                                          'id'])
                                                                   .currentState!
                                                                   .validate()) {
                                                                 setState(() =>
@@ -643,6 +709,13 @@ class _InboxScreenState extends State<InboxScreen> {
                                               ],
                                             ),
                                           ],
+                                        )
+                                      : Container(),
+                                  showBody[ms.messages[index]['id']] == true
+                                      ? const Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(5, 10, 5, 10),
+                                          child: Divider(),
                                         )
                                       : Container()
                                 ],

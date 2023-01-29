@@ -147,6 +147,26 @@ class MailboxOverviewScreen extends StatelessWidget {
                                                       20, 10, 10, 10),
                                               child: Row(
                                                 children: [
+                                                  SizedBox(
+                                                    width: 30,
+                                                    child: Icon(
+                                                        (defaultTargetPlatform ==
+                                                                    TargetPlatform
+                                                                        .iOS ||
+                                                                defaultTargetPlatform ==
+                                                                    TargetPlatform
+                                                                        .macOS)
+                                                            ? CupertinoIcons
+                                                                .circle_fill
+                                                            : FontAwesomeIcons
+                                                                .circle,
+                                                        size: 10,
+                                                        color: mailboxes[index][
+                                                                    'active'] ==
+                                                                true
+                                                            ? Colors.green
+                                                            : Colors.red),
+                                                  ),
                                                   Text(mailboxes[index]
                                                       ['email']),
                                                   const Spacer(),

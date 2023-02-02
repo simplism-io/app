@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import '../../constants/icons/alert_icon.dart';
 import '../../constants/icons/chevron_right_icon.dart';
@@ -33,9 +38,11 @@ class _InboxScreenState extends State<InboxScreen> {
   Map<String, dynamic> showBody = {};
   Map<String, dynamic> formKey = {};
   bool showSettings = true;
-  String? body;
+  String? body_html;
+  String? body_text;
   bool loader = false;
-  Uint8List? avatarBytes;
+  Uint8List? attachmentBytes;
+  final HtmlEditorController controller = HtmlEditorController();
 
   @override
   initState() {
@@ -49,7 +56,6 @@ class _InboxScreenState extends State<InboxScreen> {
   }
 
   toggleBody(id, value) {
-    print(showBody[id]);
     setState(() {
       if (showBody[id] == null) {
         showBody[id] = value;
@@ -80,6 +86,17 @@ class _InboxScreenState extends State<InboxScreen> {
 
   String truncateString(String data, int length) {
     return (data.length >= length) ? '${data.substring(0, length)}...' : data;
+  }
+
+  String formatHtmlString(String string) {
+    return string
+        .replaceAll("\n\n", "<p>") // Paragraphs
+        .replaceAll("\n", "<br>") // Line Breaks
+        .replaceAll("\"", "&quot;") // Quote Marks
+        .replaceAll("'", "&apos;") // Apostrophe
+        .replaceAll(">", "&lt;") // Less-than Comparator (Strip Tags)
+        .replaceAll("<", "&gt;") // Greater-than Comparator (Strip Tags)
+        .trim(); // Whitespace
   }
 
   drawer() {
@@ -222,11 +239,144 @@ class _InboxScreenState extends State<InboxScreen> {
     ));
   }
 
+  replyFormField() {
+    return HtmlEditor(
+      controller: controller,
+      htmlEditorOptions: HtmlEditorOptions(
+        adjustHeightForKeyboard: true,
+        shouldEnsureVisible: true,
+        hint: LocalizationService.of(context)
+                ?.translate('reply_message_hinttext') ??
+            '',
+      ),
+      htmlToolbarOptions: HtmlToolbarOptions(
+        defaultToolbarButtons: [
+          StyleButtons(),
+          FontButtons(),
+          InsertButtons(otherFile: true),
+        ],
+        toolbarPosition: ToolbarPosition.belowEditor,
+        toolbarType: ToolbarType.nativeGrid,
+        onOtherFileLinkInsert: (String url) {
+          print(url);
+          //return true;
+        },
+        onOtherFileUpload: (PlatformFile file) async {
+          dynamic avatarAsBytes = await file.bytes;
+          String? base64Avatar = base64Encode(avatarAsBytes);
+
+          print(base64Avatar);
+        },
+        mediaLinkInsertInterceptor: (String url, InsertFileType type) {
+          print(url);
+          return true;
+        },
+        mediaUploadInterceptor: (PlatformFile file, InsertFileType type) async {
+          print(file.name); //filename
+          print(file.size); //size in bytes
+          print(file.extension); //file extension (eg jpeg or mp4)
+          return true;
+        },
+      ),
+      otherOptions: OtherOptions(height: 200),
+      callbacks: Callbacks(
+        onBeforeCommand: (String? currentHtml) {
+          print('html before change is $currentHtml');
+        },
+        onChangeContent: (String? changed) {
+          print('content changed to $changed');
+        },
+        onChangeCodeview: (String? changed) {
+          print('code changed to $changed');
+        },
+        onChangeSelection: (EditorSettings settings) {
+          print('parent element is ${settings.parentElement}');
+          print('font name is ${settings.fontName}');
+        },
+        onImageLinkInsert: (String? url) {
+          print(url ?? "unknown url");
+        },
+        onImageUpload: (FileUpload file) async {
+          print(file.name);
+          // print(file.size);
+          // print(file.type);
+          print(file.base64);
+
+          setState(() {
+            //List attachment
+          });
+        },
+        onImageUploadError:
+            (FileUpload? file, String? base64Str, UploadError error) {
+          print(describeEnum(error));
+          print(base64Str ?? '');
+          if (file != null) {
+            print(file.name);
+            print(file.size);
+            print(file.type);
+          }
+        },
+      ),
+    );
+    //  TextFormField(
+    //     keyboardType:
+    //         TextInputType
+    //             .multiline,
+    //     maxLines: null,
+    //     minLines: 3,
+    //     decoration:
+    //         InputDecoration(
+    //       focusedBorder:
+    //           InputBorder
+    //               .none,
+    //       border:
+    //           InputBorder
+    //               .none,
+    //       hintText: LocalizationService.of(
+    //                   context)
+    //               ?.translate(
+    //                   'reply_message_hinttext') ??
+    //           '',
+    //     ),
+    //     textCapitalization:
+    //         TextCapitalization
+    //             .words,
+    //     textAlign:
+    //         TextAlign.left,
+    //     style:
+    //         const TextStyle(
+    //             fontSize:
+    //                 14),
+    //     autofocus: true,
+    //     validator: (String?
+    //         value) {
+    //       return (value !=
+    //                   null &&
+    //               value.length <
+    //                   2)
+    //           ? LocalizationService.of(
+    //                       context)
+    //                   ?.translate(
+    //                       'invalid_reply_message') ??
+    //               ''
+    //           : null;
+    //     },
+    //     onChanged: (val) {
+    //       setState(() =>
+    //           {body = val});
+    //     }),
+  }
+
   @override
   Widget build(BuildContext context) {
     reply(message, index) async {
-      final result = await MessageService().sendMessageProcedure(
-          message['id'], message['channel_id'], message['subject'], body);
+      setState(() async {
+        loader = true;
+        body_html = await controller.getText();
+        body_text = formatHtmlString(body_html!);
+      });
+      final result = await MessageService().sendMessageProcedure(message['id'],
+          message['channel_id'], message['subject'], body_html, body_text);
       if (result == true) {
         if (!mounted) {
           return;
@@ -363,58 +513,129 @@ class _InboxScreenState extends State<InboxScreen> {
           )),
           ResponsiveRowColumnItem(
               rowFlex: 2,
-              child: Consumer<MessageService>(
-                builder: (context, ms, child) => ms.messages.isEmpty
-                    ? Padding(
-                        padding: EdgeInsets.fromLTRB(
-                            0.0,
-                            0.0,
-                            ResponsiveValue(context,
-                                defaultValue: 0.0,
-                                valueWhen: [
-                                  const Condition.largerThan(
-                                      name: MOBILE, value: 10.0)
-                                ]).value!,
-                            0.0),
-                        child: Card(
-                          color: Theme.of(context).colorScheme.surface,
-                          elevation: 0,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                15.0, 10.0, 15.0, 10.0),
-                            child: Row(
-                              children: [
-                                Text(LocalizationService.of(context)?.translate(
-                                        'no_data_message_messages') ??
-                                    ''),
-                              ],
+              child: SingleChildScrollView(
+                child: Consumer<MessageService>(
+                  builder: (context, ms, child) => ms.messages.isEmpty
+                      ? Padding(
+                          padding: EdgeInsets.fromLTRB(
+                              0.0,
+                              0.0,
+                              ResponsiveValue(context,
+                                  defaultValue: 0.0,
+                                  valueWhen: [
+                                    const Condition.largerThan(
+                                        name: MOBILE, value: 10.0)
+                                  ]).value!,
+                              0.0),
+                          child: Card(
+                            color: Theme.of(context).colorScheme.surface,
+                            elevation: 0,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  15.0, 10.0, 15.0, 10.0),
+                              child: Row(
+                                children: [
+                                  Text(LocalizationService.of(context)
+                                          ?.translate(
+                                              'no_data_message_messages') ??
+                                      ''),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        itemCount: ms.messages.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                              padding: EdgeInsets.fromLTRB(
-                                  0.0,
-                                  0.0,
-                                  ResponsiveValue(context,
-                                      defaultValue: 0.0,
-                                      valueWhen: [
-                                        const Condition.largerThan(
-                                            name: MOBILE, value: 10.0)
-                                      ]).value!,
-                                  0.0),
-                              child: Column(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () => toggleBody(
-                                        ms.messages[index]['id'], true),
-                                    child: ms.messages[index]['incoming'] ==
-                                            true
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          itemCount: ms.messages.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                                padding: EdgeInsets.fromLTRB(
+                                    0.0,
+                                    0.0,
+                                    ResponsiveValue(context,
+                                        defaultValue: 0.0,
+                                        valueWhen: [
+                                          const Condition.largerThan(
+                                              name: MOBILE, value: 10.0)
+                                        ]).value!,
+                                    0.0),
+                                child: Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () => toggleBody(
+                                          ms.messages[index]['id'], true),
+                                      child: ms.messages[index]['incoming'] ==
+                                              true
+                                          ? Card(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surface,
+                                              elevation: showBody[
+                                                          ms.messages[index]
+                                                              ['id']] ==
+                                                      true
+                                                  ? 3
+                                                  : 0,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        15, 10, 5, 10),
+                                                child: Row(
+                                                  children: [
+                                                    const SizedBox(
+                                                        width: 40,
+                                                        child: Text('avtr')),
+                                                    Text(
+                                                      ms.messages[index]
+                                                                      ['channels']
+                                                                  ['channel'] ==
+                                                              'alert'
+                                                          ? truncateString(
+                                                              LocalizationService.of(
+                                                                          context)
+                                                                      ?.translate(
+                                                                          ms.messages[index]
+                                                                              [
+                                                                              "subject"]) ??
+                                                                  '',
+                                                              ResponsiveValue(
+                                                                  context,
+                                                                  defaultValue:
+                                                                      20,
+                                                                  valueWhen: [
+                                                                    const Condition
+                                                                            .largerThan(
+                                                                        name:
+                                                                            TABLET,
+                                                                        value:
+                                                                            50),
+                                                                    const Condition
+                                                                            .largerThan(
+                                                                        name:
+                                                                            MOBILE,
+                                                                        value:
+                                                                            30)
+                                                                  ]).value!)
+                                                          : truncateString(
+                                                              ms.messages[index]
+                                                                  ["subject"],
+                                                              15),
+                                                      style: const TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    const Spacer(),
+                                                    getIcon(ms.messages[index]
+                                                            ['channels']
+                                                        ['channel']),
+                                                  ],
+                                                ),
+                                              ))
+                                          : Container(),
+                                    ),
+                                    showBody[ms.messages[index]['id']] == true
                                         ? Card(
                                             color: Theme.of(context)
                                                 .colorScheme
@@ -423,304 +644,215 @@ class _InboxScreenState extends State<InboxScreen> {
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
-                                                      15, 10, 5, 10),
-                                              child: Row(
+                                                      15, 10, 10, 10),
+                                              child: Column(
                                                 children: [
-                                                  const SizedBox(
-                                                      width: 40,
-                                                      child: Text('avtr')),
-                                                  Text(
-                                                    ms.messages[index]
-                                                                    ['channels']
-                                                                ['channel'] ==
-                                                            'alert'
-                                                        ? truncateString(
-                                                            LocalizationService.of(
-                                                                        context)
-                                                                    ?.translate(
-                                                                        ms.messages[index]
+                                                  Row(
+                                                    children: [
+                                                      ms.messages[index][
+                                                                      'channels']
+                                                                  ['channel'] ==
+                                                              'email'
+                                                          ? Expanded(
+                                                              child: Html(
+                                                                data: ms.messages[index]
                                                                             [
-                                                                            "subject"]) ??
-                                                                '',
-                                                            ResponsiveValue(
-                                                                context,
-                                                                defaultValue:
-                                                                    20,
-                                                                valueWhen: [
-                                                                  const Condition
-                                                                          .largerThan(
-                                                                      name:
-                                                                          TABLET,
-                                                                      value:
-                                                                          50),
-                                                                  const Condition
-                                                                          .largerThan(
-                                                                      name:
-                                                                          MOBILE,
-                                                                      value: 30)
-                                                                ]).value!)
-                                                        : truncateString(
-                                                            ms.messages[index]
-                                                                ["subject"],
-                                                            15),
-                                                    style: const TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.bold),
+                                                                            'emails']
+                                                                        [
+                                                                        "body_html"] ??
+                                                                    '',
+                                                              ),
+                                                            )
+                                                          : Text(
+                                                              ms.messages[index]
+                                                                              [
+                                                                              'channels']
+                                                                          [
+                                                                          'channel'] ==
+                                                                      'alert'
+                                                                  ? LocalizationService.of(
+                                                                              context)
+                                                                          ?.translate(ms.messages[index]
+                                                                              [
+                                                                              'body']) ??
+                                                                      ''
+                                                                  : ms.messages[
+                                                                              index]
+                                                                          [
+                                                                          'body'] ??
+                                                                      '',
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          15),
+                                                            ),
+                                                    ],
                                                   ),
-                                                  const Spacer(),
-                                                  getIcon(ms.messages[index]
-                                                      ['channels']['channel']),
+                                                  const SizedBox(height: 5)
                                                 ],
                                               ),
                                             ))
                                         : Container(),
-                                  ),
-                                  showBody[ms.messages[index]['id']] == true
-                                      ? Card(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .surface,
-                                          elevation: 0,
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                15, 10, 10, 10),
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      ms.messages[index][
-                                                                      'channels']
-                                                                  ['channel'] ==
-                                                              'alert'
-                                                          ? LocalizationService.of(
-                                                                      context)
-                                                                  ?.translate(ms
-                                                                              .messages[
-                                                                          index]
-                                                                      [
-                                                                      "body"]) ??
-                                                              ''
-                                                          : ms.messages[index]
-                                                                  ["body"] ??
-                                                              '',
-                                                      style: const TextStyle(
-                                                          fontSize: 15),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 5)
-                                              ],
-                                            ),
-                                          ))
-                                      : Container(),
-                                  showBody[ms.messages[index]['id']] == true
-                                      ? Column(
-                                          children: [
-                                            Card(
-                                              elevation: 0,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .surface,
-                                              child: SizedBox(
-                                                width: ResponsiveValue(context,
-                                                    defaultValue:
-                                                        double.infinity,
-                                                    valueWhen: const [
-                                                      Condition.largerThan(
-                                                          name: MOBILE,
-                                                          value:
-                                                              double.infinity),
-                                                      Condition.smallerThan(
-                                                          name: TABLET,
-                                                          value:
-                                                              double.infinity)
-                                                    ]).value,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          15.0, 0.0, 15, 0.0),
-                                                  child: Form(
-                                                    key: getFormKey(ms
-                                                        .messages[index]['id']),
-                                                    child: TextFormField(
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .multiline,
-                                                        maxLines: null,
-                                                        minLines: 3,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          focusedBorder:
-                                                              InputBorder.none,
-                                                          border:
-                                                              InputBorder.none,
-                                                          hintText: LocalizationService
-                                                                      .of(
-                                                                          context)
-                                                                  ?.translate(
-                                                                      'reply_message_hinttext') ??
-                                                              '',
-                                                        ),
-                                                        textCapitalization:
-                                                            TextCapitalization
-                                                                .words,
-                                                        textAlign:
-                                                            TextAlign.left,
-                                                        style: const TextStyle(
-                                                            fontSize: 14),
-                                                        autofocus: true,
-                                                        validator:
-                                                            (String? value) {
-                                                          return (value !=
-                                                                      null &&
-                                                                  value.length <
-                                                                      2)
-                                                              ? LocalizationService.of(
-                                                                          context)
-                                                                      ?.translate(
-                                                                          'invalid_reply_message') ??
-                                                                  ''
-                                                              : null;
-                                                        },
-                                                        onChanged: (val) {
-                                                          setState(() =>
-                                                              {body = val});
-                                                        }),
+                                    showBody[ms.messages[index]['id']] == true
+                                        ? Column(
+                                            children: [
+                                              Card(
+                                                elevation: 0,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .surface,
+                                                child: SizedBox(
+                                                  width: ResponsiveValue(
+                                                      context,
+                                                      defaultValue:
+                                                          double.infinity,
+                                                      valueWhen: const [
+                                                        Condition.largerThan(
+                                                            name: MOBILE,
+                                                            value: double
+                                                                .infinity),
+                                                        Condition.smallerThan(
+                                                            name: TABLET,
+                                                            value:
+                                                                double.infinity)
+                                                      ]).value,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                            .fromLTRB(
+                                                        15.0, 0.0, 15, 0.0),
+                                                    child: Form(
+                                                        key: getFormKey(
+                                                            ms.messages[index]
+                                                                ['id']),
+                                                        child:
+                                                            replyFormField()),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                const Spacer(),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          5.0, 5.0, 5.0, 5.0),
-                                                  child: ConstrainedBox(
-                                                    constraints:
-                                                        const BoxConstraints
-                                                                .tightFor(
-                                                            height: 50),
-                                                    child: (defaultTargetPlatform ==
-                                                                TargetPlatform
-                                                                    .iOS ||
-                                                            defaultTargetPlatform ==
-                                                                TargetPlatform
-                                                                    .macOS)
-                                                        ? CupertinoButton(
-                                                            onPressed:
-                                                                () async {
-                                                              if (getFormKey(
+                                              Row(
+                                                children: [
+                                                  const Spacer(),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                            .fromLTRB(
+                                                        5.0, 5.0, 5.0, 5.0),
+                                                    child: ConstrainedBox(
+                                                      constraints:
+                                                          const BoxConstraints
+                                                                  .tightFor(
+                                                              height: 50),
+                                                      child: (defaultTargetPlatform ==
+                                                                  TargetPlatform
+                                                                      .iOS ||
+                                                              defaultTargetPlatform ==
+                                                                  TargetPlatform
+                                                                      .macOS)
+                                                          ? CupertinoButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                if (getFormKey(ms
+                                                                            .messages[
+                                                                        index]['id'])
+                                                                    .currentState!
+                                                                    .validate()) {
+                                                                  setState(() =>
+                                                                      loader =
+                                                                          true);
+                                                                  reply(
                                                                       ms.messages[
-                                                                              index]
-                                                                          [
-                                                                          'id'])
-                                                                  .currentState!
-                                                                  .validate()) {
-                                                                setState(() =>
+                                                                          index],
+                                                                      index);
+                                                                }
+                                                              },
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        5.0),
+                                                                child: Text(
+                                                                  loader == true
+                                                                      ? LocalizationService.of(context)?.translate(
+                                                                              'loader_button_label') ??
+                                                                          ''
+                                                                      : LocalizationService.of(context)
+                                                                              ?.translate('reply_message_button_label') ??
+                                                                          '',
+                                                                  style: TextStyle(
+                                                                      color: Theme.of(
+                                                                              context)
+                                                                          .colorScheme
+                                                                          .onPrimary,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
+                                                              ),
+                                                            )
+                                                          : ElevatedButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                if (getFormKey(ms
+                                                                            .messages[
+                                                                        index]['id'])
+                                                                    .currentState!
+                                                                    .validate()) {
+                                                                  reply(
+                                                                      ms.messages[
+                                                                          index],
+                                                                      index);
+                                                                } else {
+                                                                  setState(() {
                                                                     loader =
-                                                                        true);
-                                                                reply(
-                                                                    ms.messages[
-                                                                        index],
-                                                                    index);
-                                                              }
-                                                            },
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .primary,
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(5.0),
-                                                              child: Text(
-                                                                loader == true
-                                                                    ? LocalizationService.of(context)?.translate(
-                                                                            'loader_button_label') ??
-                                                                        ''
-                                                                    : LocalizationService.of(context)
-                                                                            ?.translate('reply_message_button_label') ??
-                                                                        '',
-                                                                style: TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .onPrimary,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
+                                                                        false;
+                                                                  });
+                                                                }
+                                                              },
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        10.0),
+                                                                child: Text(
+                                                                  loader == true
+                                                                      ? LocalizationService.of(context)?.translate(
+                                                                              'loader_button_label') ??
+                                                                          ''
+                                                                      : LocalizationService.of(context)
+                                                                              ?.translate('reply_message_button_label') ??
+                                                                          '',
+                                                                  style: TextStyle(
+                                                                      color: Theme.of(
+                                                                              context)
+                                                                          .colorScheme
+                                                                          .onPrimary,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
                                                               ),
                                                             ),
-                                                          )
-                                                        : ElevatedButton(
-                                                            onPressed:
-                                                                () async {
-                                                              if (getFormKey(
-                                                                      ms.messages[
-                                                                              index]
-                                                                          [
-                                                                          'id'])
-                                                                  .currentState!
-                                                                  .validate()) {
-                                                                setState(() =>
-                                                                    loader =
-                                                                        true);
-                                                                reply(
-                                                                    ms.messages[
-                                                                        index],
-                                                                    index);
-                                                              } else {
-                                                                setState(() {
-                                                                  loader =
-                                                                      false;
-                                                                });
-                                                              }
-                                                            },
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .all(
-                                                                      10.0),
-                                                              child: Text(
-                                                                loader == true
-                                                                    ? LocalizationService.of(context)?.translate(
-                                                                            'loader_button_label') ??
-                                                                        ''
-                                                                    : LocalizationService.of(context)
-                                                                            ?.translate('reply_message_button_label') ??
-                                                                        '',
-                                                                style: TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .onPrimary,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                              ),
-                                                            ),
-                                                          ),
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        )
-                                      : Container(),
-                                  showBody[ms.messages[index]['id']] == true
-                                      ? const Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(5, 10, 5, 10),
-                                          child: Divider(),
-                                        )
-                                      : Container()
-                                ],
-                              )); //getMessages();
-                        }),
+                                                ],
+                                              ),
+                                            ],
+                                          )
+                                        : Container(),
+                                    showBody[ms.messages[index]['id']] == true
+                                        ? const Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                5, 10, 5, 10),
+                                            child: Divider(),
+                                          )
+                                        : Container()
+                                  ],
+                                )); //getMessages();
+                          }),
+                ),
               ))
         ],
       ),

@@ -27,6 +27,8 @@ dependencies:
   circle_flags: ^1.0.3
   html_editor_enhanced: ^2.5.1
   flutter_html: ^3.0.0-alpha.6
+  file_picker: ^5.2.5
+  quill_html_editor: ^2.0.2
 
 dev_dependencies:
   test: ^1.22.2

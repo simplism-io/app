@@ -9,7 +9,7 @@ import '../constants/loaders/loader_spinner_widget.dart';
 import '../services/agent_service.dart';
 import 'private/create_agent_name_screen.dart';
 import 'private/create_organisation_screen.dart';
-import 'private/inbox_screen.dart';
+import 'private/messages_screen.dart';
 import 'public/auth_screen.dart';
 import 'public/index_screen.dart';
 
@@ -61,7 +61,7 @@ class _RootState extends State<Root> {
                   if (agent['name'] == null || agent['name'] == '') {
                     return const CreateAgentNameScreen();
                   } else {
-                    return InboxScreen(agent: agent);
+                    return MessagesScreen(agent: agent);
                   }
                 }
                 if (!snapshot.hasData) {

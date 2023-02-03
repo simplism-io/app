@@ -41,7 +41,7 @@ class MessageService extends ChangeNotifier {
   }
 
   Future sendMessageProcedure(
-      messageId, channelId, subject, bodyHtml, bodyText) async {
+      messageId, channelId, subject, bodyHtml, bodyText, attachments) async {
     if (kDebugMode) {
       print('Trying to send message');
     }

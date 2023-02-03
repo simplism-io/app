@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import '../../../constants/icon_buttons/go_back_icon_button.dart';
 import '../../../constants/icons/password_icon.dart';
 import '../../../constants/icons/port_icon.dart';
 import '../../../constants/icons/smtp_icon.dart';
@@ -84,21 +85,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          leading: ResponsiveVisibility(
-            visible: false,
-            visibleWhen: const [Condition.smallerThan(name: TABLET)],
-            child: Builder(builder: (context) {
-              return IconButton(
-                icon: const Icon(
-                  FontAwesomeIcons.chevronLeft,
-                  size: 20.0,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              );
-            }),
-          ),
+          leading: const GoBackIconButton(),
           elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.background),
       body: SingleChildScrollView(

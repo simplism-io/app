@@ -71,10 +71,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
                     child: IconButton(
                       icon: Icon(
-                        (defaultTargetPlatform == TargetPlatform.iOS ||
-                                defaultTargetPlatform == TargetPlatform.macOS)
-                            ? CupertinoIcons.collections
-                            : FontAwesomeIcons.folderTree,
+                        CupertinoIcons.collections,
                         color: Theme.of(context).colorScheme.onBackground,
                       ),
                       onPressed: () {

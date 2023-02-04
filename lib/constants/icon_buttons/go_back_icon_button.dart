@@ -8,19 +8,16 @@ class GoBackIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveVisibility(
-      visible: false,
-      visibleWhen: const [Condition.smallerThan(name: TABLET)],
-      child: Builder(builder: (context) {
-        return IconButton(
-          icon: const Icon(
-            FontAwesomeIcons.chevronLeft,
-            size: 20.0,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        );
-      }),
+      hiddenWhen: const [Condition.largerThan(name: MOBILE)],
+      child: IconButton(
+        icon: const Icon(
+          FontAwesomeIcons.chevronLeft,
+          size: 20.0,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 }

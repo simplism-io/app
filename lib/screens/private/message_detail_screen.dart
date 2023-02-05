@@ -64,24 +64,19 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     final customButtons = [
       InkWell(
           onTap: () async {
-            FilePickerResult? result =
-                await FilePicker.platform.pickFiles(type: FileType.any);
+            FilePickerResult? result = await FilePicker.platform.pickFiles(
+                type: FileType.custom, allowedExtensions: ['txt', 'pdf']);
+
+            print(result);
 
             if (result != null) {
               String? base64Attachment =
                   base64Encode(result.files.single.bytes!);
-
-              print(base64Attachment);
-
               Map<String, String> attachment = {};
               attachment["name"] = result.names[0]!;
               attachment["base64"] = base64Attachment;
-              // print(attachment);
-              // print(attachment.length);
-
               setState(() {
                 attachments[attachments.length] = attachment;
-                //print(attachments);
               });
             }
           },
@@ -286,7 +281,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
               padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
               child: Column(children: [
                 SizedBox(
-                  height: 208,
+                  height: attachments.isNotEmpty ? 270 : 208,
                   width: double.infinity,
                   child: Form(
                     key: formKey,
@@ -304,67 +299,89 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                 debugPrint('widget text change $text'),
                             isEnabled: true,
                           ),
+                          attachments.isNotEmpty
+                              ? Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(25, 10, 25, 0),
+                                  child: SizedBox(
+                                    height: 40,
+                                    width: 1000,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ListView.builder(
+                                            shrinkWrap: true,
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount: attachments.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 0, 5, 0),
+                                                child: Chip(
+                                                  elevation: 0,
+                                                  padding: EdgeInsets.all(8),
+                                                  backgroundColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .background,
+                                                  deleteIcon: const Icon(
+                                                    Icons.close,
+                                                  ),
+                                                  onDeleted: () {
+                                                    setState(() {
+                                                      attachments.remove(index);
+                                                    });
+                                                  },
+                                                  label: Text(
+                                                    attachments[index]!['name'],
+                                                    style:
+                                                        TextStyle(fontSize: 10),
+                                                  ), //Text
+                                                ),
+                                                //CircleAvatar
+                                              );
+                                            }),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : Container(),
                         ],
                       ),
                     ),
                   ),
                 ),
-                attachments.isNotEmpty
-                    ? SizedBox(
-                        height: 40,
-                        width: 1200,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: attachments.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  print(attachments[index]!['name']);
-                                  return Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: Chip(
-                                      elevation: 0,
-                                      padding: EdgeInsets.all(8),
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.surface,
-                                      // avatar: CircleAvatar(
-                                      //   backgroundImage: NetworkImage(
-                                      //       "https://pbs.twimg.com/profile_images/1304985167476523008/QNHrwL2q_400x400.jpg"), //NetworkImage
-                                      // ), //CircleAvatar
-                                      label: Text(
-                                        attachments[index]!['name'],
-                                        style: TextStyle(fontSize: 10),
-                                      ), //Text
-                                    ),
-                                  );
-                                }),
-                          ],
-                        ),
-                      )
-                    : Container(),
                 ResponsiveRowColumn(
                   layout: ResponsiveWrapper.of(context).isSmallerThan(TABLET)
                       ? ResponsiveRowColumnType.COLUMN
                       : ResponsiveRowColumnType.ROW,
-                  rowMainAxisAlignment: MainAxisAlignment.start,
+                  rowMainAxisAlignment: MainAxisAlignment.spaceBetween,
                   rowCrossAxisAlignment: CrossAxisAlignment.start,
-                  rowPadding: const EdgeInsets.all(20.0),
-                  columnPadding: EdgeInsets.fromLTRB(
-                      ResponsiveValue(context, defaultValue: 30.0, valueWhen: [
-                        const Condition.smallerThan(name: TABLET, value: 10.0)
-                      ]).value!,
-                      10,
-                      30,
-                      10),
+                  // columnPadding: EdgeInsets.fromLTRB(
+                  //     ResponsiveValue(context, defaultValue: 30.0, valueWhen: [
+                  //       const Condition.smallerThan(name: TABLET, value: 10.0)
+                  //     ]).value!,
+                  //     10,
+                  //     30,
+                  //     10),
                   children: [
                     ResponsiveRowColumnItem(
                         rowFlex: 1,
                         child: Card(
                           child: ToolBar(
-                              padding: const EdgeInsets.all(6),
+                              padding: EdgeInsets.fromLTRB(
+                                  0.0,
+                                  5.0,
+                                  ResponsiveValue(context,
+                                      defaultValue: 5.0,
+                                      valueWhen: [
+                                        const Condition.smallerThan(
+                                            name: TABLET, value: 15.0)
+                                      ]).value!,
+                                  5.0),
                               controller: controller,
                               customButtons: customButtons,
                               toolBarConfig: customToolBarList),

@@ -25,22 +25,22 @@ dependencies:
   flutter_native_splash: ^2.2.16
   cupertino_icons: ^1.0.5
   circle_flags: ^1.0.3
+  flutter_html: ^3.0.0-alpha.6
+  file_picker: ^5.2.5
+  quill_html_editor: ^2.0.3
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  test: ^1.22.2
   flutter_lints: ^2.0.1
+  path_provider: ^2.0.12
 
-# The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
   assets:
     - .env
     - assets/i18n/en.json
     - assets/i18n/nl.json
-  # example:
   fonts:
     - family: OpenSans
       fonts:

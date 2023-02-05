@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import '../../../constants/icon_buttons/go_back_text_button.dart';
 import '../../../constants/loaders/loader_spinner_widget.dart';
 import '../../../services/localization_service.dart';
 import '../../../services/mailbox_service.dart';
@@ -28,18 +28,7 @@ class MailboxOverviewScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              TextButton(
-                  style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(50, 30),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      alignment: Alignment.centerLeft),
-                  onPressed: () => {
-                        Navigator.pop(context),
-                      },
-                  child: Text(LocalizationService.of(context)
-                          ?.translate('go_back_link_label') ??
-                      '')),
+              const GoBackTextButton(),
               const SizedBox(height: 20),
               Text(
                   LocalizationService.of(context)
@@ -148,6 +137,26 @@ class MailboxOverviewScreen extends StatelessWidget {
                                                       20, 10, 10, 10),
                                               child: Row(
                                                 children: [
+                                                  SizedBox(
+                                                    width: 30,
+                                                    child: Icon(
+                                                        (defaultTargetPlatform ==
+                                                                    TargetPlatform
+                                                                        .iOS ||
+                                                                defaultTargetPlatform ==
+                                                                    TargetPlatform
+                                                                        .macOS)
+                                                            ? CupertinoIcons
+                                                                .circle_fill
+                                                            : FontAwesomeIcons
+                                                                .circle,
+                                                        size: 10,
+                                                        color: mailboxes[index][
+                                                                    'active'] ==
+                                                                true
+                                                            ? Colors.green
+                                                            : Colors.red),
+                                                  ),
                                                   Text(mailboxes[index]
                                                       ['email']),
                                                   const Spacer(),

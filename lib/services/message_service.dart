@@ -28,27 +28,26 @@ class MessageService extends ChangeNotifier {
     ).subscribe();
   }
 
-  getMessages() async {
+  Future<void> getMessages() async {
     if (kDebugMode) {
       print('Trying to load messages');
     }
-    messages = await supabase.from('messages').select('''
-    id, subject, body, incoming, created, channel_id, channels:channel_id (channel)
-  ''').eq('organisation_id', organisationId);
+    messages = await supabase
+        .from('messages')
+        .select(
+            'id, subject, body, incoming, created, channel_id, channels(channel), emails(*), errors(*)')
+        .eq('organisation_id', organisationId);
     notifyListeners();
   }
 
   Future sendMessageProcedure(
-    messageId,
-    channelId,
-    subject,
-    body,
-  ) async {
+      messageId, channelId, subject, bodyHtml, bodyText, attachments) async {
     if (kDebugMode) {
       print('Trying to send message');
     }
     bool error = false;
-    final resultCreateMessage = await createMessage(channelId, subject, body);
+    final resultCreateMessage =
+        await createMessage(channelId, subject, bodyText);
 
     if (resultCreateMessage != null) {
       //SWITCH BASE BASED ON CHANNEL
@@ -61,8 +60,11 @@ class MessageService extends ChangeNotifier {
           .single();
 
       if (originalEmail != null) {
-        final email = createEmail(newMessageId,
-            originalEmail['email_address_id'], originalEmail['mailbox_id']);
+        final email = createEmail(
+            newMessageId,
+            originalEmail['email_address_id'],
+            originalEmail['mailbox_id'],
+            bodyHtml);
         // ignore: unnecessary_null_comparison
         if (email != null) {
           if (kDebugMode) {
@@ -88,11 +90,7 @@ class MessageService extends ChangeNotifier {
     }
   }
 
-  Future createMessage(
-    channelId,
-    subject,
-    body,
-  ) async {
+  Future createMessage(channelId, subject, bodyText) async {
     if (kDebugMode) {
       print('Trying to create message');
     }
@@ -102,7 +100,7 @@ class MessageService extends ChangeNotifier {
           'organisation_id': organisationId,
           'channel_id': channelId,
           'subject': subject,
-          'body': body,
+          'body': bodyText,
           'incoming': false
         })
         .select()
@@ -115,7 +113,7 @@ class MessageService extends ChangeNotifier {
     }
   }
 
-  Future createEmail(newMessageId, emailAddressId, mailboxId) async {
+  Future createEmail(newMessageId, emailAddressId, mailboxId, bodyHtml) async {
     if (kDebugMode) {
       print('Trying to create email');
     }
@@ -125,6 +123,7 @@ class MessageService extends ChangeNotifier {
           'message_id': newMessageId,
           'email_address_id': emailAddressId,
           'mailbox_id': mailboxId,
+          'body_html': bodyHtml
         })
         .select()
         .single();

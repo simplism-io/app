@@ -61,31 +61,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final customButtons = [
-      InkWell(
-          onTap: () async {
-            FilePickerResult? result = await FilePicker.platform.pickFiles(
-                type: FileType.custom, allowedExtensions: ['txt', 'pdf']);
-
-            print(result);
-
-            if (result != null) {
-              String? base64Attachment =
-                  base64Encode(result.files.single.bytes!);
-              Map<String, String> attachment = {};
-              attachment["name"] = result.names[0]!;
-              attachment["base64"] = base64Attachment;
-              setState(() {
-                attachments[attachments.length] = attachment;
-              });
-            }
-          },
-          child: const Icon(
-            FontAwesomeIcons.paperclip,
-            size: 18,
-          )),
-    ];
-
     reply(message) async {
       setState(() async {
         loader = true;
@@ -120,6 +95,58 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         });
       }
     }
+
+    final customButtons = [
+      InkWell(
+          onTap: () async {
+            FilePickerResult? result = await FilePicker.platform.pickFiles(
+                type: FileType.custom,
+                allowedExtensions: ['txt', 'pdf', 'doc', 'docx']);
+
+            print(result);
+
+            if (result != null) {
+              String? base64Attachment =
+                  base64Encode(result.files.single.bytes!);
+              Map<String, String> attachment = {};
+              attachment["name"] = result.names[0]!;
+              attachment["base64"] = base64Attachment;
+              setState(() {
+                attachments[attachments.length] = attachment;
+              });
+            }
+          },
+          child: const Icon(
+            FontAwesomeIcons.paperclip,
+            size: 18,
+          )),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+        child: InkWell(
+            onTap: () async {
+              FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ['png', 'jpg', 'jpeg', 'svg', 'mp4']);
+
+              print(result);
+
+              if (result != null) {
+                String? base64Attachment =
+                    base64Encode(result.files.single.bytes!);
+                Map<String, String> attachment = {};
+                attachment["name"] = result.names[0]!;
+                attachment["base64"] = base64Attachment;
+                setState(() {
+                  attachments[attachments.length] = attachment;
+                });
+              }
+            },
+            child: const Icon(
+              FontAwesomeIcons.image,
+              size: 18,
+            )),
+      ),
+    ];
 
     String truncateString(String data, int length) {
       return (data.length >= length) ? '${data.substring(0, length)}...' : data;
@@ -292,7 +319,12 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           QuillHtmlEditor(
-                            hintText: 'Hint text goes here',
+                            defaultFontSize: 15,
+                            //defaultFontColor:
+                            //Theme.of(context).colorScheme.onSurface,
+                            hintText: LocalizationService.of(context)
+                                    ?.translate('reply_message_hinttext') ??
+                                '',
                             controller: controller,
                             height: 200,
                             onTextChanged: (text) =>
@@ -354,107 +386,250 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                     ),
                   ),
                 ),
-                ResponsiveRowColumn(
-                  layout: ResponsiveWrapper.of(context).isSmallerThan(TABLET)
-                      ? ResponsiveRowColumnType.COLUMN
-                      : ResponsiveRowColumnType.ROW,
-                  rowMainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  rowCrossAxisAlignment: CrossAxisAlignment.start,
-                  // columnPadding: EdgeInsets.fromLTRB(
-                  //     ResponsiveValue(context, defaultValue: 30.0, valueWhen: [
-                  //       const Condition.smallerThan(name: TABLET, value: 10.0)
-                  //     ]).value!,
-                  //     10,
-                  //     30,
-                  //     10),
-                  children: [
-                    ResponsiveRowColumnItem(
-                        rowFlex: 1,
-                        child: Card(
-                          child: ToolBar(
-                              padding: EdgeInsets.fromLTRB(
-                                  0.0,
-                                  5.0,
-                                  ResponsiveValue(context,
-                                      defaultValue: 5.0,
-                                      valueWhen: [
-                                        const Condition.smallerThan(
-                                            name: TABLET, value: 15.0)
-                                      ]).value!,
-                                  5.0),
-                              controller: controller,
-                              customButtons: customButtons,
-                              toolBarConfig: customToolBarList),
-                        )),
-                    ResponsiveRowColumnItem(
-                        rowFlex: 1,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                          child: (defaultTargetPlatform == TargetPlatform.iOS ||
-                                  defaultTargetPlatform == TargetPlatform.macOS)
-                              ? CupertinoButton(
-                                  onPressed: () async {
-                                    if (formKey.currentState!.validate()) {
-                                      setState(() => loader = true);
-                                      reply(widget.message);
-                                    }
-                                  },
-                                  color: Theme.of(context).colorScheme.primary,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Text(
-                                      loader == true
-                                          ? LocalizationService.of(context)
-                                                  ?.translate(
-                                                      'loader_button_label') ??
-                                              ''
-                                          : LocalizationService.of(context)
-                                                  ?.translate(
-                                                      'reply_message_button_label') ??
-                                              '',
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onPrimary,
-                                          fontWeight: FontWeight.bold),
+                // ResponsiveRowColumn(
+                //   layout: ResponsiveWrapper.of(context).isSmallerThan(TABLET)
+                //       ? ResponsiveRowColumnType.COLUMN
+                //       : ResponsiveRowColumnType.ROW,
+                //   rowMainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   rowCrossAxisAlignment: CrossAxisAlignment.start,
+                //   // columnPadding: EdgeInsets.fromLTRB(
+                //   //     ResponsiveValue(context, defaultValue: 30.0, valueWhen: [
+                //   //       const Condition.smallerThan(name: TABLET, value: 10.0)
+                //   //     ]).value!,
+                //   //     10,
+                //   //     30,
+                //   //     10),
+                //   children: [
+                //     ResponsiveRowColumnItem(
+                //         child: Card(
+                //       child: SizedBox(
+                //         width: ResponsiveValue(context,
+                //             defaultValue: 400.0,
+                //             valueWhen: [
+                //               const Condition.smallerThan(
+                //                   name: TABLET, value: double.infinity)
+                //             ]).value,
+                //         child: ToolBar(
+                //             padding: EdgeInsets.all(7),
+                //             activeIconColor:
+                //                 Theme.of(context).colorScheme.primary,
+                //             iconColor: Theme.of(context).colorScheme.onSurface,
+                //             controller: controller,
+                //             customButtons: customButtons,
+                //             toolBarConfig: customToolBarList),
+                //       ),
+                //     )),
+                //     ResponsiveRowColumnItem(
+                //         child: SizedBox(
+                //       width: ResponsiveValue(context,
+                //           defaultValue: 150.0,
+                //           valueWhen: [
+                //             const Condition.smallerThan(
+                //                 name: TABLET, value: double.infinity)
+                //           ]).value,
+                //       child: ResponsiveVisibility(
+                //           visible: true,
+                //           hiddenWhen: const [
+                //             Condition.smallerThan(name: TABLET)
+                //           ],
+                //           child: SizedBox(
+                //             width: 200,
+                //             child: Padding(
+                //               padding:
+                //                   const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+                //               child: (defaultTargetPlatform ==
+                //                           TargetPlatform.iOS ||
+                //                       defaultTargetPlatform ==
+                //                           TargetPlatform.macOS)
+                //                   ? CupertinoButton(
+                //                       onPressed: () async {
+                //                         if (formKey.currentState!.validate()) {
+                //                           setState(() => loader = true);
+                //                           reply(widget.message);
+                //                         }
+                //                       },
+                //                       color:
+                //                           Theme.of(context).colorScheme.primary,
+                //                       child: Padding(
+                //                         padding: const EdgeInsets.all(5.0),
+                //                         child: Text(
+                //                           loader == true
+                //                               ? LocalizationService.of(context)
+                //                                       ?.translate(
+                //                                           'loader_button_label') ??
+                //                                   ''
+                //                               : LocalizationService.of(context)
+                //                                       ?.translate(
+                //                                           'reply_message_button_label') ??
+                //                                   '',
+                //                           style: TextStyle(
+                //                               color: Theme.of(context)
+                //                                   .colorScheme
+                //                                   .onPrimary,
+                //                               fontWeight: FontWeight.bold),
+                //                         ),
+                //                       ),
+                //                     )
+                //                   : ElevatedButton(
+                //                       onPressed: () async {
+                //                         if (formKey.currentState!.validate()) {
+                //                           reply(widget.message);
+                //                         } else {
+                //                           setState(() {
+                //                             loader = false;
+                //                           });
+                //                         }
+                //                       },
+                //                       child: Padding(
+                //                         padding: const EdgeInsets.all(10.0),
+                //                         child: Text(
+                //                           loader == true
+                //                               ? LocalizationService.of(context)
+                //                                       ?.translate(
+                //                                           'loader_button_label') ??
+                //                                   ''
+                //                               : LocalizationService.of(context)
+                //                                       ?.translate(
+                //                                           'reply_message_button_label') ??
+                //                                   '',
+                //                           style: TextStyle(
+                //                               color: Theme.of(context)
+                //                                   .colorScheme
+                //                                   .onPrimary,
+                //                               fontWeight: FontWeight.bold),
+                //                         ),
+                //                       ),
+                //                     ),
+                //             ),
+                //           )),
+                //     )),
+                //     ResponsiveRowColumnItem(
+                //       child: ResponsiveVisibility(
+                //           visible: false,
+                //           visibleWhen: const [
+                //             Condition.smallerThan(name: TABLET)
+                //           ],
+                //           child: Padding(
+                //             padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                //             child: InkWell(
+                //                 onTap: () async {
+                //                   reply(widget.message);
+                //                 },
+                //                 child: const Icon(
+                //                   FontAwesomeIcons.circleChevronRight,
+                //                   size: 18,
+                //                 )),
+                //           )),
+                //     )
+                //   ],
+                // ),
+              ])),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+            child: Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Card(
+                    child: ToolBar(
+                        padding: EdgeInsets.all(7),
+                        activeIconColor: Theme.of(context).colorScheme.primary,
+                        iconColor: Theme.of(context).colorScheme.onSurface,
+                        controller: controller,
+                        customButtons: customButtons,
+                        toolBarConfig: customToolBarList),
+                  ),
+                  Spacer(),
+                  ResponsiveVisibility(
+                      visible: false,
+                      visibleWhen: const [Condition.largerThan(name: MOBILE)],
+                      child: SizedBox(
+                          width: 200,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+                            child: (defaultTargetPlatform ==
+                                        TargetPlatform.iOS ||
+                                    defaultTargetPlatform ==
+                                        TargetPlatform.macOS)
+                                ? CupertinoButton(
+                                    onPressed: () async {
+                                      if (formKey.currentState!.validate()) {
+                                        setState(() => loader = true);
+                                        reply(widget.message);
+                                      }
+                                    },
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Text(
+                                        loader == true
+                                            ? LocalizationService.of(context)
+                                                    ?.translate(
+                                                        'loader_button_label') ??
+                                                ''
+                                            : LocalizationService.of(context)
+                                                    ?.translate(
+                                                        'reply_message_button_label') ??
+                                                '',
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  )
+                                : ElevatedButton(
+                                    onPressed: () async {
+                                      if (formKey.currentState!.validate()) {
+                                        reply(widget.message);
+                                      } else {
+                                        setState(() {
+                                          loader = false;
+                                        });
+                                      }
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text(
+                                        loader == true
+                                            ? LocalizationService.of(context)
+                                                    ?.translate(
+                                                        'loader_button_label') ??
+                                                ''
+                                            : LocalizationService.of(context)
+                                                    ?.translate(
+                                                        'reply_message_button_label') ??
+                                                '',
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ),
                                   ),
-                                )
-                              : ElevatedButton(
-                                  onPressed: () async {
-                                    if (formKey.currentState!.validate()) {
-                                      reply(widget.message);
-                                    } else {
-                                      setState(() {
-                                        loader = false;
-                                      });
-                                    }
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Text(
-                                      loader == true
-                                          ? LocalizationService.of(context)
-                                                  ?.translate(
-                                                      'loader_button_label') ??
-                                              ''
-                                          : LocalizationService.of(context)
-                                                  ?.translate(
-                                                      'reply_message_button_label') ??
-                                              '',
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onPrimary,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ),
-                        )),
-                  ],
-                ),
-              ]))
+                          ))),
+                  ResponsiveVisibility(
+                      visible: false,
+                      visibleWhen: const [Condition.smallerThan(name: TABLET)],
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
+                        child: InkWell(
+                            onTap: () async {
+                              reply(widget.message);
+                            },
+                            child: const Icon(
+                              FontAwesomeIcons.circleChevronRight,
+                              size: 18,
+                            )),
+                      ))
+                ],
+              ),
+            ),
+          )
         ],
       ),
       endDrawer: PrivateMenuEndDrawer(agent: widget.agent),

@@ -70,6 +70,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       final result = await MessageService().sendMessageProcedure(
           message['id'],
           message['channel_id'],
+          message['channels']['channel'],
           message['subject'],
           bodyHtml,
           bodyText,
@@ -171,26 +172,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            ResponsiveVisibility(
-                visible: false,
-                visibleWhen: const [Condition.smallerThan(name: TABLET)],
-                child: Builder(builder: (context) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
-                    child: IconButton(
-                      icon: Icon(
-                        (defaultTargetPlatform == TargetPlatform.iOS ||
-                                defaultTargetPlatform == TargetPlatform.macOS)
-                            ? CupertinoIcons.chevron_left
-                            : FontAwesomeIcons.chevronLeft,
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                    ),
-                  );
-                })),
+            GoBackIconButton(inheritedContext: context),
             const LogoHeaderLink()
           ],
         ),
@@ -320,8 +302,10 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                         children: [
                           QuillHtmlEditor(
                             defaultFontSize: 15,
-                            //defaultFontColor:
-                            //Theme.of(context).colorScheme.onSurface,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surface,
+                            defaultFontColor:
+                                Theme.of(context).colorScheme.onSurface,
                             hintText: LocalizationService.of(context)
                                     ?.translate('reply_message_hinttext') ??
                                 '',
@@ -354,7 +338,8 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                                         0, 0, 5, 0),
                                                 child: Chip(
                                                   elevation: 0,
-                                                  padding: EdgeInsets.all(8),
+                                                  padding:
+                                                      const EdgeInsets.all(8),
                                                   backgroundColor:
                                                       Theme.of(context)
                                                           .colorScheme
@@ -369,8 +354,8 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                                   },
                                                   label: Text(
                                                     attachments[index]!['name'],
-                                                    style:
-                                                        TextStyle(fontSize: 10),
+                                                    style: const TextStyle(
+                                                        fontSize: 10),
                                                   ), //Text
                                                 ),
                                                 //CircleAvatar
@@ -386,143 +371,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                     ),
                   ),
                 ),
-                // ResponsiveRowColumn(
-                //   layout: ResponsiveWrapper.of(context).isSmallerThan(TABLET)
-                //       ? ResponsiveRowColumnType.COLUMN
-                //       : ResponsiveRowColumnType.ROW,
-                //   rowMainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   rowCrossAxisAlignment: CrossAxisAlignment.start,
-                //   // columnPadding: EdgeInsets.fromLTRB(
-                //   //     ResponsiveValue(context, defaultValue: 30.0, valueWhen: [
-                //   //       const Condition.smallerThan(name: TABLET, value: 10.0)
-                //   //     ]).value!,
-                //   //     10,
-                //   //     30,
-                //   //     10),
-                //   children: [
-                //     ResponsiveRowColumnItem(
-                //         child: Card(
-                //       child: SizedBox(
-                //         width: ResponsiveValue(context,
-                //             defaultValue: 400.0,
-                //             valueWhen: [
-                //               const Condition.smallerThan(
-                //                   name: TABLET, value: double.infinity)
-                //             ]).value,
-                //         child: ToolBar(
-                //             padding: EdgeInsets.all(7),
-                //             activeIconColor:
-                //                 Theme.of(context).colorScheme.primary,
-                //             iconColor: Theme.of(context).colorScheme.onSurface,
-                //             controller: controller,
-                //             customButtons: customButtons,
-                //             toolBarConfig: customToolBarList),
-                //       ),
-                //     )),
-                //     ResponsiveRowColumnItem(
-                //         child: SizedBox(
-                //       width: ResponsiveValue(context,
-                //           defaultValue: 150.0,
-                //           valueWhen: [
-                //             const Condition.smallerThan(
-                //                 name: TABLET, value: double.infinity)
-                //           ]).value,
-                //       child: ResponsiveVisibility(
-                //           visible: true,
-                //           hiddenWhen: const [
-                //             Condition.smallerThan(name: TABLET)
-                //           ],
-                //           child: SizedBox(
-                //             width: 200,
-                //             child: Padding(
-                //               padding:
-                //                   const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                //               child: (defaultTargetPlatform ==
-                //                           TargetPlatform.iOS ||
-                //                       defaultTargetPlatform ==
-                //                           TargetPlatform.macOS)
-                //                   ? CupertinoButton(
-                //                       onPressed: () async {
-                //                         if (formKey.currentState!.validate()) {
-                //                           setState(() => loader = true);
-                //                           reply(widget.message);
-                //                         }
-                //                       },
-                //                       color:
-                //                           Theme.of(context).colorScheme.primary,
-                //                       child: Padding(
-                //                         padding: const EdgeInsets.all(5.0),
-                //                         child: Text(
-                //                           loader == true
-                //                               ? LocalizationService.of(context)
-                //                                       ?.translate(
-                //                                           'loader_button_label') ??
-                //                                   ''
-                //                               : LocalizationService.of(context)
-                //                                       ?.translate(
-                //                                           'reply_message_button_label') ??
-                //                                   '',
-                //                           style: TextStyle(
-                //                               color: Theme.of(context)
-                //                                   .colorScheme
-                //                                   .onPrimary,
-                //                               fontWeight: FontWeight.bold),
-                //                         ),
-                //                       ),
-                //                     )
-                //                   : ElevatedButton(
-                //                       onPressed: () async {
-                //                         if (formKey.currentState!.validate()) {
-                //                           reply(widget.message);
-                //                         } else {
-                //                           setState(() {
-                //                             loader = false;
-                //                           });
-                //                         }
-                //                       },
-                //                       child: Padding(
-                //                         padding: const EdgeInsets.all(10.0),
-                //                         child: Text(
-                //                           loader == true
-                //                               ? LocalizationService.of(context)
-                //                                       ?.translate(
-                //                                           'loader_button_label') ??
-                //                                   ''
-                //                               : LocalizationService.of(context)
-                //                                       ?.translate(
-                //                                           'reply_message_button_label') ??
-                //                                   '',
-                //                           style: TextStyle(
-                //                               color: Theme.of(context)
-                //                                   .colorScheme
-                //                                   .onPrimary,
-                //                               fontWeight: FontWeight.bold),
-                //                         ),
-                //                       ),
-                //                     ),
-                //             ),
-                //           )),
-                //     )),
-                //     ResponsiveRowColumnItem(
-                //       child: ResponsiveVisibility(
-                //           visible: false,
-                //           visibleWhen: const [
-                //             Condition.smallerThan(name: TABLET)
-                //           ],
-                //           child: Padding(
-                //             padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                //             child: InkWell(
-                //                 onTap: () async {
-                //                   reply(widget.message);
-                //                 },
-                //                 child: const Icon(
-                //                   FontAwesomeIcons.circleChevronRight,
-                //                   size: 18,
-                //                 )),
-                //           )),
-                //     )
-                //   ],
-                // ),
               ])),
           Padding(
             padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
@@ -532,14 +380,14 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 children: [
                   Card(
                     child: ToolBar(
-                        padding: EdgeInsets.all(7),
+                        padding: const EdgeInsets.all(7),
                         activeIconColor: Theme.of(context).colorScheme.primary,
                         iconColor: Theme.of(context).colorScheme.onSurface,
                         controller: controller,
                         customButtons: customButtons,
                         toolBarConfig: customToolBarList),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   ResponsiveVisibility(
                       visible: false,
                       visibleWhen: const [Condition.largerThan(name: MOBILE)],
@@ -615,17 +463,14 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                   ResponsiveVisibility(
                       visible: false,
                       visibleWhen: const [Condition.smallerThan(name: TABLET)],
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
-                        child: InkWell(
-                            onTap: () async {
-                              reply(widget.message);
-                            },
-                            child: const Icon(
-                              FontAwesomeIcons.circleChevronRight,
-                              size: 18,
-                            )),
-                      ))
+                      child: InkWell(
+                          onTap: () async {
+                            reply(widget.message);
+                          },
+                          child: const Icon(
+                            FontAwesomeIcons.circleChevronRight,
+                            size: 18,
+                          )))
                 ],
               ),
             ),

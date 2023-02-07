@@ -85,7 +85,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          leading: const GoBackIconButton(),
+          leading: GoBackIconButton(inheritedContext: context),
           elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.background),
       body: SingleChildScrollView(

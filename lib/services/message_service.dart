@@ -40,42 +40,62 @@ class MessageService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future sendMessageProcedure(
-      messageId, channelId, subject, bodyHtml, bodyText, attachments) async {
+  Future sendMessageProcedure(messageId, channelId, channel, subject, bodyHtml,
+      bodyText, attachments) async {
     if (kDebugMode) {
       print('Trying to send message');
     }
     bool error = false;
+
+    print(messageId);
+    print(channelId);
+    print(channel);
+    print(subject);
+    print(bodyHtml);
+    print(bodyText);
+    print(attachments);
+
     final resultCreateMessage =
         await createMessage(channelId, subject, bodyText);
 
     if (resultCreateMessage != null) {
-      //SWITCH BASE BASED ON CHANNEL
       final newMessageId = resultCreateMessage;
 
-      final originalEmail = await supabase
-          .from('emails')
-          .select()
-          .eq('message_id', messageId)
-          .single();
+      switch (channel) {
+        case "email":
+          final originalEmail = await supabase
+              .from('emails')
+              .select()
+              .eq('message_id', messageId)
+              .single();
 
-      if (originalEmail != null) {
-        final email = createEmail(
-            newMessageId,
-            originalEmail['email_address_id'],
-            originalEmail['mailbox_id'],
-            bodyHtml);
-        // ignore: unnecessary_null_comparison
-        if (email != null) {
-          if (kDebugMode) {
-            print('Transaction complete');
+          if (originalEmail != null) {
+            final resultCreateEmail = createEmail(
+                newMessageId,
+                originalEmail['email_address_id'],
+                originalEmail['mailbox_id'],
+                bodyHtml);
+            // ignore: unnecessary_null_comparison
+            if (resultCreateEmail != null) {
+              if (attachments != null) {
+                final resultCreateAttachments =
+                    await createAttachments(attachments, newMessageId);
+                if (resultCreateAttachments == true) {
+                  if (kDebugMode) {
+                    print('Transaction complete');
+                  }
+                }
+              }
+            }
+          } else {
+            if (kDebugMode) {
+              error = true;
+              print('originalEmail is null');
+            }
           }
-        }
-      } else {
-        if (kDebugMode) {
-          error = true;
-          print('originalEmail is null');
-        }
+          break;
+        case "viber":
+          break;
       }
     } else {
       error = true;
@@ -132,6 +152,33 @@ class MessageService extends ChangeNotifier {
       return email['id'];
     } else {
       return null;
+    }
+  }
+
+  Future createAttachments(attachments, newMessageId) async {
+    if (kDebugMode) {
+      print('Trying to create email');
+    }
+
+    bool error = false;
+
+    attachments.forEach((attachment) async => {
+          attachment = await supabase
+              .from('attachments')
+              .insert({
+                'message_id': newMessageId,
+                'name': attachment['name'],
+                'base64': attachment['base64']
+              })
+              .select()
+              .single(),
+          if (attachment == null) {error = true}
+        });
+
+    if (error == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

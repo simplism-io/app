@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../constants/icons/go_back_icon.dart';
+import '../../constants/icon_buttons/go_back_icon_button.dart';
 import '../../services/agent_service.dart';
 import '../../services/localization_service.dart';
 
@@ -74,7 +74,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          leading: const GoBackIconWidget(),
+          leading: GoBackIconButton(inheritedContext: context),
           elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.background,
         ),

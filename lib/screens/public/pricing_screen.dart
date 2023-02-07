@@ -3,10 +3,10 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../constants/drop_downs/language_header_dropdown_widget.dart';
 import '../../constants/headers/public_menu_header.dart';
-import '../../constants/icons/public_menu_icon.dart';
-import '../../constants/icons/theme_header_icon.dart';
-import '../../constants/links/about_drawer_link.dart';
-import '../../constants/links/about_header_link.dart';
+import '../../constants/icon_buttons/github_icon_button.dart';
+import '../../constants/icon_buttons/public_menu_icon_button.dart';
+import '../../constants/icon_buttons/theme_header_icon_button.dart';
+import '../../constants/links/github_drawer_link.dart';
 import '../../constants/links/faq_drawer_link.dart';
 import '../../constants/links/faq_header_link.dart';
 import '../../constants/links/features_drawer_link.dart';
@@ -102,7 +102,7 @@ class PricingScreen extends StatelessWidget {
           SizedBox(height: 5.0),
           FaqDrawerLink(highlight: false),
           SizedBox(height: 5.0),
-          AboutDrawerLink(highlight: false)
+          GithubDrawerLink()
         ],
       ),
     );
@@ -125,7 +125,7 @@ class PricingScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: const <Widget>[PublicMenuIcon(), LogoHeaderLink()],
+            children: const <Widget>[PublicMenuIconButton(), LogoHeaderLink()],
           ),
         ),
         titleSpacing: 0,
@@ -134,10 +134,10 @@ class PricingScreen extends StatelessWidget {
         actions: const [
           FeaturesHeaderLink(highlight: false),
           PricingHeaderLink(highlight: true),
-          AboutUsHeaderLink(highlight: false),
           FaqHeaderLink(highlight: false),
           LanguageHeaderDropdown(),
-          ThemeHeaderIcon(),
+          ThemeHeaderIconButton(),
+          GithubIconButton(),
         ],
       ),
       body: Column(

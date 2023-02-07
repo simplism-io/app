@@ -6,10 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../constants/drop_downs/language_header_dropdown_widget.dart';
 import '../../constants/headers/public_menu_header.dart';
 import '../../constants/icon_buttons/github_icon_button.dart';
-import '../../constants/icons/public_menu_icon.dart';
-import '../../constants/icons/theme_header_icon.dart';
-import '../../constants/links/about_drawer_link.dart';
-import '../../constants/links/about_header_link.dart';
+import '../../constants/icon_buttons/public_menu_icon_button.dart';
+import '../../constants/icon_buttons/theme_header_icon_button.dart';
+import '../../constants/links/github_drawer_link.dart';
 import '../../constants/links/auth_header_link.dart';
 import '../../constants/links/faq_drawer_link.dart';
 import '../../constants/links/faq_header_link.dart';
@@ -64,7 +63,7 @@ class _IndexScreenState extends State<IndexScreen> {
           FeaturesDrawerLink(highlight: false),
           PricingDrawerLink(highlight: false),
           FaqDrawerLink(highlight: false),
-          AboutDrawerLink(highlight: false)
+          GithubDrawerLink()
         ],
       ),
     );
@@ -88,7 +87,7 @@ class _IndexScreenState extends State<IndexScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: const <Widget>[PublicMenuIcon(), LogoHeaderLink()],
+            children: const <Widget>[PublicMenuIconButton(), LogoHeaderLink()],
           ),
         ),
         titleSpacing: 0,
@@ -97,10 +96,9 @@ class _IndexScreenState extends State<IndexScreen> {
         actions: [
           const FeaturesHeaderLink(highlight: false),
           const PricingHeaderLink(highlight: false),
-          //const AboutUsHeaderLink(highlight: false),
           const FaqHeaderLink(highlight: false),
           const LanguageHeaderDropdown(),
-          const ThemeHeaderIcon(),
+          const ThemeHeaderIconButton(),
           const GithubIconButton(),
           (defaultTargetPlatform == TargetPlatform.iOS ||
                   defaultTargetPlatform == TargetPlatform.android)

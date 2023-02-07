@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'attachment_service.dart';
+import 'email_service.dart';
+
 final supabase = Supabase.instance.client;
 
 class MessageService extends ChangeNotifier {
@@ -36,7 +39,9 @@ class MessageService extends ChangeNotifier {
         .from('messages')
         .select(
             'id, subject, body, incoming, created, channel_id, channels(channel), emails(*), errors(*)')
-        .eq('organisation_id', organisationId);
+        .eq('organisation_id', organisationId)
+        .order('created', ascending: false);
+
     notifyListeners();
   }
 
@@ -63,14 +68,10 @@ class MessageService extends ChangeNotifier {
 
       switch (channel) {
         case "email":
-          final originalEmail = await supabase
-              .from('emails')
-              .select()
-              .eq('message_id', messageId)
-              .single();
+          final originalEmail = await EmailService().getEmail(messageId);
 
           if (originalEmail != null) {
-            final emailId = await createEmail(
+            final emailId = await EmailService().createEmail(
                 newMessageId,
                 originalEmail['mailbox_id'],
                 originalEmail['email_addresses_id'],
@@ -78,8 +79,8 @@ class MessageService extends ChangeNotifier {
             // ignore: unnecessary_null_comparison
             if (emailId != null) {
               if (attachments.length > 0) {
-                final resultCreateAttachments =
-                    await createAttachments(attachments, newMessageId);
+                final resultCreateAttachments = await AttachmentService()
+                    .createAttachments(attachments, newMessageId);
                 if (resultCreateAttachments == true) {
                   if (kDebugMode) {
                     print('Transaction complete');
@@ -140,56 +141,6 @@ class MessageService extends ChangeNotifier {
       return message['id'];
     } else {
       return null;
-    }
-  }
-
-  Future createEmail(newMessageId, mailboxId, emailAddressId, bodyHtml) async {
-    if (kDebugMode) {
-      print('Trying to create email');
-    }
-
-    final email = await supabase
-        .from('emails')
-        .insert({
-          'message_id': newMessageId,
-          'mailbox_id': mailboxId,
-          'email_addresses_id': emailAddressId,
-          'body_html': bodyHtml
-        })
-        .select()
-        .single();
-
-    if (email != null) {
-      return email['id'];
-    } else {
-      return null;
-    }
-  }
-
-  Future createAttachments(attachments, newMessageId) async {
-    if (kDebugMode) {
-      print('Trying to create attachment');
-    }
-
-    bool error = false;
-
-    attachments.forEach((attachment) async => {
-          attachment = await supabase
-              .from('attachments')
-              .insert({
-                'message_id': newMessageId,
-                'name': attachment['name'],
-                'base64': attachment['base64']
-              })
-              .select()
-              .single(),
-          if (attachment == null) {error = true}
-        });
-
-    if (error == false) {
-      return true;
-    } else {
-      return false;
     }
   }
 

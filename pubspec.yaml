@@ -28,9 +28,9 @@ dependencies:
   flutter_html: ^3.0.0-alpha.6
   file_picker: ^5.2.5
   quill_html_editor: ^2.0.5
+  flutter_widget_from_html: ^0.9.1
 
 dev_dependencies:
-  test: ^1.22.2
   flutter_lints: ^2.0.1
   path_provider: ^2.0.12
 

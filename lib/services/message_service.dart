@@ -47,13 +47,13 @@ class MessageService extends ChangeNotifier {
     }
     bool error = false;
 
-    print(messageId);
-    print(channelId);
-    print(channel);
-    print(subject);
-    print(bodyHtml);
-    print(bodyText);
-    print(attachments);
+    // print(messageId);
+    // print(channelId);
+    // print(channel);
+    // print(subject);
+    // print(bodyHtml);
+    // print(bodyText);
+    // print(attachments == null);
 
     final resultCreateMessage =
         await createMessage(channelId, subject, bodyText);
@@ -70,22 +70,32 @@ class MessageService extends ChangeNotifier {
               .single();
 
           if (originalEmail != null) {
-            final resultCreateEmail = createEmail(
+            final emailId = await createEmail(
                 newMessageId,
-                originalEmail['email_address_id'],
                 originalEmail['mailbox_id'],
+                originalEmail['email_addresses_id'],
                 bodyHtml);
             // ignore: unnecessary_null_comparison
-            if (resultCreateEmail != null) {
-              if (attachments != null) {
+            if (emailId != null) {
+              if (attachments.length > 0) {
                 final resultCreateAttachments =
                     await createAttachments(attachments, newMessageId);
                 if (resultCreateAttachments == true) {
                   if (kDebugMode) {
                     print('Transaction complete');
                   }
+                } else {
+                  error = true;
+                  deleteMessage(newMessageId);
+                }
+              } else {
+                if (kDebugMode) {
+                  print('Transaction complete');
                 }
               }
+            } else {
+              error = true;
+              deleteMessage(newMessageId);
             }
           } else {
             if (kDebugMode) {
@@ -133,16 +143,17 @@ class MessageService extends ChangeNotifier {
     }
   }
 
-  Future createEmail(newMessageId, emailAddressId, mailboxId, bodyHtml) async {
+  Future createEmail(newMessageId, mailboxId, emailAddressId, bodyHtml) async {
     if (kDebugMode) {
       print('Trying to create email');
     }
+
     final email = await supabase
         .from('emails')
         .insert({
           'message_id': newMessageId,
-          'email_address_id': emailAddressId,
           'mailbox_id': mailboxId,
+          'email_addresses_id': emailAddressId,
           'body_html': bodyHtml
         })
         .select()
@@ -157,7 +168,7 @@ class MessageService extends ChangeNotifier {
 
   Future createAttachments(attachments, newMessageId) async {
     if (kDebugMode) {
-      print('Trying to create email');
+      print('Trying to create attachment');
     }
 
     bool error = false;
@@ -180,5 +191,9 @@ class MessageService extends ChangeNotifier {
     } else {
       return false;
     }
+  }
+
+  Future deleteMessage(messageId) async {
+    await supabase.from('messages').delete().match({'id': messageId});
   }
 }

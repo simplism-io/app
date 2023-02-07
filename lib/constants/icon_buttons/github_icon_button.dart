@@ -8,6 +8,7 @@ class GithubIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveVisibility(
+      visible: false,
       visibleWhen: const [Condition.largerThan(name: MOBILE)],
       child: IconButton(
         icon: const Icon(

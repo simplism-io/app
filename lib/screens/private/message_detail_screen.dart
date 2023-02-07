@@ -8,6 +8,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
+import 'package:html/parser.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 import '../../constants/drawers/private_menu_end_drawer.dart';
 import '../../constants/icon_buttons/go_back_icon_button.dart';
@@ -39,15 +41,17 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
 
   Map<int, Map> attachments = {};
 
-  String formatHtmlString(String string) {
-    return string
-        .replaceAll("\n\n", "<p>") // Paragraphs
-        .replaceAll("\n", "<br>") // Line Breaks
-        .replaceAll("\"", "&quot;") // Quote Marks
-        .replaceAll("'", "&apos;") // Apostrophe
-        .replaceAll(">", "&lt;") // Less-than Comparator (Strip Tags)
-        .replaceAll("<", "&gt;") // Greater-than Comparator (Strip Tags)
-        .trim(); // Whitespace
+  String? formatHtmlString(String string) {
+    var htmlString = parse(string);
+    if (htmlString.documentElement != null) {
+      String textString = htmlString.documentElement!.text;
+      return textString;
+    }
+    return null;
+  }
+
+  String truncateString(String data, int length) {
+    return (data.length >= length) ? '${data.substring(0, length)}...' : data;
   }
 
   getIcon(channel) {
@@ -62,11 +66,11 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   @override
   Widget build(BuildContext context) {
     reply(message) async {
-      setState(() async {
-        loader = true;
-        bodyHtml = await controller.getText();
-        bodyText = formatHtmlString(bodyHtml!);
-      });
+      bodyHtml = await controller.getText();
+      bodyText = formatHtmlString(bodyHtml!);
+      print(bodyText);
+      controller.enableEditor(false);
+
       final result = await MessageService().sendMessageProcedure(
           message['id'],
           message['channel_id'],
@@ -91,6 +95,28 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
               )),
         );
         ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+        setState(() {
+          loader = false;
+        });
+        controller.clear();
+        Navigator.pop(context);
+      } else {
+        if (!mounted) {
+          return;
+        }
+        final errorSnackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.error,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('general_error_message') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onError,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+        controller.enableEditor(true);
         setState(() {
           loader = false;
         });
@@ -148,10 +174,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             )),
       ),
     ];
-
-    String truncateString(String data, int length) {
-      return (data.length >= length) ? '${data.substring(0, length)}...' : data;
-    }
 
     controller.onTextChanged((text) {
       debugPrint('listening to $text');
@@ -229,14 +251,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                 LocalizationService.of(context)?.translate(
                                         widget.message["subject"]) ??
                                     '',
-                                ResponsiveValue(context,
-                                    defaultValue: 20,
-                                    valueWhen: [
-                                      const Condition.largerThan(
-                                          name: TABLET, value: 50),
-                                      const Condition.largerThan(
-                                          name: MOBILE, value: 30)
-                                    ]).value!)
+                                20)
                             : truncateString(widget.message["subject"], 15),
                         style: const TextStyle(
                             fontSize: 15, fontWeight: FontWeight.bold),
@@ -249,39 +264,30 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                      child: Card(
-                        color: Theme.of(context).colorScheme.surface,
-                        elevation: 0,
-                        child: widget.message['channels']['channel'] == 'email'
-                            ? Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                child: Html(
-                                  data: widget.message['emails']["body_html"] ??
-                                      '',
-                                ),
-                              )
-                            : Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                child: Text(
-                                  widget.message['channels']['channel'] ==
-                                          'alert'
-                                      ? LocalizationService.of(context)
-                                              ?.translate(
-                                                  widget.message['body']) ??
-                                          ''
-                                      : widget.message['body'] ?? '',
-                                  style: const TextStyle(fontSize: 15),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                  child: Card(
+                    color: Theme.of(context).colorScheme.surface,
+                    elevation: 0,
+                    child: widget.message['channels']['channel'] == 'email'
+                        ? Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                            child: HtmlWidget(
+                              widget.message['emails']['body_html'] ?? '',
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                            child: Text(
+                              widget.message['channels']['channel'] == 'alert'
+                                  ? LocalizationService.of(context)
+                                          ?.translate(widget.message['body']) ??
+                                      ''
+                                  : widget.message['body'] ?? '',
+                              style: const TextStyle(fontSize: 15),
+                            ),
+                          ),
+                  ),
                 ),
               ],
             ),
@@ -432,6 +438,9 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                 : ElevatedButton(
                                     onPressed: () async {
                                       if (formKey.currentState!.validate()) {
+                                        setState(() {
+                                          loader = true;
+                                        });
                                         reply(widget.message);
                                       } else {
                                         setState(() {

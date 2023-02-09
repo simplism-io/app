@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../main.dart';
 import '../../services/localization_service.dart';
-import '../../constants/loaders/loader_spinner_widget.dart';
+import '../../constants/loaders/loader.dart';
 import '../root.dart';
 import 'update_password_screen.dart';
 import 'update_agent_screen.dart';
@@ -34,7 +34,7 @@ class AgentScreen extends StatelessWidget {
     avatarBytes = base64Decode(agent!['avatar']);
 
     return loading
-        ? const LoaderSpinnerWidget()
+        ? const Loader()
         : Scaffold(
             appBar: AppBar(
                 leading: ResponsiveVisibility(

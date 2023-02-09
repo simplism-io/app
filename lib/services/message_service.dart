@@ -38,75 +38,83 @@ class MessageService extends ChangeNotifier {
     messages = await supabase
         .from('messages')
         .select(
-            'id, subject, body, incoming, created, channel_id, channels(channel), emails(*), errors(*)')
+            'id, subject, body, incoming, created, channel_id, channels(channel), emails(*), messages_customers(*, customers(*)), errors(*)')
         .eq('organisation_id', organisationId)
         .order('created', ascending: false);
-
     notifyListeners();
   }
 
+  Future getMessageHistory(customerId) async {
+    return await supabase
+        .from('messages')
+        .select(
+            'id, subject, body, incoming, created, channel_id, channels(channel), emails(*), messages_customers(*, customers(*)), errors(*)')
+        .eq('messages_customers.id', customerId)
+        .order('created', ascending: false);
+  }
+
   Future sendMessageProcedure(messageId, channelId, channel, subject, bodyHtml,
-      bodyText, attachments) async {
+      bodyText, attachments, agentId) async {
     if (kDebugMode) {
       print('Trying to send message');
     }
     bool error = false;
-
-    // print(messageId);
-    // print(channelId);
-    // print(channel);
-    // print(subject);
-    // print(bodyHtml);
-    // print(bodyText);
-    // print(attachments == null);
-
     final resultCreateMessage =
         await createMessage(channelId, subject, bodyText);
 
     if (resultCreateMessage != null) {
       final newMessageId = resultCreateMessage;
+      final resultCreateMessageAgent =
+          await createMessageAgent(newMessageId, agentId);
 
-      switch (channel) {
-        case "email":
-          final originalEmail = await EmailService().getEmail(messageId);
+      if (resultCreateMessageAgent == true) {
+        switch (channel) {
+          case "email":
+            final originalEmail = await EmailService().getEmail(messageId);
 
-          if (originalEmail != null) {
-            final emailId = await EmailService().createEmail(
-                newMessageId,
-                originalEmail['mailbox_id'],
-                originalEmail['email_addresses_id'],
-                bodyHtml);
-            // ignore: unnecessary_null_comparison
-            if (emailId != null) {
-              if (attachments.length > 0) {
-                final resultCreateAttachments = await AttachmentService()
-                    .createAttachments(attachments, newMessageId);
-                if (resultCreateAttachments == true) {
+            if (originalEmail != null) {
+              final emailId = await EmailService().createEmail(
+                  newMessageId,
+                  originalEmail['mailbox_id'],
+                  originalEmail['email_addresses_id'],
+                  bodyHtml);
+              // ignore: unnecessary_null_comparison
+              if (emailId != null) {
+                if (attachments.length > 0) {
+                  final resultCreateAttachments = await AttachmentService()
+                      .createAttachments(attachments, newMessageId);
+                  if (resultCreateAttachments == true) {
+                    if (kDebugMode) {
+                      print('Transaction complete');
+                    }
+                  } else {
+                    error = true;
+                    deleteMessage(newMessageId);
+                  }
+                } else {
                   if (kDebugMode) {
                     print('Transaction complete');
                   }
-                } else {
-                  error = true;
-                  deleteMessage(newMessageId);
                 }
               } else {
-                if (kDebugMode) {
-                  print('Transaction complete');
-                }
+                error = true;
+                deleteMessage(newMessageId);
               }
             } else {
-              error = true;
-              deleteMessage(newMessageId);
+              if (kDebugMode) {
+                error = true;
+                print('originalEmail is null');
+              }
             }
-          } else {
-            if (kDebugMode) {
-              error = true;
-              print('originalEmail is null');
-            }
-          }
-          break;
-        case "viber":
-          break;
+            break;
+          case "viber":
+            break;
+        }
+      } else {
+        error = true;
+        if (kDebugMode) {
+          print('resultCreateMessageAgent is null');
+        }
       }
     } else {
       error = true;
@@ -141,6 +149,26 @@ class MessageService extends ChangeNotifier {
       return message['id'];
     } else {
       return null;
+    }
+  }
+
+  Future createMessageAgent(messageId, agentId) async {
+    if (kDebugMode) {
+      print('Trying to create message agent');
+    }
+    final messageAgent = await supabase
+        .from('messages_agents')
+        .insert({
+          'message_id': messageId,
+          'agent_id': agentId,
+        })
+        .select()
+        .single();
+
+    if (messageAgent != null) {
+      return true;
+    } else {
+      return false;
     }
   }
 

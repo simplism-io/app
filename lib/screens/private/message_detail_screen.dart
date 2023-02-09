@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:base/constants/loaders/loader.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ import '../../constants/icons/email_icon.dart';
 import '../../constants/links/logo_header_link.dart';
 import '../../services/localization_service.dart';
 import '../../services/message_service.dart';
+import '../../services/util_service.dart';
 
 class MessageDetailScreen extends StatefulWidget {
   final dynamic message;
@@ -50,10 +52,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     return null;
   }
 
-  String truncateString(String data, int length) {
-    return (data.length >= length) ? '${data.substring(0, length)}...' : data;
-  }
-
   getIcon(channel) {
     switch (channel) {
       case 'email':
@@ -65,10 +63,11 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    reply(message) async {
+    //print(widget.message['emails'][0]['body_html']);
+
+    Future reply(message) async {
       bodyHtml = await controller.getText();
-      bodyText = formatHtmlString(bodyHtml!);
-      print(bodyText);
+      bodyText = formatHtmlString(bodyHtml!)!.trim();
       controller.enableEditor(false);
 
       final result = await MessageService().sendMessageProcedure(
@@ -78,7 +77,8 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           message['subject'],
           bodyHtml,
           bodyText,
-          attachments);
+          attachments,
+          widget.agent['id']);
       if (result == true) {
         if (!mounted) {
           return;
@@ -220,82 +220,139 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           })
         ],
       ),
-      body: Column(
-        children: [
-          ResponsiveVisibility(
-              visible: false,
-              visibleWhen: const [Condition.largerThan(name: MOBILE)],
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(25, 30, 25, 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                      child: GoBackTextButton(),
-                    ),
-                  ],
-                ),
-              )),
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 10, 20, 10),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ResponsiveVisibility(
+                visible: false,
+                visibleWhen: const [Condition.largerThan(name: MOBILE)],
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(25, 30, 25, 10),
                   child: Row(
-                    children: [
-                      const SizedBox(width: 40, child: Text('avtr')),
-                      Text(
-                        widget.message['channels']['channel'] == 'alert'
-                            ? truncateString(
-                                LocalizationService.of(context)?.translate(
-                                        widget.message["subject"]) ??
-                                    '',
-                                20)
-                            : truncateString(widget.message["subject"], 15),
-                        style: const TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                        child: GoBackTextButton(),
                       ),
-                      const Spacer(),
-                      getIcon(widget.message['channels']['channel']),
                     ],
                   ),
+                )),
+            SizedBox(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(30, 10, 20, 10),
+                child: Row(
+                  children: [
+                    const SizedBox(width: 40, child: Text('avtr')),
+                    SizedBox(
+                        width: 40,
+                        child: Text(widget.message['messages_customers'][0]
+                            ['customers']['name'])),
+                    Text(
+                      widget.message['channels']['channel'] == 'alert'
+                          ? UtilService().truncateString(
+                              LocalizationService.of(context)
+                                      ?.translate(widget.message["subject"]) ??
+                                  '',
+                              20)
+                          : UtilService()
+                              .truncateString(widget.message["subject"], 15),
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                    const Spacer(),
+                    getIcon(widget.message['channels']['channel']),
+                  ],
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                  child: Card(
-                    color: Theme.of(context).colorScheme.surface,
-                    elevation: 0,
-                    child: widget.message['channels']['channel'] == 'email'
-                        ? Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                            child: HtmlWidget(
-                              widget.message['emails']['body_html'] ?? '',
-                            ),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                            child: Text(
-                              widget.message['channels']['channel'] == 'alert'
-                                  ? LocalizationService.of(context)
-                                          ?.translate(widget.message['body']) ??
-                                      ''
-                                  : widget.message['body'] ?? '',
-                              style: const TextStyle(fontSize: 15),
-                            ),
-                          ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-          Padding(
+            Padding(
               padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-              child: Column(children: [
-                SizedBox(
+              child: LimitedBox(
+                maxHeight: 200,
+                maxWidth: double.infinity,
+                child: FutureBuilder(
+                  builder: (ctx, snapshot) {
+                    // Checking if future is resolved or not
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      // If we got an error
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            '${snapshot.error} occurred',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        );
+
+                        // if we got our data
+                      } else if (snapshot.hasData) {
+                        final messages = snapshot.data;
+
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: messages.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              var messagesCustomers =
+                                  messages[index]['messages_customers'];
+                              print(messagesCustomers.length);
+                              return Row(
+                                crossAxisAlignment: messages[index]
+                                            ['messages_customers'] !=
+                                        null
+                                    ? CrossAxisAlignment.start
+                                    : CrossAxisAlignment.end,
+                                children: [
+                                  Card(
+                                      child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(messages[index]['body']),
+                                  )),
+                                ],
+                              );
+                            });
+                      }
+                    }
+                    return const Center(
+                      child: Loader(),
+                    );
+                  },
+                  future:
+                      MessageService().getMessageHistory(widget.agent['id']),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+              child: Card(
+                color: Theme.of(context).colorScheme.surface,
+                elevation: 0,
+                child: widget.message['channels']['channel'] == 'email'
+                    ? Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                        child: HtmlWidget(
+                          widget.message['emails'][0]['body_html'] ?? '',
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        child: Text(
+                          widget.message['channels']['channel'] == 'alert'
+                              ? LocalizationService.of(context)
+                                      ?.translate(widget.message['body']) ??
+                                  ''
+                              : widget.message['body'] ?? '',
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                      ),
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                child: SizedBox(
                   height: attachments.isNotEmpty ? 270 : 208,
                   width: double.infinity,
                   child: Form(
@@ -376,115 +433,118 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                       ),
                     ),
                   ),
+                )),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+              child: Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Card(
+                      child: ToolBar(
+                          padding: const EdgeInsets.all(7),
+                          activeIconColor:
+                              Theme.of(context).colorScheme.primary,
+                          iconColor: Theme.of(context).colorScheme.onSurface,
+                          controller: controller,
+                          customButtons: customButtons,
+                          toolBarConfig: customToolBarList),
+                    ),
+                    const Spacer(),
+                    ResponsiveVisibility(
+                        visible: false,
+                        visibleWhen: const [Condition.largerThan(name: MOBILE)],
+                        child: SizedBox(
+                            width: 200,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+                              child: (defaultTargetPlatform ==
+                                          TargetPlatform.iOS ||
+                                      defaultTargetPlatform ==
+                                          TargetPlatform.macOS)
+                                  ? CupertinoButton(
+                                      onPressed: () async {
+                                        if (formKey.currentState!.validate()) {
+                                          setState(() => loader = true);
+                                          reply(widget.message);
+                                        }
+                                      },
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: Text(
+                                          loader == true
+                                              ? LocalizationService.of(context)
+                                                      ?.translate(
+                                                          'loader_button_label') ??
+                                                  ''
+                                              : LocalizationService.of(context)
+                                                      ?.translate(
+                                                          'reply_message_button_label') ??
+                                                  '',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    )
+                                  : ElevatedButton(
+                                      onPressed: () async {
+                                        if (formKey.currentState!.validate()) {
+                                          setState(() {
+                                            loader = true;
+                                          });
+                                          reply(widget.message);
+                                        } else {
+                                          setState(() {
+                                            loader = false;
+                                          });
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(
+                                          loader == true
+                                              ? LocalizationService.of(context)
+                                                      ?.translate(
+                                                          'loader_button_label') ??
+                                                  ''
+                                              : LocalizationService.of(context)
+                                                      ?.translate(
+                                                          'reply_message_button_label') ??
+                                                  '',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
+                            ))),
+                    ResponsiveVisibility(
+                        visible: false,
+                        visibleWhen: const [
+                          Condition.smallerThan(name: TABLET)
+                        ],
+                        child: InkWell(
+                            onTap: () async {
+                              reply(widget.message);
+                            },
+                            child: const Icon(
+                              FontAwesomeIcons.circleChevronRight,
+                              size: 18,
+                            )))
+                  ],
                 ),
-              ])),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-            child: Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Card(
-                    child: ToolBar(
-                        padding: const EdgeInsets.all(7),
-                        activeIconColor: Theme.of(context).colorScheme.primary,
-                        iconColor: Theme.of(context).colorScheme.onSurface,
-                        controller: controller,
-                        customButtons: customButtons,
-                        toolBarConfig: customToolBarList),
-                  ),
-                  const Spacer(),
-                  ResponsiveVisibility(
-                      visible: false,
-                      visibleWhen: const [Condition.largerThan(name: MOBILE)],
-                      child: SizedBox(
-                          width: 200,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                            child: (defaultTargetPlatform ==
-                                        TargetPlatform.iOS ||
-                                    defaultTargetPlatform ==
-                                        TargetPlatform.macOS)
-                                ? CupertinoButton(
-                                    onPressed: () async {
-                                      if (formKey.currentState!.validate()) {
-                                        setState(() => loader = true);
-                                        reply(widget.message);
-                                      }
-                                    },
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: Text(
-                                        loader == true
-                                            ? LocalizationService.of(context)
-                                                    ?.translate(
-                                                        'loader_button_label') ??
-                                                ''
-                                            : LocalizationService.of(context)
-                                                    ?.translate(
-                                                        'reply_message_button_label') ??
-                                                '',
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onPrimary,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  )
-                                : ElevatedButton(
-                                    onPressed: () async {
-                                      if (formKey.currentState!.validate()) {
-                                        setState(() {
-                                          loader = true;
-                                        });
-                                        reply(widget.message);
-                                      } else {
-                                        setState(() {
-                                          loader = false;
-                                        });
-                                      }
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text(
-                                        loader == true
-                                            ? LocalizationService.of(context)
-                                                    ?.translate(
-                                                        'loader_button_label') ??
-                                                ''
-                                            : LocalizationService.of(context)
-                                                    ?.translate(
-                                                        'reply_message_button_label') ??
-                                                '',
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onPrimary,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                          ))),
-                  ResponsiveVisibility(
-                      visible: false,
-                      visibleWhen: const [Condition.smallerThan(name: TABLET)],
-                      child: InkWell(
-                          onTap: () async {
-                            reply(widget.message);
-                          },
-                          child: const Icon(
-                            FontAwesomeIcons.circleChevronRight,
-                            size: 18,
-                          )))
-                ],
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
       endDrawer: PrivateMenuEndDrawer(agent: widget.agent),
     );

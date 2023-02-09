@@ -13,6 +13,7 @@ import '../../constants/icons/email_icon.dart';
 import '../../services/localization_service.dart';
 import '../../services/message_service.dart';
 import '../../constants/links/logo_header_link.dart';
+import '../../services/util_service.dart';
 import 'message_detail_screen.dart';
 
 final supabase = Supabase.instance.client;
@@ -48,10 +49,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   drawer() {
     return const Drawer(child: Text('Text'));
-  }
-
-  String truncateString(String data, int length) {
-    return (data.length >= length) ? '${data.substring(0, length)}...' : data;
   }
 
   @override
@@ -255,36 +252,34 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                                       ['channels']
                                                                   ['channel'] ==
                                                               'alert'
-                                                          ? truncateString(
-                                                              LocalizationService.of(
-                                                                          context)
-                                                                      ?.translate(
-                                                                          ms.messages[index]
-                                                                              [
+                                                          ? UtilService()
+                                                              .truncateString(
+                                                                  LocalizationService.of(context)
+                                                                          ?.translate(ms.messages[index][
                                                                               "subject"]) ??
-                                                                  '',
-                                                              ResponsiveValue(
-                                                                  context,
-                                                                  defaultValue:
-                                                                      20,
-                                                                  valueWhen: [
-                                                                    const Condition
-                                                                            .largerThan(
-                                                                        name:
-                                                                            TABLET,
-                                                                        value:
-                                                                            50),
-                                                                    const Condition
-                                                                            .largerThan(
-                                                                        name:
-                                                                            MOBILE,
-                                                                        value:
-                                                                            30)
-                                                                  ]).value!)
-                                                          : truncateString(
-                                                              ms.messages[index]
-                                                                  ["subject"],
-                                                              15),
+                                                                      '',
+                                                                  ResponsiveValue(
+                                                                      context,
+                                                                      defaultValue:
+                                                                          20,
+                                                                      valueWhen: [
+                                                                        const Condition.largerThan(
+                                                                            name:
+                                                                                TABLET,
+                                                                            value:
+                                                                                50),
+                                                                        const Condition.largerThan(
+                                                                            name:
+                                                                                MOBILE,
+                                                                            value:
+                                                                                30)
+                                                                      ]).value!)
+                                                          : UtilService()
+                                                              .truncateString(
+                                                                  ms.messages[
+                                                                          index]
+                                                                      ["subject"],
+                                                                  15),
                                                       style: const TextStyle(
                                                           fontSize: 15,
                                                           fontWeight:

@@ -15,7 +15,7 @@ class ThemeHeaderIconButton extends StatelessWidget {
     return pv.Consumer<ThemeService>(
         builder: (context, theme, child) => theme.darkTheme == true
             ? Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
+                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),
                 child: IconButton(
                     icon: Icon(
                       (defaultTargetPlatform == TargetPlatform.iOS ||
@@ -39,11 +39,13 @@ class ThemeHeaderIconButton extends StatelessWidget {
                     0.0),
                 child: IconButton(
                     icon: Icon(
-                        (defaultTargetPlatform == TargetPlatform.iOS ||
-                                defaultTargetPlatform == TargetPlatform.macOS)
-                            ? CupertinoIcons.moon
-                            : FontAwesomeIcons.moon,
-                        color: Theme.of(context).colorScheme.onBackground),
+                      (defaultTargetPlatform == TargetPlatform.iOS ||
+                              defaultTargetPlatform == TargetPlatform.macOS)
+                          ? CupertinoIcons.moon
+                          : FontAwesomeIcons.moon,
+                      color: Theme.of(context).colorScheme.onBackground,
+                      size: 25,
+                    ),
                     onPressed: () => theme.toggleTheme()),
               ));
   }

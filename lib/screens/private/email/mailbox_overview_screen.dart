@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import '../../../constants/icon_buttons/go_back_text_button.dart';
-import '../../../constants/loaders/loader_spinner_widget.dart';
+import '../../../constants/loaders/loader.dart';
 import '../../../services/localization_service.dart';
 import '../../../services/mailbox_service.dart';
 import 'create_mailbox_screen.dart';
@@ -208,7 +208,7 @@ class MailboxOverviewScreen extends StatelessWidget {
                                   ]);
                             }
                           } else {
-                            return const LoaderSpinnerWidget();
+                            return const Loader();
                           }
                         },
                         future: MailBoxService().loadMailBoxes(),

@@ -8,13 +8,11 @@ class EmailIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-        child: Icon(
-            (defaultTargetPlatform == TargetPlatform.iOS ||
-                    defaultTargetPlatform == TargetPlatform.macOS)
-                ? CupertinoIcons.envelope
-                : FontAwesomeIcons.envelope,
-            color: Theme.of(context).colorScheme.onBackground));
+    return Icon(
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+                defaultTargetPlatform == TargetPlatform.macOS)
+            ? CupertinoIcons.envelope
+            : FontAwesomeIcons.envelope,
+        color: Theme.of(context).colorScheme.onBackground);
   }
 }

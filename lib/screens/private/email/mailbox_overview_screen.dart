@@ -28,7 +28,7 @@ class MailboxOverviewScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const GoBackTextButton(),
+              const GoBackTextButton(toRoot: true),
               const SizedBox(height: 20),
               Text(
                   LocalizationService.of(context)

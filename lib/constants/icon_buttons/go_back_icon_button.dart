@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import '../../screens/root.dart';
+
 class GoBackIconButton extends StatelessWidget {
-  final BuildContext inheritedContext;
-  const GoBackIconButton({super.key, required this.inheritedContext});
+  final bool toRoot;
+  const GoBackIconButton({super.key, required this.toRoot});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,13 @@ class GoBackIconButton extends StatelessWidget {
           size: 20.0,
         ),
         onPressed: () {
-          Navigator.pop(inheritedContext);
+          if (toRoot == true) {
+            Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const Root()),
+                (route) => false);
+          } else {
+            Navigator.pop(context);
+          }
         },
       ),
     );

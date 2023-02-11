@@ -13,7 +13,7 @@ class MessageService extends ChangeNotifier {
 
   MessageService() {
     messages = [];
-    getMessages();
+    getNewMessages();
 
     supabase.channel('public:messages').on(
       RealtimeListenTypes.postgresChanges,
@@ -26,41 +26,44 @@ class MessageService extends ChangeNotifier {
         if (kDebugMode) {
           print('New incoming message');
         }
-        await getMessages();
+        await getNewMessages();
       },
     ).subscribe();
   }
 
-  Future<void> getMessages() async {
+  Future<void> getNewMessages() async {
     if (kDebugMode) {
       print('Trying to load messages');
     }
     messages = await supabase
         .from('messages')
         .select(
-            'id, subject, body, incoming, created, channel_id, channels(channel), emails(*), messages_customers(*, customers(*)), errors(*)')
+            'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), errors(*)')
         .eq('organisation_id', organisationId)
         .order('created', ascending: false);
     notifyListeners();
   }
 
-  Future getMessageHistory(customerId) async {
-    return await supabase
+  Future getMessageHistory(
+    customerId,
+  ) async {
+    final messageHistory = await supabase
         .from('messages')
         .select(
-            'id, subject, body, incoming, created, channel_id, channels(channel), emails(*), messages_customers(*, customers(*)), errors(*)')
-        .eq('messages_customers.id', customerId)
-        .order('created', ascending: false);
+            'id, subject, body, incoming, created, channel_id, channels(channel), customer_id, customers(name), emails(body_html), messages_agents(agent_id, agents(id, name)), errors(*)')
+        .eq('customer_id', customerId)
+        .order('created', ascending: true);
+    return messageHistory;
   }
 
-  Future sendMessageProcedure(messageId, channelId, channel, subject, bodyHtml,
-      bodyText, attachments, agentId) async {
+  Future sendMessageProcedure(messageId, channelId, channel, customerId,
+      subject, bodyHtml, bodyText, attachments, agentId) async {
     if (kDebugMode) {
       print('Trying to send message');
     }
     bool error = false;
     final resultCreateMessage =
-        await createMessage(channelId, subject, bodyText);
+        await createMessage(channelId, customerId, subject, bodyText);
 
     if (resultCreateMessage != null) {
       final newMessageId = resultCreateMessage;
@@ -129,7 +132,7 @@ class MessageService extends ChangeNotifier {
     }
   }
 
-  Future createMessage(channelId, subject, bodyText) async {
+  Future createMessage(channelId, customerId, subject, bodyText) async {
     if (kDebugMode) {
       print('Trying to create message');
     }
@@ -138,6 +141,7 @@ class MessageService extends ChangeNotifier {
         .insert({
           'organisation_id': organisationId,
           'channel_id': channelId,
+          'customer_id': customerId,
           'subject': subject,
           'body': bodyText,
           'incoming': false

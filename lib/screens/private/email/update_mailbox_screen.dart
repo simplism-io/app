@@ -92,7 +92,7 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          leading: GoBackIconButton(inheritedContext: context),
+          leading: const GoBackIconButton(toRoot: false),
           elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.background),
       body: SingleChildScrollView(

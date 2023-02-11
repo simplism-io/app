@@ -56,6 +56,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: false,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -133,181 +134,187 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
               padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
               child: Divider(color: Theme.of(context).colorScheme.surface),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(25, 25, 25, 10),
-              child: FutureBuilder(
-                builder: (ctx, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          '${snapshot.error} occurred',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      );
-                    } else if (snapshot.hasData) {
-                      final messages = snapshot.data;
-                      return Column(
-                        children: [
-                          maxNumberOfMessages == 2
-                              ? TextButton(
-                                  onPressed: () => {
-                                        setState(() {
-                                          toggleSeeAllMessages();
-                                        })
-                                      },
-                                  child: Text('See all'))
-                              : Container(),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.6,
-                            child: SingleChildScrollView(
-                              child: ListView.builder(
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  itemCount: messages.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0, 10, 0, 10),
-                                      child: index < maxNumberOfMessages
-                                          ? Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    SizedBox(
-                                                      child: Padding(
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(25, 25, 25, 10),
+                child: FutureBuilder(
+                  builder: (ctx, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            '${snapshot.error} occurred',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        );
+                      } else if (snapshot.hasData) {
+                        final messages = snapshot.data;
+                        return Column(
+                          children: [
+                            maxNumberOfMessages == 2
+                                ? TextButton(
+                                    onPressed: () => {
+                                          setState(() {
+                                            toggleSeeAllMessages();
+                                          })
+                                        },
+                                    child: Text('See all'))
+                                : Container(),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.7,
+                              child: SingleChildScrollView(
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: messages.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 10, 0, 10),
+                                        child: index < maxNumberOfMessages
+                                            ? Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      SizedBox(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  5, 0, 0, 0),
+                                                          child: Text(
+                                                              messages[index][
+                                                                          'incoming'] ==
+                                                                      true
+                                                                  ? messages[index]
+                                                                          ['customers']
+                                                                      ['name']
+                                                                  : messages[index]['messages_agents']
+                                                                              .length >
+                                                                          0
+                                                                      ? messages[index]['messages_agents'][0]
+                                                                              ['agents']
+                                                                          [
+                                                                          'name']
+                                                                      : 'Agent name',
+                                                              style: const TextStyle(
+                                                                  fontSize: 10,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold)),
+                                                        ),
+                                                      ),
+
+                                                      // Padding(
+                                                      //   padding: const EdgeInsets.fromLTRB(
+                                                      //       5, 0, 5, 0),
+                                                      //   child: SizedBox(
+                                                      //     child: messages[index]['incoming'] ==
+                                                      //             true
+                                                      //         ? getIcon(
+                                                      //             widget.message['channels']
+                                                      //                 ['channel'])
+                                                      //         : '',
+                                                      //   ),
+                                                      // ),
+                                                      const Spacer(),
+                                                      SizedBox(
+                                                          child: Padding(
                                                         padding:
                                                             const EdgeInsets
                                                                     .fromLTRB(
-                                                                5, 0, 0, 0),
+                                                                5, 0, 5, 0),
                                                         child: Text(
-                                                            messages[index][
-                                                                        'incoming'] ==
-                                                                    true
-                                                                ? messages[index]
-                                                                        ['customers']
-                                                                    ['name']
-                                                                : messages[index]['messages_agents']
-                                                                            .length >
-                                                                        0
-                                                                    ? messages[index]
-                                                                            [
-                                                                            'messages_agents'][0]['agents']
-                                                                        ['name']
-                                                                    : 'Agent name',
+                                                            messages[index]
+                                                                ['created'],
                                                             style: const TextStyle(
                                                                 fontSize: 10,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold)),
+                                                      )),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    child: Padding(
+                                                      padding: const EdgeInsets
+                                                          .fromLTRB(0, 5, 0, 5),
+                                                      child: Card(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .surface,
+                                                        child: widget.message[
+                                                                        'channels']
+                                                                    [
+                                                                    'channel'] ==
+                                                                'email'
+                                                            ? Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .fromLTRB(
+                                                                        10,
+                                                                        10,
+                                                                        10,
+                                                                        10),
+                                                                child:
+                                                                    HtmlWidget(
+                                                                  messages[index]['emails']
+                                                                              [
+                                                                              0]
+                                                                          [
+                                                                          'body_html'] ??
+                                                                      '',
+                                                                ),
+                                                              )
+                                                            : Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .fromLTRB(
+                                                                        10,
+                                                                        10,
+                                                                        10,
+                                                                        10),
+                                                                child: Text(
+                                                                  messages[index]['channels']
+                                                                              [
+                                                                              'channel'] ==
+                                                                          'alert'
+                                                                      ? LocalizationService.of(context)?.translate(widget.message[
+                                                                              'body']) ??
+                                                                          ''
+                                                                      : messages[index]
+                                                                              [
+                                                                              'body'] ??
+                                                                          '',
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          15),
+                                                                ),
+                                                              ),
                                                       ),
                                                     ),
-
-                                                    // Padding(
-                                                    //   padding: const EdgeInsets.fromLTRB(
-                                                    //       5, 0, 5, 0),
-                                                    //   child: SizedBox(
-                                                    //     child: messages[index]['incoming'] ==
-                                                    //             true
-                                                    //         ? getIcon(
-                                                    //             widget.message['channels']
-                                                    //                 ['channel'])
-                                                    //         : '',
-                                                    //   ),
-                                                    // ),
-                                                    const Spacer(),
-                                                    SizedBox(
-                                                        child: Padding(
-                                                      padding: const EdgeInsets
-                                                          .fromLTRB(5, 0, 5, 0),
-                                                      child: Text(
-                                                          messages[index]
-                                                              ['created'],
-                                                          style: const TextStyle(
-                                                              fontSize: 10,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                    )),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(0, 5, 0, 5),
-                                                    child: Card(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .surface,
-                                                      child: widget.message[
-                                                                      'channels']
-                                                                  ['channel'] ==
-                                                              'email'
-                                                          ? Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .fromLTRB(
-                                                                      10,
-                                                                      10,
-                                                                      10,
-                                                                      10),
-                                                              child: HtmlWidget(
-                                                                messages[index][
-                                                                            'emails'][0]
-                                                                        [
-                                                                        'body_html'] ??
-                                                                    '',
-                                                              ),
-                                                            )
-                                                          : Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .fromLTRB(
-                                                                      10,
-                                                                      10,
-                                                                      10,
-                                                                      10),
-                                                              child: Text(
-                                                                messages[index]['channels']
-                                                                            [
-                                                                            'channel'] ==
-                                                                        'alert'
-                                                                    ? LocalizationService.of(context)?.translate(widget.message[
-                                                                            'body']) ??
-                                                                        ''
-                                                                    : messages[index]
-                                                                            [
-                                                                            'body'] ??
-                                                                        '',
-                                                                style:
-                                                                    const TextStyle(
-                                                                        fontSize:
-                                                                            15),
-                                                              ),
-                                                            ),
-                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            )
-                                          : Container(),
-                                    );
-                                  }),
+                                                ],
+                                              )
+                                            : Container(),
+                                      );
+                                    }),
+                              ),
                             ),
-                          ),
-                        ],
-                      );
+                          ],
+                        );
+                      }
                     }
-                  }
-                  return const Center(
-                    child: Loader(),
-                  );
-                },
-                future: MessageService()
-                    .getMessageHistory(widget.message['customer_id']),
+                    return const Center(
+                      child: Loader(),
+                    );
+                  },
+                  future: MessageService()
+                      .getMessageHistory(widget.message['customer_id']),
+                ),
               ),
             ),
           ],
@@ -315,7 +322,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       ),
       floatingActionButton:
           ReplyForm(message: widget.message, agent: widget.agent),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       endDrawer: PrivateMenuEndDrawer(agent: widget.agent),
     );
   }
@@ -476,8 +482,6 @@ class _ReplyFormState extends State<ReplyForm> {
     return showFab
         ? FloatingActionButton(
             backgroundColor: Theme.of(context).colorScheme.primary,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
             onPressed: () {
               var bottomSheetController = showBottomSheet(
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -782,7 +786,7 @@ class _ReplyFormState extends State<ReplyForm> {
                       defaultTargetPlatform == TargetPlatform.macOS)
                   ? CupertinoIcons.reply
                   : FontAwesomeIcons.reply,
-              size: 20,
+              size: 15,
             ),
           )
         : Container();

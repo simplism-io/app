@@ -41,6 +41,7 @@ class MessageService extends ChangeNotifier {
             'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), errors(*)')
         .eq('organisation_id', organisationId)
         .order('created', ascending: false);
+        print(messages);
     notifyListeners();
   }
 

@@ -17,7 +17,9 @@
   "create_organization_header_label": "Nieuwe organisatie toevoegen",
   "create_organisation_button_label": "Organisatie opslaan",
   "create_organisation_snackbar_label": "De organisatie is opgeslagen",
+  "custom_views_header_label": "Custom views",
   "dark_mode_switcher_label": "Donker thema",
+  "default_views_header_label": "Standaard views",
   "email_input_label": "Email",
   "email_input_hinttext": "Email",
   "faq_header_label": "FAQ",
@@ -94,5 +96,6 @@
   "update_password_snackbar_label": "Je wachtwoord is bijgewerkt",
   "update_profile_button_label": "Profiel bijwerken",
   "update_profile_header_label": "Profiel bijwerken",
-  "update_profile_snackbar_label": "Je profiel is bijgewerkt"
+  "update_profile_snackbar_label": "Je profiel is bijgewerkt",
+  "views_header_label": "Views"
 }

@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ChevronRightIcon extends StatelessWidget {
-  const ChevronRightIcon({super.key});
+class ChevronDownIcon extends StatelessWidget {
+  const ChevronDownIcon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +13,8 @@ class ChevronRightIcon extends StatelessWidget {
         child: Icon(
             (defaultTargetPlatform == TargetPlatform.iOS ||
                     defaultTargetPlatform == TargetPlatform.macOS)
-                ? CupertinoIcons.chevron_right
-                : FontAwesomeIcons.chevronRight,
+                ? CupertinoIcons.chevron_down
+                : FontAwesomeIcons.chevronDown,
             color: Theme.of(context).colorScheme.onBackground,
             size: 15));
   }

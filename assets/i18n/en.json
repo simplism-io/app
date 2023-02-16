@@ -17,7 +17,9 @@
   "create_organisation_header_label": "New organisation",
   "create_organisation_button_label": "Save organsation",
   "create_organisation_snackbar_label": "The organisation is saved",
+  "custom_views_header_label": "Custom",
   "dark_mode_switcher_label": "Dark theme",
+  "default_views_header_label": "Default",
   "email_input_label": "Email",
   "email_input_hinttext": "Email",
   "faq_header_label": "FAQ",
@@ -97,5 +99,6 @@
   "update_password_snackbar_label": "Your password has been updated",
   "update_profile_button_label": "Update Profile",
   "update_profile_header_label": "Update profile",
-  "update_profile_snackbar_label": "Your profile has been updated"
+  "update_profile_snackbar_label": "Your profile has been updated",
+  "views_header_label": "Views"
 }

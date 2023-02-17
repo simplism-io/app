@@ -208,7 +208,7 @@ class MailboxOverviewScreen extends StatelessWidget {
                                   ]);
                             }
                           } else {
-                            return const Loader();
+                            return const Loader(size: 50.0);
                           }
                         },
                         future: MailBoxService().loadMailBoxes(),

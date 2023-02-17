@@ -34,7 +34,7 @@ class AgentScreen extends StatelessWidget {
     avatarBytes = base64Decode(agent!['avatar']);
 
     return loading
-        ? const Loader()
+        ? const Loader(size: 50.0)
         : Scaffold(
             appBar: AppBar(
                 leading: ResponsiveVisibility(

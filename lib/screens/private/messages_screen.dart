@@ -16,6 +16,7 @@ import '../../constants/icons/alert_icon.dart';
 import '../../constants/icons/chevron_right_icon.dart';
 import '../../constants/icons/email_icon.dart';
 import '../../services/localization_service.dart';
+import '../../services/mailbox_service.dart';
 import '../../services/message_service.dart';
 import '../../constants/links/logo_header_link.dart';
 import '../../services/util_service.dart';
@@ -146,93 +147,132 @@ class _MessagesScreenState extends State<MessagesScreen> {
             ResponsiveRowColumnItem(
                 child: ResponsiveVisibility(
               hiddenWhen: const [Condition.smallerThan(name: TABLET)],
-              child: SizedBox(
-                width: 175,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 5),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('views_header_label') ??
-                              '',
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    // Column(
-                    //   children: [
-                    //     const SizedBox(height: 4),
-                    //     SizedBox(
-                    //       child: Builder(
-                    //         builder: (context) {
-                    //           return IconButton(
-                    //             icon: const Icon(
-                    //               Icons.chevron_left,
-                    //             ),
-                    //             onPressed: () {
-                    //               Scaffold.of(context).openDrawer();
-                    //             },
-                    //           );
-                    //         },
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: ListTile(
-                        onTap: () => {toggleCollapsedDefaultViews()},
-                        visualDensity:
-                            const VisualDensity(horizontal: 0, vertical: -4),
-                        contentPadding: const EdgeInsets.all(0),
-                        title: Text(
-                          LocalizationService.of(context)
-                                  ?.translate('default_views_header_label') ??
-                              '',
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        trailing: defaultViewCollapsed == false
-                            ? const ChevronRightIcon()
-                            : const ChevronDownIcon(),
-                      ),
-                    ),
-                    defaultViewCollapsed == true
-                        ? Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: SizedBox(
-                              child: Text('Default Views'),
-                            ),
-                          )
-                        : Container(),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: ListTile(
-                        onTap: () => {toggleCollapsedCustomViews()},
-                        visualDensity:
-                            const VisualDensity(horizontal: 0, vertical: -4),
-                        contentPadding: const EdgeInsets.all(0),
-                        title: Text(
+              child: Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 5),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
                             LocalizationService.of(context)
-                                    ?.translate('custom_views_header_label') ??
+                                    ?.translate('views_header_label') ??
                                 '',
-                            style: const TextStyle(fontSize: 14)),
-                        trailing: customViewCollapsed == false
-                            ? const ChevronRightIcon()
-                            : const ChevronDownIcon(),
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
                       ),
-                    ),
-                    const SizedBox(height: 5.0),
-                    customViewCollapsed == true
-                        ? Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: SizedBox(
-                              child: Text('Custom Views'),
-                            ),
-                          )
-                        : Container(),
-                  ],
+                      // Column(
+                      //   children: [
+                      //     const SizedBox(height: 4),
+                      //     SizedBox(
+                      //       child: Builder(
+                      //         builder: (context) {
+                      //           return IconButton(
+                      //             icon: const Icon(
+                      //               Icons.chevron_left,
+                      //             ),
+                      //             onPressed: () {
+                      //               Scaffold.of(context).openDrawer();
+                      //             },
+                      //           );
+                      //         },
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: ListTile(
+                          onTap: () => {toggleCollapsedDefaultViews()},
+                          visualDensity:
+                              const VisualDensity(horizontal: 0, vertical: -4),
+                          contentPadding: const EdgeInsets.all(0),
+                          title: Text(
+                            LocalizationService.of(context)
+                                    ?.translate('default_views_header_label') ??
+                                '',
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          trailing: defaultViewCollapsed == false
+                              ? const ChevronRightIcon()
+                              : const ChevronDownIcon(),
+                        ),
+                      ),
+                      defaultViewCollapsed == true
+                          ? LimitedBox(
+                              maxHeight:
+                                  MediaQuery.of(context).size.height * 0.2,
+                              child: FutureBuilder(
+                                builder: (ctx, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.data.length > 0) {
+                                      final mailboxes = snapshot.data!;
+                                      return ListView.builder(
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: mailboxes.length,
+                                          itemBuilder: (context, index) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      10, 0, 10, 0),
+                                              child: ListTile(
+                                                onTap: () => {},
+                                                visualDensity:
+                                                    const VisualDensity(
+                                                        horizontal: 0,
+                                                        vertical: -4),
+                                                contentPadding:
+                                                    const EdgeInsets.all(0),
+                                                title: Text(
+                                                  mailboxes[index]['email'],
+                                                  style: const TextStyle(
+                                                      fontSize: 14),
+                                                ),
+                                              ),
+                                            );
+                                          });
+                                    } else {
+                                      return Container();
+                                    }
+                                  }
+                                  return const Loader(size: 25.0);
+                                },
+                                future: MailBoxService().loadMailBoxes(),
+                              ),
+                            )
+                          : Container(),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: ListTile(
+                          onTap: () => {toggleCollapsedCustomViews()},
+                          visualDensity:
+                              const VisualDensity(horizontal: 0, vertical: -4),
+                          contentPadding: const EdgeInsets.all(0),
+                          title: Text(
+                              LocalizationService.of(context)?.translate(
+                                      'custom_views_header_label') ??
+                                  '',
+                              style: const TextStyle(fontSize: 14)),
+                          trailing: customViewCollapsed == false
+                              ? const ChevronRightIcon()
+                              : const ChevronDownIcon(),
+                        ),
+                      ),
+                      const SizedBox(height: 5.0),
+                      customViewCollapsed == true
+                          ? Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                              child: SizedBox(
+                                child: Text('Custom Views'),
+                              ),
+                            )
+                          : Container(),
+                    ],
+                  ),
                 ),
               ),
             )),
@@ -368,7 +408,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   ),
                                 ),
                               )
-                            : const Loader()))
+                            : const Loader(size: 50.0)))
           ],
         ),
       ),

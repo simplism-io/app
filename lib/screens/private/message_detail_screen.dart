@@ -346,7 +346,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                       }
                     }
                     return const Center(
-                      child: Loader(),
+                      child: Loader(size: 50.0),
                     );
                   },
                   future: MessageService()

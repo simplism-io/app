@@ -8,6 +8,7 @@ final supabase = Supabase.instance.client;
 
 class MessageService extends ChangeNotifier {
   late List messages;
+
   final organisationId =
       supabase.auth.currentSession!.user.userMetadata!['organisation_id'];
 
@@ -41,7 +42,6 @@ class MessageService extends ChangeNotifier {
             'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), errors(*)')
         .eq('organisation_id', organisationId)
         .order('created', ascending: false);
-        print(messages);
     notifyListeners();
   }
 

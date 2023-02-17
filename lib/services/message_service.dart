@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'attachment_service.dart';
@@ -8,9 +11,36 @@ final supabase = Supabase.instance.client;
 
 class MessageService extends ChangeNotifier {
   late List messages;
-
+  String key = 'view';
+  String? viewEncoded;
+  String? viewDecoded;
+  String? activeView;
   final organisationId =
       supabase.auth.currentSession!.user.userMetadata!['organisation_id'];
+
+  loadViewfromPrefs() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    final view = pref.getString(key);
+    if (kDebugMode) {
+      print('View $view loaded from localStorage');
+    }
+    return view;
+  }
+
+  removeViewFromPrefs() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.remove(key);
+    getNewMessages();
+  }
+
+  saveViewToPrefs(viewEncoded) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.setString(key, viewEncoded);
+    if (kDebugMode) {
+      print('View $viewEncoded saved to localStorage');
+    }
+    getNewMessages();
+  }
 
   MessageService() {
     messages = [];
@@ -36,13 +66,40 @@ class MessageService extends ChangeNotifier {
     if (kDebugMode) {
       print('Trying to load messages');
     }
-    messages = await supabase
-        .from('messages')
-        .select(
-            'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), errors(*)')
-        .eq('organisation_id', organisationId)
-        .order('created', ascending: false);
-    notifyListeners();
+
+    final viewEncoded = await loadViewfromPrefs();
+
+    if (viewEncoded == null) {
+      activeView = null;
+    }
+
+    if (viewEncoded == null) {
+      if (kDebugMode) {
+        print('Showing all messages');
+      }
+
+      messages = await supabase
+          .from('messages')
+          .select(
+              'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), errors(*)')
+          .eq('organisation_id', organisationId)
+          .order('created', ascending: false);
+      notifyListeners();
+    } else {
+      if (kDebugMode) {
+        print('Active view found, showing selective messages');
+      }
+      final viewDecoded = json.decode(viewEncoded);
+      activeView = viewDecoded['value'];
+      messages = await supabase
+          .from('messages')
+          .select(
+              'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), emails(*) errors(*)')
+          .eq('organisation_id', organisationId)
+          .eq(viewDecoded['key'], viewDecoded['value'])
+          .order('created', ascending: false);
+      notifyListeners();
+    }
   }
 
   Future getMessageHistory(

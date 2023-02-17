@@ -165,7 +165,7 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                           labelStyle: const TextStyle(
                                             fontSize: 15,
                                           ), //label style
-                                          prefixIcon: const EmailIcon(),
+                                          prefixIcon: const EmailIcon(size: 15),
                                           hintText: LocalizationService.of(
                                                       context)
                                                   ?.translate(

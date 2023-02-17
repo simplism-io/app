@@ -582,7 +582,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                               labelStyle: const TextStyle(
                                                 fontSize: 15,
                                               ), //label style
-                                              prefixIcon: const EmailIcon()),
+                                              prefixIcon:
+                                                  const EmailIcon(size: 15)),
                                           textAlign: TextAlign.left,
                                           initialValue: email,
                                           autofocus: true,
@@ -1126,7 +1127,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                               labelStyle: const TextStyle(
                                                 fontSize: 15,
                                               ), //label style
-                                              prefixIcon: const EmailIcon()),
+                                              prefixIcon:
+                                                  const EmailIcon(size: 15)),
                                           textAlign: TextAlign.left,
                                           initialValue: email,
                                           autofocus: true,

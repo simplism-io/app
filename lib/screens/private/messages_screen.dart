@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:base/constants/drawers/private_menu_end_drawer.dart';
 import 'package:base/constants/icons/chevron_down_icon.dart';
@@ -36,6 +37,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
   bool loaded = false;
   bool defaultViewCollapsed = false;
   bool customViewCollapsed = false;
+  String? viewEncoded;
+  final Map view = {};
 
   @override
   initState() {
@@ -52,7 +55,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   getIcon(channel) {
     switch (channel) {
       case 'email':
-        return const EmailIcon();
+        return const EmailIcon(size: 15);
       case 'alert':
         return const AlertIcon();
     }
@@ -153,7 +156,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 5),
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
@@ -182,22 +184,39 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       //     ),
                       //   ],
                       // ),
+                      Consumer<MessageService>(
+                          builder: (context, ms, child) => Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                child: GestureDetector(
+                                  onTap: () => {ms.removeViewFromPrefs()},
+                                  child: Row(
+                                    children: [
+                                      Text(LocalizationService.of(context)
+                                              ?.translate(
+                                                  'all_messages_button_label') ??
+                                          ''),
+                                      ms.activeView == null
+                                          ? Text('bla')
+                                          : Container()
+                                    ],
+                                  ),
+                                ),
+                              )),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        child: ListTile(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                        child: GestureDetector(
                           onTap: () => {toggleCollapsedDefaultViews()},
-                          visualDensity:
-                              const VisualDensity(horizontal: 0, vertical: -4),
-                          contentPadding: const EdgeInsets.all(0),
-                          title: Text(
-                            LocalizationService.of(context)
-                                    ?.translate('default_views_header_label') ??
+                          child: Text(
+                            LocalizationService.of(context)?.translate(
+                                    'default_email_views_header_label') ??
                                 '',
-                            style: const TextStyle(fontSize: 14),
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: defaultViewCollapsed == true
+                                    ? FontWeight.bold
+                                    : null),
                           ),
-                          trailing: defaultViewCollapsed == false
-                              ? const ChevronRightIcon()
-                              : const ChevronDownIcon(),
                         ),
                       ),
                       defaultViewCollapsed == true
@@ -215,25 +234,45 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                           scrollDirection: Axis.vertical,
                                           itemCount: mailboxes.length,
                                           itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      10, 0, 10, 0),
-                                              child: ListTile(
-                                                onTap: () => {},
-                                                visualDensity:
-                                                    const VisualDensity(
-                                                        horizontal: 0,
-                                                        vertical: -4),
-                                                contentPadding:
-                                                    const EdgeInsets.all(0),
-                                                title: Text(
-                                                  mailboxes[index]['email'],
-                                                  style: const TextStyle(
-                                                      fontSize: 14),
-                                                ),
-                                              ),
-                                            );
+                                            view['key'] = 'emails.mailbox_id';
+                                            view['value'] =
+                                                mailboxes[index]['id'];
+                                            viewEncoded = json.encode(view);
+                                            return Consumer<MessageService>(
+                                                builder: (context, ms, child) =>
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          20, 5, 10, 5),
+                                                      child: GestureDetector(
+                                                        onTap: () => {
+                                                          ms.saveViewToPrefs(
+                                                              viewEncoded)
+                                                        },
+                                                        child: Row(
+                                                          children: [
+                                                            const EmailIcon(
+                                                                size: 14),
+                                                            const SizedBox(
+                                                                width: 5),
+                                                            Text(
+                                                              mailboxes[index]
+                                                                  ['email'],
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          14),
+                                                            ),
+                                                            ms.activeView ==
+                                                                    mailboxes[
+                                                                            index]
+                                                                        ['id']
+                                                                ? Text('Bla')
+                                                                : Container()
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ));
                                           });
                                     } else {
                                       return Container();
@@ -246,26 +285,25 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             )
                           : Container(),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        child: ListTile(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                        child: GestureDetector(
                           onTap: () => {toggleCollapsedCustomViews()},
-                          visualDensity:
-                              const VisualDensity(horizontal: 0, vertical: -4),
-                          contentPadding: const EdgeInsets.all(0),
-                          title: Text(
+                          child: Text(
                               LocalizationService.of(context)?.translate(
                                       'custom_views_header_label') ??
                                   '',
-                              style: const TextStyle(fontSize: 14)),
-                          trailing: customViewCollapsed == false
-                              ? const ChevronRightIcon()
-                              : const ChevronDownIcon(),
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: customViewCollapsed == true
+                                      ? FontWeight.bold
+                                      : null)),
                         ),
                       ),
                       const SizedBox(height: 5.0),
                       customViewCollapsed == true
                           ? Padding(
-                              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                              padding:
+                                  const EdgeInsets.fromLTRB(10, 10, 10, 10),
                               child: SizedBox(
                                 child: Text('Custom Views'),
                               ),
@@ -277,7 +315,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
               ),
             )),
             ResponsiveRowColumnItem(
-                rowFlex: 2,
+                rowFlex: 3,
                 child: Consumer<MessageService>(
                     builder: (context, ms, child) => ms.messages.isNotEmpty
                         ? ListView.builder(

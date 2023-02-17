@@ -39,7 +39,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   getIcon(channel) {
     switch (channel) {
       case 'email':
-        return const EmailIcon();
+        return const EmailIcon(size: 15);
       case 'alert':
         return const AlertIcon();
     }

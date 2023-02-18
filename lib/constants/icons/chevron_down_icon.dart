@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ChevronDownIcon extends StatelessWidget {
-  const ChevronDownIcon({super.key});
+  final double size;
+  const ChevronDownIcon({super.key, required this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +17,6 @@ class ChevronDownIcon extends StatelessWidget {
                 ? CupertinoIcons.chevron_down
                 : FontAwesomeIcons.chevronDown,
             color: Theme.of(context).colorScheme.onBackground,
-            size: 15));
+            size: size));
   }
 }

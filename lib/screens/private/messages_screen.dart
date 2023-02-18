@@ -1,7 +1,10 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:base/constants/drawers/private_menu_end_drawer.dart';
+import 'package:base/constants/icons/checkmark_icon.dart';
 import 'package:base/constants/icons/chevron_down_icon.dart';
 import 'package:base/constants/loaders/loader.dart';
 import 'package:flutter/cupertino.dart';
@@ -39,6 +42,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   bool customViewCollapsed = false;
   String? viewEncoded;
   final Map view = {};
+  List? localMessages = [];
 
   @override
   initState() {
@@ -192,13 +196,31 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   onTap: () => {ms.removeViewFromPrefs()},
                                   child: Row(
                                     children: [
-                                      Text(LocalizationService.of(context)
-                                              ?.translate(
-                                                  'all_messages_button_label') ??
-                                          ''),
-                                      ms.activeView == null
-                                          ? Text('bla')
-                                          : Container()
+                                      Text(
+                                          LocalizationService.of(context)
+                                                  ?.translate(
+                                                      'all_messages_button_label') ??
+                                              '',
+                                          style: TextStyle(
+                                              color: ms.activeView == null
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : null)),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                          '(' +
+                                              (ms.totalMessageCount)
+                                                   +
+                                              ')',
+                                          style: TextStyle(
+                                              color: ms.activeView == null
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : null))
                                     ],
                                   ),
                                 ),
@@ -206,18 +228,22 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                         child: GestureDetector(
-                          onTap: () => {toggleCollapsedDefaultViews()},
-                          child: Text(
-                            LocalizationService.of(context)?.translate(
-                                    'default_email_views_header_label') ??
-                                '',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: defaultViewCollapsed == true
-                                    ? FontWeight.bold
-                                    : null),
-                          ),
-                        ),
+                            onTap: () => {toggleCollapsedDefaultViews()},
+                            child: Row(
+                              children: [
+                                Text(
+                                  LocalizationService.of(context)?.translate(
+                                          'default_email_views_header_label') ??
+                                      '',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                defaultViewCollapsed == false
+                                    ? const ChevronRightIcon(size: 12)
+                                    : const ChevronDownIcon(size: 12)
+                              ],
+                            )),
                       ),
                       defaultViewCollapsed == true
                           ? LimitedBox(
@@ -238,41 +264,53 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                             view['value'] =
                                                 mailboxes[index]['id'];
                                             viewEncoded = json.encode(view);
+
                                             return Consumer<MessageService>(
-                                                builder: (context, ms, child) =>
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .fromLTRB(
-                                                          20, 5, 10, 5),
-                                                      child: GestureDetector(
-                                                        onTap: () => {
-                                                          ms.saveViewToPrefs(
-                                                              viewEncoded)
-                                                        },
-                                                        child: Row(
-                                                          children: [
-                                                            const EmailIcon(
-                                                                size: 14),
-                                                            const SizedBox(
-                                                                width: 5),
-                                                            Text(
-                                                              mailboxes[index]
-                                                                  ['email'],
-                                                              style:
-                                                                  const TextStyle(
-                                                                      fontSize:
-                                                                          14),
+                                                builder:
+                                                    (context, ms, child) =>
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  10, 5, 10, 5),
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () => {
+                                                              ms.saveViewToPrefs(
+                                                                  viewEncoded)
+                                                            },
+                                                            child: Row(
+                                                              children: [
+                                                                Text(
+                                                                  mailboxes[
+                                                                          index]
+                                                                      ['email'],
+                                                                  style: TextStyle(
+                                                                      color: ms.activeView ==
+                                                                              mailboxes[index][
+                                                                                  'id']
+                                                                          ? Theme.of(context)
+                                                                              .colorScheme
+                                                                              .primary
+                                                                          : null),
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 5,
+                                                                ),
+                                                                Text(
+                                                                    '(' +
+                                                                        (mailboxes[index]['emails'].length)
+                                                                            .toString() +
+                                                                        ')',
+                                                                    style: TextStyle(
+                                                                        color: ms.activeView ==
+                                                                                mailboxes[index]['id']
+                                                                            ? Theme.of(context).colorScheme.primary
+                                                                            : null))
+                                                              ],
                                                             ),
-                                                            ms.activeView ==
-                                                                    mailboxes[
-                                                                            index]
-                                                                        ['id']
-                                                                ? Text('Bla')
-                                                                : Container()
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ));
+                                                          ),
+                                                        ));
                                           });
                                     } else {
                                       return Container();
@@ -315,7 +353,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
               ),
             )),
             ResponsiveRowColumnItem(
-                rowFlex: 3,
+                rowFlex: 4,
                 child: Consumer<MessageService>(
                     builder: (context, ms, child) => ms.messages.isNotEmpty
                         ? ListView.builder(
@@ -323,6 +361,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             scrollDirection: Axis.vertical,
                             itemCount: ms.messages.length,
                             itemBuilder: (context, index) {
+                              localMessages = ms.messages;
                               return SizedBox(
                                 child: Padding(
                                     padding: EdgeInsets.fromLTRB(

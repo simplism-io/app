@@ -56,7 +56,7 @@ class _PrivateMenuEndDrawerState extends State<PrivateMenuEndDrawer> {
                               ?.translate('admin_drawer_link_label') ??
                           '',
                       style: const TextStyle(fontWeight: FontWeight.bold)),
-                  trailing: const ChevronRightIcon(),
+                  trailing: const ChevronRightIcon(size: 15),
                 ))
             : Container(),
         const SizedBox(height: 5.0),
@@ -74,7 +74,7 @@ class _PrivateMenuEndDrawerState extends State<PrivateMenuEndDrawer> {
                           ?.translate('profile_link_label') ??
                       '',
                   style: const TextStyle(fontWeight: FontWeight.bold)),
-              trailing: const ChevronRightIcon(),
+              trailing: const ChevronRightIcon(size: 15),
             )),
         const SizedBox(height: 5.0),
         Consumer<InternationalizationService>(
@@ -153,7 +153,7 @@ class _PrivateMenuEndDrawerState extends State<PrivateMenuEndDrawer> {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.onBackground)),
-            trailing: const ChevronRightIcon(),
+            trailing: const ChevronRightIcon(size: 15),
           ),
         )
       ],

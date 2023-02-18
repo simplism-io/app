@@ -27,7 +27,7 @@ class ContactDrawerLink extends StatelessWidget {
                   ? Theme.of(context).colorScheme.primary
                   : Theme.of(context).colorScheme.onBackground,
             )),
-        trailing: const ChevronRightIcon(),
+        trailing: const ChevronRightIcon(size: 15),
       ),
     );
   }

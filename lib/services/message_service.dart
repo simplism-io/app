@@ -11,16 +11,18 @@ final supabase = Supabase.instance.client;
 
 class MessageService extends ChangeNotifier {
   late List messages;
-  String key = 'view';
+  String keyView = 'view';
+  String keyCount = 'count';
   String? viewEncoded;
   String? viewDecoded;
   String? activeView;
   final organisationId =
       supabase.auth.currentSession!.user.userMetadata!['organisation_id'];
+  String totalMessageCount = '0';
 
   loadViewfromPrefs() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    final view = pref.getString(key);
+    final view = pref.getString(keyView);
     if (kDebugMode) {
       print('View $view loaded from localStorage');
     }
@@ -29,22 +31,44 @@ class MessageService extends ChangeNotifier {
 
   removeViewFromPrefs() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.remove(key);
+    pref.remove(keyView);
     getNewMessages();
   }
 
   saveViewToPrefs(viewEncoded) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setString(key, viewEncoded);
+    await pref.setString(keyView, viewEncoded);
     if (kDebugMode) {
       print('View $viewEncoded saved to localStorage');
     }
     getNewMessages();
   }
 
+  saveTotalMessageCountToPrefs(count) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.setString(keyCount, count);
+    if (kDebugMode) {
+      print('Message count of $count saved to localStorage');
+    }
+    loadTotalMessageCountfromPrefs();
+  }
+
+  loadTotalMessageCountfromPrefs() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    totalMessageCount = pref.getString(keyCount)!;
+    if (kDebugMode) {
+      print('Message count loaded from localStorage');
+    }
+    notifyListeners();
+  }
+
   MessageService() {
     messages = [];
-    getNewMessages();
+    if (messages.isEmpty) {
+      getNewMessages();
+    }
+
+    loadTotalMessageCountfromPrefs();
 
     supabase.channel('public:messages').on(
       RealtimeListenTypes.postgresChanges,
@@ -77,13 +101,14 @@ class MessageService extends ChangeNotifier {
       if (kDebugMode) {
         print('Showing all messages');
       }
-
       messages = await supabase
           .from('messages')
           .select(
               'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), errors(*)')
           .eq('organisation_id', organisationId)
+          .eq('incoming', true)
           .order('created', ascending: false);
+      await saveTotalMessageCountToPrefs(messages.length);
       notifyListeners();
     } else {
       if (kDebugMode) {
@@ -94,8 +119,9 @@ class MessageService extends ChangeNotifier {
       messages = await supabase
           .from('messages')
           .select(
-              'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), emails(*) errors(*)')
+              'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), emails(*), errors(*)')
           .eq('organisation_id', organisationId)
+          .eq('incoming', true)
           .eq(viewDecoded['key'], viewDecoded['value'])
           .order('created', ascending: false);
       notifyListeners();

@@ -20,7 +20,7 @@ class GithubDrawerLink extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.onBackground,
             )),
-        trailing: const ChevronRightIcon(),
+        trailing: const ChevronRightIcon(size: 15),
       ),
     );
   }

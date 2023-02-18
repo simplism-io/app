@@ -7,7 +7,8 @@ class MailBoxService extends ChangeNotifier {
   Map? mailboxStatus;
 
   Future loadMailBoxes() async {
-    return await supabase.from('mailboxes').select().eq('organisation_id',
+    return await supabase.from('mailboxes').select('*, emails(id)').eq(
+        'organisation_id',
         supabase.auth.currentSession!.user.userMetadata!['organisation_id']);
   }
 

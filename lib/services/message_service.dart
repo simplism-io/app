@@ -108,7 +108,8 @@ class MessageService extends ChangeNotifier {
           .eq('organisation_id', organisationId)
           .eq('incoming', true)
           .order('created', ascending: false);
-      await saveTotalMessageCountToPrefs(messages.length);
+      await saveTotalMessageCountToPrefs((messages.length).toString());
+      print(messages);
       notifyListeners();
     } else {
       if (kDebugMode) {

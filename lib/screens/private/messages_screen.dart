@@ -4,21 +4,19 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:base/constants/drawers/private_menu_end_drawer.dart';
-import 'package:base/constants/icons/checkmark_icon.dart';
 import 'package:base/constants/icons/chevron_down_icon.dart';
 import 'package:base/constants/loaders/loader.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:jiffy/jiffy.dart';
 
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../constants/icons/alert_icon.dart';
 import '../../constants/icons/chevron_right_icon.dart';
-import '../../constants/icons/email_icon.dart';
 import '../../services/localization_service.dart';
 import '../../services/mailbox_service.dart';
 import '../../services/message_service.dart';
@@ -43,6 +41,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   String? viewEncoded;
   final Map view = {};
   List? localMessages = [];
+  bool showSideBar = true;
 
   @override
   initState() {
@@ -54,15 +53,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Future<void> dispose() async {
     await supabase.removeAllChannels();
     super.dispose();
-  }
-
-  getIcon(channel) {
-    switch (channel) {
-      case 'email':
-        return const EmailIcon(size: 15);
-      case 'alert':
-        return const AlertIcon();
-    }
   }
 
   drawer() {
@@ -86,6 +76,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
   toggleCollapsedCustomViews() {
     setState(() {
       customViewCollapsed = !customViewCollapsed;
+    });
+  }
+
+  toggleShowSideBar() {
+    setState(() {
+      showSideBar = !showSideBar;
     });
   }
 
@@ -151,209 +147,250 @@ class _MessagesScreenState extends State<MessagesScreen> {
           rowPadding: const EdgeInsets.all(20.0),
           columnPadding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
           children: [
-            ResponsiveRowColumnItem(
-                child: ResponsiveVisibility(
-              hiddenWhen: const [Condition.smallerThan(name: TABLET)],
-              child: Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                            LocalizationService.of(context)
-                                    ?.translate('views_header_label') ??
-                                '',
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
+            showSideBar == false
+                ? ResponsiveRowColumnItem(
+                    child: ResponsiveVisibility(
+                    hiddenWhen: const [Condition.smallerThan(name: TABLET)],
+                    child: SizedBox(
+                      child: Builder(
+                        builder: (context) {
+                          return IconButton(
+                            icon: const Icon(
+                              Icons.chevron_right,
+                            ),
+                            onPressed: () {
+                              toggleShowSideBar();
+                              //Scaffold.of(context).openDrawer();
+                            },
+                          );
+                        },
                       ),
-                      // Column(
-                      //   children: [
-                      //     const SizedBox(height: 4),
-                      //     SizedBox(
-                      //       child: Builder(
-                      //         builder: (context) {
-                      //           return IconButton(
-                      //             icon: const Icon(
-                      //               Icons.chevron_left,
-                      //             ),
-                      //             onPressed: () {
-                      //               Scaffold.of(context).openDrawer();
-                      //             },
-                      //           );
-                      //         },
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                      Consumer<MessageService>(
-                          builder: (context, ms, child) => Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                child: GestureDetector(
-                                  onTap: () => {ms.removeViewFromPrefs()},
+                    ),
+                  ))
+                : ResponsiveRowColumnItem(child: Container()),
+            showSideBar == true
+                ? ResponsiveRowColumnItem(
+                    child: ResponsiveVisibility(
+                    hiddenWhen: const [Condition.smallerThan(name: TABLET)],
+                    child: Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Text(
+                                      LocalizationService.of(context)
+                                              ?.translate(
+                                                  'views_header_label') ??
+                                          '',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                ),
+                                const Spacer(),
+                                SizedBox(
+                                  child: Builder(
+                                    builder: (context) {
+                                      return IconButton(
+                                        icon: const Icon(
+                                          Icons.chevron_left,
+                                        ),
+                                        onPressed: () {
+                                          toggleShowSideBar();
+                                          //Scaffold.of(context).openDrawer();
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // Column(
+                            //   children: [
+                            //     const SizedBox(height: 4),
+                            //     SizedBox(
+                            //       child: Builder(
+                            //         builder: (context) {
+                            //           return IconButton(
+                            //             icon: const Icon(
+                            //               Icons.chevron_left,
+                            //             ),
+                            //             onPressed: () {
+                            //               Scaffold.of(context).openDrawer();
+                            //             },
+                            //           );
+                            //         },
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                            Consumer<MessageService>(
+                                builder: (context, ms, child) => Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          10, 5, 10, 5),
+                                      child: GestureDetector(
+                                        onTap: () => {ms.removeViewFromPrefs()},
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                                LocalizationService.of(context)
+                                                        ?.translate(
+                                                            'all_messages_button_label') ??
+                                                    '',
+                                                style: TextStyle(
+                                                    color: ms.activeView == null
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
+                                                        : null)),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                                '(' +
+                                                    (ms.totalMessageCount) +
+                                                    ')',
+                                                style: TextStyle(
+                                                    color: ms.activeView == null
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
+                                                        : null))
+                                          ],
+                                        ),
+                                      ),
+                                    )),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                              child: GestureDetector(
+                                  onTap: () => {toggleCollapsedDefaultViews()},
                                   child: Row(
                                     children: [
                                       Text(
-                                          LocalizationService.of(context)
-                                                  ?.translate(
-                                                      'all_messages_button_label') ??
-                                              '',
-                                          style: TextStyle(
-                                              color: ms.activeView == null
-                                                  ? Theme.of(context)
-                                                      .colorScheme
-                                                      .primary
-                                                  : null)),
-                                      const SizedBox(
-                                        width: 5,
+                                        LocalizationService.of(context)?.translate(
+                                                'default_email_views_header_label') ??
+                                            '',
                                       ),
-                                      Text(
-                                          '(' +
-                                              (ms.totalMessageCount)
-                                                   +
-                                              ')',
-                                          style: TextStyle(
-                                              color: ms.activeView == null
-                                                  ? Theme.of(context)
-                                                      .colorScheme
-                                                      .primary
-                                                  : null))
+                                      defaultViewCollapsed == false
+                                          ? const ChevronRightIcon(size: 12)
+                                          : const ChevronDownIcon(size: 12)
                                     ],
-                                  ),
-                                ),
-                              )),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                        child: GestureDetector(
-                            onTap: () => {toggleCollapsedDefaultViews()},
-                            child: Row(
-                              children: [
-                                Text(
-                                  LocalizationService.of(context)?.translate(
-                                          'default_email_views_header_label') ??
-                                      '',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                defaultViewCollapsed == false
-                                    ? const ChevronRightIcon(size: 12)
-                                    : const ChevronDownIcon(size: 12)
-                              ],
-                            )),
-                      ),
-                      defaultViewCollapsed == true
-                          ? LimitedBox(
-                              maxHeight:
-                                  MediaQuery.of(context).size.height * 0.2,
-                              child: FutureBuilder(
-                                builder: (ctx, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    if (snapshot.data.length > 0) {
-                                      final mailboxes = snapshot.data!;
-                                      return ListView.builder(
-                                          shrinkWrap: true,
-                                          scrollDirection: Axis.vertical,
-                                          itemCount: mailboxes.length,
-                                          itemBuilder: (context, index) {
-                                            view['key'] = 'emails.mailbox_id';
-                                            view['value'] =
-                                                mailboxes[index]['id'];
-                                            viewEncoded = json.encode(view);
-
-                                            return Consumer<MessageService>(
-                                                builder:
-                                                    (context, ms, child) =>
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  10, 5, 10, 5),
-                                                          child:
-                                                              GestureDetector(
-                                                            onTap: () => {
-                                                              ms.saveViewToPrefs(
-                                                                  viewEncoded)
-                                                            },
-                                                            child: Row(
-                                                              children: [
-                                                                Text(
-                                                                  mailboxes[
-                                                                          index]
-                                                                      ['email'],
-                                                                  style: TextStyle(
-                                                                      color: ms.activeView ==
-                                                                              mailboxes[index][
-                                                                                  'id']
-                                                                          ? Theme.of(context)
-                                                                              .colorScheme
-                                                                              .primary
-                                                                          : null),
+                                  )),
+                            ),
+                            defaultViewCollapsed == true
+                                ? LimitedBox(
+                                    maxHeight:
+                                        MediaQuery.of(context).size.height *
+                                            0.2,
+                                    child: FutureBuilder(
+                                      builder: (ctx, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.done) {
+                                          if (snapshot.data.length > 0) {
+                                            final mailboxes = snapshot.data!;
+                                            return ListView.builder(
+                                                shrinkWrap: true,
+                                                scrollDirection: Axis.vertical,
+                                                itemCount: mailboxes.length,
+                                                itemBuilder: (context, index) {
+                                                  view['key'] =
+                                                      'emails.mailbox_id';
+                                                  view['value'] =
+                                                      mailboxes[index]['id'];
+                                                  viewEncoded =
+                                                      json.encode(view);
+                                                  return Consumer<
+                                                          MessageService>(
+                                                      builder:
+                                                          (context, ms,
+                                                                  child) =>
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .fromLTRB(
+                                                                        20,
+                                                                        5,
+                                                                        10,
+                                                                        5),
+                                                                child:
+                                                                    GestureDetector(
+                                                                  onTap: () => {
+                                                                    ms.saveViewToPrefs(
+                                                                        viewEncoded)
+                                                                  },
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Text(
+                                                                        mailboxes[index]
+                                                                            [
+                                                                            'email'],
+                                                                        style: TextStyle(
+                                                                            color: ms.activeView == mailboxes[index]['id']
+                                                                                ? Theme.of(context).colorScheme.primary
+                                                                                : null),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                        width:
+                                                                            5,
+                                                                      ),
+                                                                      Text(
+                                                                          '(' +
+                                                                              (mailboxes[index]['emails'].length)
+                                                                                  .toString() +
+                                                                              ')',
+                                                                          style:
+                                                                              TextStyle(color: ms.activeView == mailboxes[index]['id'] ? Theme.of(context).colorScheme.primary : null))
+                                                                    ],
+                                                                  ),
                                                                 ),
-                                                                const SizedBox(
-                                                                  width: 5,
-                                                                ),
-                                                                Text(
-                                                                    '(' +
-                                                                        (mailboxes[index]['emails'].length)
-                                                                            .toString() +
-                                                                        ')',
-                                                                    style: TextStyle(
-                                                                        color: ms.activeView ==
-                                                                                mailboxes[index]['id']
-                                                                            ? Theme.of(context).colorScheme.primary
-                                                                            : null))
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ));
-                                          });
-                                    } else {
-                                      return Container();
-                                    }
-                                  }
-                                  return const Loader(size: 25.0);
-                                },
-                                future: MailBoxService().loadMailBoxes(),
+                                                              ));
+                                                });
+                                          } else {
+                                            return Container();
+                                          }
+                                        }
+                                        return const Loader(size: 25.0);
+                                      },
+                                      future: MailBoxService().loadMailBoxes(),
+                                    ),
+                                  )
+                                : Container(),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                              child: GestureDetector(
+                                onTap: () => {toggleCollapsedCustomViews()},
+                                child: Text(
+                                    LocalizationService.of(context)?.translate(
+                                            'custom_views_header_label') ??
+                                        '',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: customViewCollapsed == true
+                                            ? FontWeight.bold
+                                            : null)),
                               ),
-                            )
-                          : Container(),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                        child: GestureDetector(
-                          onTap: () => {toggleCollapsedCustomViews()},
-                          child: Text(
-                              LocalizationService.of(context)?.translate(
-                                      'custom_views_header_label') ??
-                                  '',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: customViewCollapsed == true
-                                      ? FontWeight.bold
-                                      : null)),
+                            ),
+                            const SizedBox(height: 5.0),
+                            customViewCollapsed == true
+                                ? Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        10, 10, 10, 10),
+                                    child: SizedBox(
+                                      child: Text('Custom Views'),
+                                    ),
+                                  )
+                                : Container(),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 5.0),
-                      customViewCollapsed == true
-                          ? Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                              child: SizedBox(
-                                child: Text('Custom Views'),
-                              ),
-                            )
-                          : Container(),
-                    ],
-                  ),
-                ),
-              ),
-            )),
+                    ),
+                  ))
+                : ResponsiveRowColumnItem(child: Container()),
             ResponsiveRowColumnItem(
-                rowFlex: 4,
+                rowFlex: 3,
                 child: Consumer<MessageService>(
                     builder: (context, ms, child) => ms.messages.isNotEmpty
                         ? ListView.builder(
@@ -377,81 +414,172 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     child: Column(
                                       children: [
                                         GestureDetector(
-                                          onTap: () => {
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MessageDetailScreen(
-                                                          message: ms
-                                                              .messages[index],
-                                                          agent: widget.agent)),
-                                            )
-                                          },
-                                          child: ms.messages[index]
-                                                      ['incoming'] ==
-                                                  true
-                                              ? Card(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .surface,
-                                                  elevation: 0,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                            .fromLTRB(
-                                                        15, 10, 15, 10),
-                                                    child: Row(
-                                                      children: [
-                                                        const SizedBox(
-                                                            width: 40,
-                                                            child:
-                                                                Text('avtr')),
-                                                        Text(
-                                                          ms.messages[index][
+                                            onTap: () => {
+                                                  Navigator.of(context,
+                                                          rootNavigator: true)
+                                                      .push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MessageDetailScreen(
+                                                                message:
+                                                                    ms.messages[
+                                                                        index],
+                                                                agent: widget
+                                                                    .agent)),
+                                                  )
+                                                },
+                                            child: Card(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .surface,
+                                                elevation: 0,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          15, 10, 15, 10),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      ResponsiveVisibility(
+                                                          hiddenWhen: const [
+                                                            Condition
+                                                                .largerThan(
+                                                                    name:
+                                                                        MOBILE)
+                                                          ],
+                                                          child: Row(
+                                                            children: [
+                                                              Text(
+                                                                Jiffy(ms.messages[
+                                                                            index]
+                                                                        [
+                                                                        'created'])
+                                                                    .fromNow(),
+                                                                style: const TextStyle(
+                                                                    fontSize:
+                                                                        10,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                              SizedBox(
+                                                                  width: 3),
+                                                              Text('via'),
+                                                              SizedBox(
+                                                                  width: 3),
+                                                              UtilService().getIcon(
+                                                                  ms.messages[index]
+                                                                          [
                                                                           'channels']
                                                                       [
-                                                                      'channel'] ==
-                                                                  'alert'
-                                                              ? UtilService()
-                                                                  .truncateString(
-                                                                      LocalizationService.of(context)?.translate(ms.messages[index]["subject"]) ??
-                                                                          '',
-                                                                      ResponsiveValue(
-                                                                              context,
-                                                                              defaultValue:
-                                                                                  20,
-                                                                              valueWhen: [
-                                                                            const Condition.largerThan(
-                                                                                name: TABLET,
-                                                                                value: 50),
-                                                                            const Condition.largerThan(
-                                                                                name: MOBILE,
-                                                                                value: 30)
-                                                                          ])
-                                                                          .value!)
-                                                              : UtilService()
-                                                                  .truncateString(
-                                                                      ms.messages[
-                                                                              index]
-                                                                          ["subject"],
-                                                                      15),
-                                                          style: const TextStyle(
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
-                                                        const Spacer(),
-                                                        getIcon(
+                                                                      'channel']),
+                                                            ],
+                                                          )),
+                                                      Row(
+                                                        children: [
+                                                          SizedBox(
+                                                              width: 60,
+                                                              child: Text(ms.messages[
+                                                                          index]
+                                                                      [
+                                                                      'customers']
+                                                                  ['name'])),
+                                                          Text(
                                                             ms.messages[index]
-                                                                    ['channels']
-                                                                ['channel']),
-                                                      ],
-                                                    ),
-                                                  ))
-                                              : Container(),
-                                        ),
+                                                                            ['channels'][
+                                                                        'channel'] ==
+                                                                    'alert'
+                                                                ? UtilService()
+                                                                    .truncateString(
+                                                                        LocalizationService.of(context)?.translate(ms.messages[index]["subject"]) ??
+                                                                            '',
+                                                                        ResponsiveValue(context,
+                                                                                defaultValue:
+                                                                                    50,
+                                                                                valueWhen: [
+                                                                              const Condition.largerThan(name: TABLET, value: 60),
+                                                                              const Condition.smallerThan(name: TABLET, value: 25)
+                                                                            ])
+                                                                            .value!)
+                                                                : UtilService()
+                                                                    .truncateString(
+                                                                        ms.messages[index]
+                                                                            [
+                                                                            "subject"],
+                                                                        ResponsiveValue(
+                                                                            context,
+                                                                            defaultValue:
+                                                                                50,
+                                                                            valueWhen: [
+                                                                              const Condition.largerThan(name: TABLET, value: 60),
+                                                                              const Condition.smallerThan(name: TABLET, value: 25)
+                                                                            ]).value!),
+                                                            style: const TextStyle(
+                                                                fontSize: 15,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          ),
+                                                          const Spacer(),
+                                                          ResponsiveVisibility(
+                                                              hiddenWhen: const [
+                                                                Condition
+                                                                    .smallerThan(
+                                                                        name:
+                                                                            TABLET)
+                                                              ],
+                                                              child: Text(
+                                                                Jiffy(ms.messages[
+                                                                            index]
+                                                                        [
+                                                                        'created'])
+                                                                    .fromNow(),
+                                                                style: const TextStyle(
+                                                                    fontSize:
+                                                                        10,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              )),
+                                                          ResponsiveVisibility(
+                                                              hiddenWhen: const [
+                                                                Condition
+                                                                    .smallerThan(
+                                                                        name:
+                                                                            TABLET)
+                                                              ],
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .fromLTRB(
+                                                                        3,
+                                                                        0,
+                                                                        3,
+                                                                        0),
+                                                                child:
+                                                                    Text('via'),
+                                                              )),
+                                                          ResponsiveVisibility(
+                                                              hiddenWhen: const [
+                                                                Condition
+                                                                    .smallerThan(
+                                                                        name:
+                                                                            TABLET)
+                                                              ],
+                                                              child: UtilService()
+                                                                  .getIcon(ms.messages[
+                                                                              index]
+                                                                          [
+                                                                          'channels']
+                                                                      [
+                                                                      'channel'])),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ))),
                                       ],
                                     )),
                               ); //getMessages();

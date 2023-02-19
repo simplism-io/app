@@ -36,15 +36,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   bool seeAllMessages = false;
   int maxNumberOfMessages = 2;
 
-  getIcon(channel) {
-    switch (channel) {
-      case 'email':
-        return const EmailIcon(size: 15);
-      case 'alert':
-        return const AlertIcon();
-    }
-  }
-
   toggleSeeAllMessages() {
     seeAllMessages = !seeAllMessages;
     if (seeAllMessages == true) {
@@ -52,11 +43,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     } else {
       maxNumberOfMessages = 2;
     }
-  }
-
-  getTimeAgo(timestamp) async {
-    //return Jiffy(timestamp).fromNow.toString();
-    await Jiffy.locale("fr");
   }
 
   @override
@@ -126,8 +112,16 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                     ?.translate(widget.message["subject"]) ??
                                 '',
                             20)
-                        : UtilService()
-                            .truncateString(widget.message["subject"], 15),
+                        : UtilService().truncateString(
+                            widget.message["subject"],
+                            ResponsiveValue(context,
+                                defaultValue: 50,
+                                valueWhen: [
+                                  const Condition.largerThan(
+                                      name: TABLET, value: 75),
+                                  const Condition.smallerThan(
+                                      name: TABLET, value: 25)
+                                ]).value!),
                     style: const TextStyle(
                         fontSize: 15, fontWeight: FontWeight.bold),
                   ),
@@ -175,26 +169,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                       itemCount: messages.length,
                                       itemBuilder:
                                           (BuildContext context, int index) {
-                                        // var jiffy = (Jiffy()..utc());
-                                        // jiffy.format();
-                                        // //var jiffy1 = Jiffy("2007-1-28");
-
-                                        // //var jiffy2 = messages[index]['created'];
-                                        // //jiffy2.format();
-
-                                        // //print(jiffy2.from(jiffy));
-                                        // //print(Jiffy(jiffy2)
-                                        // //.fromNow); // a few seconds ago)
-
-                                        // print(messages[index]['created']);
-                                        // print(Jiffy(messages[index]['created'])
-                                        //     .fromNow());
-
-                                        // var timeAgo =
-                                        //     Jiffy(messages[index]['created'])
-                                        //         .fromNow;
-                                        // print(timeAgo);
-
                                         return Padding(
                                           padding: const EdgeInsets.fromLTRB(
                                               0, 10, 0, 10),
@@ -234,9 +208,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                                                           index]
                                                                       [
                                                                       'created'])
-                                                                  .fromNow()
-                                                              // a few seconds ago
-                                                              ,
+                                                                  .fromNow(),
                                                               style: const TextStyle(
                                                                   fontSize: 10,
                                                                   fontWeight:
@@ -245,93 +217,89 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                                         )),
                                                       ],
                                                     ),
-                                                    Row(
-                                                      mainAxisAlignment: messages[
-                                                                      index][
-                                                                  'incoming'] ==
-                                                              true
-                                                          ? MainAxisAlignment
-                                                              .start
-                                                          : MainAxisAlignment
-                                                              .end,
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  0, 5, 0, 5),
-                                                          child: Card(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .surface,
-                                                            child: Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                              .fromLTRB(
-                                                                          10,
-                                                                          10,
-                                                                          10,
-                                                                          0),
-                                                                  child: Text(
-                                                                      messages[index]['incoming'] ==
-                                                                              true
-                                                                          ? messages[index]['customers']
+                                                    LimitedBox(
+                                                      maxWidth: 400,
+                                                      child: Row(
+                                                        mainAxisAlignment: messages[
+                                                                        index][
+                                                                    'incoming'] ==
+                                                                true
+                                                            ? MainAxisAlignment
+                                                                .start
+                                                            : MainAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    0, 5, 0, 5),
+                                                            child: Card(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .surface,
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.fromLTRB(
+                                                                            10,
+                                                                            10,
+                                                                            10,
+                                                                            0),
+                                                                    child: Text(
+                                                                        messages[index]['incoming'] ==
+                                                                                true
+                                                                            ? messages[index]['customers']['name']
+                                                                            : messages[index]['messages_agents'].length > 0
+                                                                                ? messages[index]['messages_agents'][0]['agents']['name']
+                                                                                : 'Agent name',
+                                                                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                                                                  ),
+                                                                  widget.message['channels']
                                                                               [
-                                                                              'name']
-                                                                          : messages[index]['messages_agents'].length >
-                                                                                  0
-                                                                              ? messages[index]['messages_agents'][0]['agents'][
-                                                                                  'name']
-                                                                              : 'Agent name',
-                                                                      style: const TextStyle(
-                                                                          fontWeight:
-                                                                              FontWeight.bold)),
-                                                                ),
-                                                                widget.message['channels']
-                                                                            [
-                                                                            'channel'] ==
-                                                                        'email'
-                                                                    ? Padding(
-                                                                        padding: const EdgeInsets.fromLTRB(
-                                                                            10,
-                                                                            5,
-                                                                            10,
-                                                                            10),
-                                                                        child:
-                                                                            HtmlWidget(
-                                                                          messages[index]['emails'][0]['body_html'] ??
-                                                                              '',
+                                                                              'channel'] ==
+                                                                          'email'
+                                                                      ? Padding(
+                                                                          padding: const EdgeInsets.fromLTRB(
+                                                                              10,
+                                                                              5,
+                                                                              10,
+                                                                              10),
+                                                                          child:
+                                                                              HtmlWidget(
+                                                                            messages[index]['emails'][0]['body_html'] ??
+                                                                                '',
+                                                                          ),
+                                                                        )
+                                                                      : Padding(
+                                                                          padding: const EdgeInsets.fromLTRB(
+                                                                              10,
+                                                                              5,
+                                                                              10,
+                                                                              10),
+                                                                          child:
+                                                                              Text(
+                                                                            messages[index]['channels']['channel'] == 'alert'
+                                                                                ? LocalizationService.of(context)?.translate(widget.message['body']) ?? ''
+                                                                                : messages[index]['body'] ?? '',
+                                                                            style:
+                                                                                const TextStyle(fontSize: 15),
+                                                                          ),
                                                                         ),
-                                                                      )
-                                                                    : Padding(
-                                                                        padding: const EdgeInsets.fromLTRB(
-                                                                            10,
-                                                                            5,
-                                                                            10,
-                                                                            10),
-                                                                        child:
-                                                                            Text(
-                                                                          messages[index]['channels']['channel'] == 'alert'
-                                                                              ? LocalizationService.of(context)?.translate(widget.message['body']) ?? ''
-                                                                              : messages[index]['body'] ?? '',
-                                                                          style:
-                                                                              const TextStyle(fontSize: 15),
-                                                                        ),
-                                                                      ),
-                                                              ],
+                                                                ],
+                                                              ),
                                                             ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
                                                   ],
                                                 )

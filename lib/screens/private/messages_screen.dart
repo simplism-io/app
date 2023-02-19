@@ -22,6 +22,7 @@ import '../../services/mailbox_service.dart';
 import '../../services/message_service.dart';
 import '../../constants/links/logo_header_link.dart';
 import '../../services/util_service.dart';
+import 'create_view_screen.dart';
 import 'message_detail_screen.dart';
 
 final supabase = Supabase.instance.client;
@@ -36,12 +37,13 @@ class MessagesScreen extends StatefulWidget {
 
 class _MessagesScreenState extends State<MessagesScreen> {
   bool loaded = false;
-  bool defaultViewCollapsed = false;
-  bool customViewCollapsed = false;
+  bool defaultViewCollapsed = true;
+  bool customViewCollapsed = true;
   String? viewEncoded;
   final Map view = {};
   List? localMessages = [];
   bool showSideBar = true;
+  bool showCustomerBar = false;
 
   @override
   initState() {
@@ -81,7 +83,15 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   toggleShowSideBar() {
     setState(() {
+      showCustomerBar = false;
       showSideBar = !showSideBar;
+    });
+  }
+
+  toggleCustomerBar() {
+    setState(() {
+      showSideBar = false;
+      showCustomerBar = !showCustomerBar;
     });
   }
 
@@ -147,7 +157,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
           rowPadding: const EdgeInsets.all(20.0),
           columnPadding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
           children: [
-            showSideBar == false
+            showSideBar == false && showCustomerBar == false
                 ? ResponsiveRowColumnItem(
                     child: ResponsiveVisibility(
                     hiddenWhen: const [Condition.smallerThan(name: TABLET)],
@@ -274,13 +284,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                 'default_email_views_header_label') ??
                                             '',
                                       ),
-                                      defaultViewCollapsed == false
+                                      defaultViewCollapsed == true
                                           ? const ChevronRightIcon(size: 12)
                                           : const ChevronDownIcon(size: 12)
                                     ],
                                   )),
                             ),
-                            defaultViewCollapsed == true
+                            defaultViewCollapsed != true
                                 ? LimitedBox(
                                     maxHeight:
                                         MediaQuery.of(context).size.height *
@@ -362,24 +372,46 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                               child: GestureDetector(
                                 onTap: () => {toggleCollapsedCustomViews()},
-                                child: Text(
-                                    LocalizationService.of(context)?.translate(
-                                            'custom_views_header_label') ??
-                                        '',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: customViewCollapsed == true
-                                            ? FontWeight.bold
-                                            : null)),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                        LocalizationService.of(context)?.translate(
+                                                'custom_views_header_label') ??
+                                            '',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight:
+                                                customViewCollapsed != true
+                                                    ? FontWeight.bold
+                                                    : null)),
+                                    customViewCollapsed == true
+                                        ? const ChevronRightIcon(size: 12)
+                                        : const ChevronDownIcon(size: 12)
+                                  ],
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 5.0),
-                            customViewCollapsed == true
+                            customViewCollapsed != true
                                 ? Padding(
                                     padding: const EdgeInsets.fromLTRB(
-                                        10, 10, 10, 10),
+                                        10, 5, 10, 10),
                                     child: SizedBox(
-                                      child: Text('Custom Views'),
+                                      child: TextButton(
+                                          style: TextButton.styleFrom(
+                                              padding: EdgeInsets.zero,
+                                              minimumSize: const Size(50, 30),
+                                              tapTargetSize:
+                                                  MaterialTapTargetSize
+                                                      .shrinkWrap,
+                                              alignment: Alignment.centerLeft),
+                                          onPressed: () => {
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .push(MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            CreateViewScreen())),
+                                              },
+                                          child: Text('Add custom view')),
                                     ),
                                   )
                                 : Container(),
@@ -389,8 +421,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     ),
                   ))
                 : ResponsiveRowColumnItem(child: Container()),
+            showCustomerBar == true
+                ? ResponsiveRowColumnItem(child: Text('CustomerBar'))
+                : ResponsiveRowColumnItem(child: Container()),
             ResponsiveRowColumnItem(
-                rowFlex: 3,
+                rowFlex: ResponsiveValue(context, defaultValue: 3, valueWhen: [
+                  const Condition.largerThan(name: TABLET, value: 4),
+                  const Condition.smallerThan(name: TABLET, value: 4)
+                ]).value!,
                 child: Consumer<MessageService>(
                     builder: (context, ms, child) => ms.messages.isNotEmpty
                         ? ListView.builder(
@@ -464,11 +502,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                                         FontWeight
                                                                             .bold),
                                                               ),
-                                                              SizedBox(
-                                                                  width: 3),
-                                                              Text('via'),
-                                                              SizedBox(
-                                                                  width: 3),
+                                                              Text(' by '),
+                                                              Text(ms.messages[
+                                                                          index]
+                                                                      [
+                                                                      'customers']
+                                                                  ['name']),
+                                                              Text(' via '),
                                                               UtilService().getIcon(
                                                                   ms.messages[index]
                                                                           [
@@ -479,43 +519,74 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                           )),
                                                       Row(
                                                         children: [
-                                                          SizedBox(
-                                                              width: 60,
-                                                              child: Text(ms.messages[
-                                                                          index]
-                                                                      [
-                                                                      'customers']
-                                                                  ['name'])),
+                                                          ResponsiveVisibility(
+                                                              hiddenWhen: const [
+                                                                Condition
+                                                                    .smallerThan(
+                                                                        name:
+                                                                            TABLET)
+                                                              ],
+                                                              child: SizedBox(
+                                                                  width: 100,
+                                                                  child:
+                                                                      TextButton(
+                                                                          style: TextButton.styleFrom(
+                                                                              padding: EdgeInsets
+                                                                                  .zero,
+                                                                              minimumSize: const Size(50,
+                                                                                  30),
+                                                                              tapTargetSize: MaterialTapTargetSize
+                                                                                  .shrinkWrap,
+                                                                              alignment: Alignment
+                                                                                  .centerLeft),
+                                                                          onPressed: () =>
+                                                                              {
+                                                                                toggleCustomerBar()
+                                                                              },
+                                                                          child:
+                                                                              Text(
+                                                                            UtilService().truncateString(
+                                                                                ms.messages[index]['customers']['name'],
+                                                                                ResponsiveValue(context, defaultValue: 12, valueWhen: [
+                                                                                  const Condition.largerThan(name: TABLET, value: 12),
+                                                                                  const Condition.smallerThan(name: TABLET, value: 12)
+                                                                                ]).value!),
+                                                                          )))),
                                                           Text(
                                                             ms.messages[index]
-                                                                            ['channels'][
+                                                                            ['channels']
+                                                                        [
                                                                         'channel'] ==
                                                                     'alert'
                                                                 ? UtilService()
                                                                     .truncateString(
                                                                         LocalizationService.of(context)?.translate(ms.messages[index]["subject"]) ??
                                                                             '',
-                                                                        ResponsiveValue(context,
-                                                                                defaultValue:
-                                                                                    50,
-                                                                                valueWhen: [
-                                                                              const Condition.largerThan(name: TABLET, value: 60),
-                                                                              const Condition.smallerThan(name: TABLET, value: 25)
-                                                                            ])
-                                                                            .value!)
-                                                                : UtilService()
-                                                                    .truncateString(
-                                                                        ms.messages[index]
-                                                                            [
-                                                                            "subject"],
                                                                         ResponsiveValue(
                                                                             context,
-                                                                            defaultValue:
-                                                                                50,
+                                                                            defaultValue: showSideBar == true || showCustomerBar == true
+                                                                                ? 40
+                                                                                : 60,
                                                                             valueWhen: [
-                                                                              const Condition.largerThan(name: TABLET, value: 60),
+                                                                              Condition.largerThan(name: TABLET, value: showSideBar == true ? 60 : 70),
                                                                               const Condition.smallerThan(name: TABLET, value: 25)
-                                                                            ]).value!),
+                                                                            ]).value!)
+                                                                : UtilService().truncateString(
+                                                                    ms.messages[index]["subject"],
+                                                                    ResponsiveValue(context, defaultValue: showSideBar == true || showCustomerBar == true ? 40 : 60, valueWhen: [
+                                                                      Condition.largerThan(
+                                                                          name:
+                                                                              TABLET,
+                                                                          value: showSideBar == true || showCustomerBar == true
+                                                                              ? 60
+                                                                              : 70),
+                                                                      const Condition
+                                                                              .smallerThan(
+                                                                          name:
+                                                                              TABLET,
+                                                                          value:
+                                                                              25)
+                                                                    ]).value!),
                                                             style: const TextStyle(
                                                                 fontSize: 15,
                                                                 fontWeight:

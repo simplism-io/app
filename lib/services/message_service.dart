@@ -104,12 +104,11 @@ class MessageService extends ChangeNotifier {
       messages = await supabase
           .from('messages')
           .select(
-              'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), errors(*)')
+              'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name, avatar), errors(*)')
           .eq('organisation_id', organisationId)
           .eq('incoming', true)
           .order('created', ascending: false);
       await saveTotalMessageCountToPrefs((messages.length).toString());
-      print(messages);
       notifyListeners();
     } else {
       if (kDebugMode) {
@@ -135,7 +134,7 @@ class MessageService extends ChangeNotifier {
     final messageHistory = await supabase
         .from('messages')
         .select(
-            'id, subject, body, incoming, created, channel_id, channels(channel), customer_id, customers(name), emails(body_html), messages_agents(agent_id, agents(id, name)), errors(*)')
+            'id, subject, body, incoming, created, channel_id, channels(channel), customer_id, customers(name, avatar), emails(body_html), messages_agents(agent_id, agents(id, name)), errors(*)')
         .eq('customer_id', customerId)
         .order('created', ascending: true);
     return messageHistory;

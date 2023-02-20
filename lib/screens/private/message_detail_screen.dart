@@ -14,8 +14,6 @@ import 'package:jiffy/jiffy.dart';
 import '../../constants/drawers/private_menu_end_drawer.dart';
 import '../../constants/icon_buttons/go_back_icon_button.dart';
 import '../../constants/icon_buttons/go_back_text_button.dart';
-import '../../constants/icons/alert_icon.dart';
-import '../../constants/icons/email_icon.dart';
 import '../../constants/links/logo_header_link.dart';
 import '../../services/localization_service.dart';
 import '../../services/message_service.dart';
@@ -144,7 +142,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                         return Center(
                           child: Text(
                             '${snapshot.error} occurred',
-                            style: TextStyle(fontSize: 18),
+                            style: const TextStyle(fontSize: 18),
                           ),
                         );
                       } else if (snapshot.hasData) {
@@ -548,15 +546,15 @@ class _ReplyFormState extends State<ReplyForm> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               QuillHtmlEditor(
-                                                defaultFontSize: 15,
+                                                textStyle: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurface),
                                                 backgroundColor:
                                                     Theme.of(context)
                                                         .colorScheme
                                                         .surface,
-                                                defaultFontColor:
-                                                    Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurface,
                                                 hintText: LocalizationService
                                                             .of(context)
                                                         ?.translate(

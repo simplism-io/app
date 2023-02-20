@@ -44,6 +44,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
   List? localMessages = [];
   bool showSideBar = true;
   bool showCustomerBar = false;
+  late Map customerInFocus;
+  Uint8List? customerAvatarBytes;
 
   @override
   initState() {
@@ -88,10 +90,19 @@ class _MessagesScreenState extends State<MessagesScreen> {
     });
   }
 
-  toggleCustomerBar() {
+  toggleCustomerBar(customer) {
     setState(() {
       showSideBar = false;
-      showCustomerBar = !showCustomerBar;
+      if (customer != null && showCustomerBar == false) {
+        showCustomerBar = !showCustomerBar;
+      }
+      if (customer == null && showCustomerBar == true) {
+        showCustomerBar = !showCustomerBar;
+      }
+      if (showCustomerBar == true) {
+        customerAvatarBytes = base64Decode(customer['avatar']);
+        customerInFocus = customer;
+      }
     });
   }
 
@@ -409,7 +420,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                         rootNavigator: true)
                                                     .push(MaterialPageRoute(
                                                         builder: (context) =>
-                                                            CreateViewScreen())),
+                                                            const CreateViewScreen())),
                                               },
                                           child: Text('Add custom view')),
                                     ),
@@ -422,7 +433,47 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   ))
                 : ResponsiveRowColumnItem(child: Container()),
             showCustomerBar == true
-                ? ResponsiveRowColumnItem(child: Text('CustomerBar'))
+                ? ResponsiveRowColumnItem(
+                    child: SizedBox(
+                    height: 220,
+                    width: 200,
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                const Spacer(),
+                                IconButton(
+                                  icon: Icon(
+                                    FontAwesomeIcons.xmark,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground,
+                                    size: 12,
+                                  ),
+                                  onPressed: () {
+                                    toggleCustomerBar(null);
+                                  },
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 100,
+                              width: 100,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.memory(customerAvatarBytes!)),
+                            ),
+                            const SizedBox(height: 20.0),
+                            Text(customerInFocus['name'])
+                          ],
+                        ),
+                      ),
+                    ),
+                  ))
                 : ResponsiveRowColumnItem(child: Container()),
             ResponsiveRowColumnItem(
                 rowFlex: ResponsiveValue(context, defaultValue: 3, valueWhen: [
@@ -502,13 +553,25 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                                         FontWeight
                                                                             .bold),
                                                               ),
-                                                              Text(' by '),
+                                                              Text(' by ',
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          10,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold)),
                                                               Text(ms.messages[
                                                                           index]
                                                                       [
                                                                       'customers']
                                                                   ['name']),
-                                                              Text(' via '),
+                                                              Text(' via ',
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          10,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold)),
                                                               UtilService().getIcon(
                                                                   ms.messages[index]
                                                                           [
@@ -541,7 +604,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                                                   .centerLeft),
                                                                           onPressed: () =>
                                                                               {
-                                                                                toggleCustomerBar()
+                                                                                toggleCustomerBar(ms.messages[index]['customers'])
                                                                               },
                                                                           child:
                                                                               Text(
@@ -614,8 +677,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                                         FontWeight
                                                                             .bold),
                                                               )),
-                                                          ResponsiveVisibility(
-                                                              hiddenWhen: const [
+                                                          const ResponsiveVisibility(
+                                                              hiddenWhen: [
                                                                 Condition
                                                                     .smallerThan(
                                                                         name:
@@ -623,12 +686,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                               ],
                                                               child: Padding(
                                                                 padding:
-                                                                    const EdgeInsets
-                                                                            .fromLTRB(
-                                                                        3,
-                                                                        0,
-                                                                        3,
-                                                                        0),
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            3,
+                                                                            0,
+                                                                            3,
+                                                                            0),
                                                                 child:
                                                                     Text('via'),
                                                               )),

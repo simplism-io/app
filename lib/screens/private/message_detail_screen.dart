@@ -18,10 +18,11 @@ import '../../constants/links/logo_header_link.dart';
 import '../../services/localization_service.dart';
 import '../../services/message_service.dart';
 import '../../services/util_service.dart';
+import 'messages_by_customer_screen.dart';
 
 class MessageDetailScreen extends StatefulWidget {
-  final dynamic message;
-  final dynamic agent;
+  final Map message;
+  final Map agent;
 
   const MessageDetailScreen(
       {super.key, required this.message, required this.agent});
@@ -31,23 +32,11 @@ class MessageDetailScreen extends StatefulWidget {
 }
 
 class _MessageDetailScreenState extends State<MessageDetailScreen> {
-  bool seeAllMessages = false;
-  int maxNumberOfMessages = 2;
-
-  toggleSeeAllMessages() {
-    seeAllMessages = !seeAllMessages;
-    if (seeAllMessages == true) {
-      maxNumberOfMessages = 1000;
-    } else {
-      maxNumberOfMessages = 2;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: false,
-      resizeToAvoidBottomInset: false,
+      // extendBody: false,
+      // resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
@@ -80,248 +69,111 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           })
         ],
       ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            ResponsiveVisibility(
-                visible: false,
-                visibleWhen: const [Condition.largerThan(name: MOBILE)],
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                        child: GoBackTextButton(toRoot: true),
-                      ),
-                    ],
-                  ),
-                )),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
-              child: Row(
+      body: Column(
+        children: [
+          ResponsiveVisibility(
+              visible: false,
+              visibleWhen: const [Condition.largerThan(name: MOBILE)],
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                      child: GoBackTextButton(toRoot: true),
+                    ),
+                  ],
+                ),
+              )),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+            child: Row(
+              children: [
+                Text(
+                  widget.message['channels']['channel'] == 'alert'
+                      ? UtilService().truncateString(
+                          LocalizationService.of(context)
+                                  ?.translate(widget.message["subject"]) ??
+                              '',
+                          20)
+                      : UtilService().truncateString(
+                          widget.message["subject"],
+                          ResponsiveValue(context,
+                              defaultValue: 50,
+                              valueWhen: [
+                                const Condition.largerThan(
+                                    name: TABLET, value: 75),
+                                const Condition.smallerThan(
+                                    name: TABLET, value: 25)
+                              ]).value!),
+                  style: const TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                Text('Agent avatar')
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+            child: Divider(color: Theme.of(context).colorScheme.surface),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+            child: Card(
+              color: Theme.of(context).colorScheme.surface,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.message['channels']['channel'] == 'alert'
-                        ? UtilService().truncateString(
-                            LocalizationService.of(context)
-                                    ?.translate(widget.message["subject"]) ??
-                                '',
-                            20)
-                        : UtilService().truncateString(
-                            widget.message["subject"],
-                            ResponsiveValue(context,
-                                defaultValue: 50,
-                                valueWhen: [
-                                  const Condition.largerThan(
-                                      name: TABLET, value: 75),
-                                  const Condition.smallerThan(
-                                      name: TABLET, value: 25)
-                                ]).value!),
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.bold),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                    child: Text(
+                        widget.message['incoming'] == true
+                            ? widget.message['customers']['name']
+                            : widget.message['messages_agents'].length > 0
+                                ? widget.message['messages_agents'][0]['agents']
+                                    ['name']
+                                : 'Agent name',
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
-                  const Spacer(),
-                  Text('Agent avatar')
+                  widget.message['channels']['channel'] == 'email'
+                      ? Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                          child: HtmlWidget(
+                            widget.message['emails'][0]['body_html'] ?? '',
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                          child: Text(
+                            widget.message['channels']['channel'] == 'alert'
+                                ? LocalizationService.of(context)
+                                        ?.translate(widget.message['body']) ??
+                                    ''
+                                : widget.message['body'] ?? '',
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                        ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-              child: Divider(color: Theme.of(context).colorScheme.surface),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
-                child: FutureBuilder(
-                  builder: (ctx, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.hasError) {
-                        return Center(
-                          child: Text(
-                            '${snapshot.error} occurred',
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        );
-                      } else if (snapshot.hasData) {
-                        final messages = snapshot.data;
-                        return SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              maxNumberOfMessages == 2
-                                  ? TextButton(
-                                      onPressed: () => {
-                                            setState(() {
-                                              toggleSeeAllMessages();
-                                            })
-                                          },
-                                      child: Text('See all'))
-                                  : Container(),
-                              SizedBox(
-                                child: SingleChildScrollView(
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.vertical,
-                                      itemCount: messages.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 10, 0, 10),
-                                          child: index < maxNumberOfMessages
-                                              ? Column(
-                                                  children: [
-                                                    Row(
-                                                      mainAxisAlignment: messages[
-                                                                      index][
-                                                                  'incoming'] ==
-                                                              true
-                                                          ? MainAxisAlignment
-                                                              .start
-                                                          : MainAxisAlignment
-                                                              .end,
-                                                      children: [
-                                                        // Padding(
-                                                        //   padding: const EdgeInsets.fromLTRB(
-                                                        //       5, 0, 5, 0),
-                                                        //   child: SizedBox(
-                                                        //     child: messages[index]['incoming'] ==
-                                                        //             true
-                                                        //         ? getIcon(
-                                                        //             widget.message['channels']
-                                                        //                 ['channel'])
-                                                        //         : '',
-                                                        //   ),
-                                                        // ),
-                                                        SizedBox(
-                                                            child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  5, 0, 5, 0),
-                                                          child: Text(
-                                                              Jiffy(messages[
-                                                                          index]
-                                                                      [
-                                                                      'created'])
-                                                                  .fromNow(),
-                                                              style: const TextStyle(
-                                                                  fontSize: 10,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold)),
-                                                        )),
-                                                      ],
-                                                    ),
-                                                    LimitedBox(
-                                                      maxWidth: 400,
-                                                      child: Row(
-                                                        mainAxisAlignment: messages[
-                                                                        index][
-                                                                    'incoming'] ==
-                                                                true
-                                                            ? MainAxisAlignment
-                                                                .start
-                                                            : MainAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .fromLTRB(
-                                                                    0, 5, 0, 5),
-                                                            child: Card(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .surface,
-                                                              child: Column(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .start,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Padding(
-                                                                    padding:
-                                                                        const EdgeInsets.fromLTRB(
-                                                                            10,
-                                                                            10,
-                                                                            10,
-                                                                            0),
-                                                                    child: Text(
-                                                                        messages[index]['incoming'] ==
-                                                                                true
-                                                                            ? messages[index]['customers']['name']
-                                                                            : messages[index]['messages_agents'].length > 0
-                                                                                ? messages[index]['messages_agents'][0]['agents']['name']
-                                                                                : 'Agent name',
-                                                                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                                                                  ),
-                                                                  widget.message['channels']
-                                                                              [
-                                                                              'channel'] ==
-                                                                          'email'
-                                                                      ? Padding(
-                                                                          padding: const EdgeInsets.fromLTRB(
-                                                                              10,
-                                                                              5,
-                                                                              10,
-                                                                              10),
-                                                                          child:
-                                                                              HtmlWidget(
-                                                                            messages[index]['emails'][0]['body_html'] ??
-                                                                                '',
-                                                                          ),
-                                                                        )
-                                                                      : Padding(
-                                                                          padding: const EdgeInsets.fromLTRB(
-                                                                              10,
-                                                                              5,
-                                                                              10,
-                                                                              10),
-                                                                          child:
-                                                                              Text(
-                                                                            messages[index]['channels']['channel'] == 'alert'
-                                                                                ? LocalizationService.of(context)?.translate(widget.message['body']) ?? ''
-                                                                                : messages[index]['body'] ?? '',
-                                                                            style:
-                                                                                const TextStyle(fontSize: 15),
-                                                                          ),
-                                                                        ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
-                                              : Container(),
-                                        );
-                                      }),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                    }
-                    return const Center(
-                      child: Loader(size: 50.0),
-                    );
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          TextButton(
+              onPressed: () => {
+                    Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                            builder: (context) => MessagesByCustomerScreen(
+                                customer: widget.message['customers'],
+                                agent: widget.agent)))
                   },
-                  future: MessageService()
-                      .getMessageHistory(widget.message['customer_id']),
-                ),
-              ),
-            ),
-          ],
-        ),
+              child: Text(
+                  'See all messages by ${widget.message['customers']['name']}'))
+        ],
       ),
       floatingActionButton:
           ReplyForm(message: widget.message, agent: widget.agent),
@@ -523,9 +375,9 @@ class _ReplyFormState extends State<ReplyForm> {
                               ],
                             ),
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                //mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Card(
                                     color:
@@ -547,7 +399,7 @@ class _ReplyFormState extends State<ReplyForm> {
                                             children: [
                                               QuillHtmlEditor(
                                                 textStyle: TextStyle(
-                                                    fontSize: 15,
+                                                    fontSize: 12,
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onSurface),
@@ -646,8 +498,6 @@ class _ReplyFormState extends State<ReplyForm> {
                                     ),
                                   ),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Card(
                                         child: ToolBar(
@@ -669,102 +519,94 @@ class _ReplyFormState extends State<ReplyForm> {
                                             Condition.largerThan(name: MOBILE)
                                           ],
                                           child: SizedBox(
-                                              width: 200,
                                               child: Padding(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        5.0, 5.0, 5.0, 5.0),
-                                                child: (defaultTargetPlatform ==
-                                                            TargetPlatform
-                                                                .iOS ||
-                                                        defaultTargetPlatform ==
-                                                            TargetPlatform
-                                                                .macOS)
-                                                    ? CupertinoButton(
-                                                        onPressed: () async {
-                                                          if (formKey
-                                                              .currentState!
-                                                              .validate()) {
-                                                            setState(() =>
-                                                                loader = true);
-                                                            reply(
-                                                                widget.message);
-                                                          }
-                                                        },
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .primary,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(5.0),
-                                                          child: Text(
-                                                            loader == true
-                                                                ? LocalizationService.of(
-                                                                            context)
-                                                                        ?.translate(
-                                                                            'loader_button_label') ??
-                                                                    ''
-                                                                : LocalizationService.of(
-                                                                            context)
-                                                                        ?.translate(
-                                                                            'reply_message_button_label') ??
-                                                                    '',
-                                                            style: TextStyle(
-                                                                color: Theme.of(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                5.0, 5.0, 5.0, 5.0),
+                                            child: (defaultTargetPlatform ==
+                                                        TargetPlatform.iOS ||
+                                                    defaultTargetPlatform ==
+                                                        TargetPlatform.macOS)
+                                                ? CupertinoButton(
+                                                    onPressed: () async {
+                                                      if (formKey.currentState!
+                                                          .validate()) {
+                                                        setState(() =>
+                                                            loader = true);
+                                                        reply(widget.message);
+                                                      }
+                                                    },
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              5.0),
+                                                      child: Text(
+                                                        loader == true
+                                                            ? LocalizationService.of(
                                                                         context)
-                                                                    .colorScheme
-                                                                    .onPrimary,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          ),
-                                                        ),
-                                                      )
-                                                    : ElevatedButton(
-                                                        onPressed: () async {
-                                                          if (formKey
-                                                              .currentState!
-                                                              .validate()) {
-                                                            setState(() {
-                                                              loader = true;
-                                                            });
-                                                            reply(
-                                                                widget.message);
-                                                          } else {
-                                                            setState(() {
-                                                              loader = false;
-                                                            });
-                                                          }
-                                                        },
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(10.0),
-                                                          child: Text(
-                                                            loader == true
-                                                                ? LocalizationService.of(
-                                                                            context)
-                                                                        ?.translate(
-                                                                            'loader_button_label') ??
-                                                                    ''
-                                                                : LocalizationService.of(
-                                                                            context)
-                                                                        ?.translate(
-                                                                            'reply_message_button_label') ??
-                                                                    '',
-                                                            style: TextStyle(
-                                                                color: Theme.of(
+                                                                    ?.translate(
+                                                                        'loader_button_label') ??
+                                                                ''
+                                                            : LocalizationService.of(
                                                                         context)
-                                                                    .colorScheme
-                                                                    .onPrimary,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          ),
-                                                        ),
+                                                                    ?.translate(
+                                                                        'reply_message_button_label') ??
+                                                                '',
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onPrimary,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
                                                       ),
-                                              ))),
+                                                    ),
+                                                  )
+                                                : ElevatedButton(
+                                                    onPressed: () async {
+                                                      if (formKey.currentState!
+                                                          .validate()) {
+                                                        setState(() {
+                                                          loader = true;
+                                                        });
+                                                        reply(widget.message);
+                                                      } else {
+                                                        setState(() {
+                                                          loader = false;
+                                                        });
+                                                      }
+                                                    },
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              10.0),
+                                                      child: Text(
+                                                        loader == true
+                                                            ? LocalizationService.of(
+                                                                        context)
+                                                                    ?.translate(
+                                                                        'loader_button_label') ??
+                                                                ''
+                                                            : LocalizationService.of(
+                                                                        context)
+                                                                    ?.translate(
+                                                                        'reply_message_button_label') ??
+                                                                '',
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onPrimary,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    ),
+                                                  ),
+                                          ))),
                                       ResponsiveVisibility(
                                           visible: false,
                                           visibleWhen: const [

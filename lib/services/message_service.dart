@@ -104,7 +104,7 @@ class MessageService extends ChangeNotifier {
       messages = await supabase
           .from('messages')
           .select(
-              'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name, avatar), errors(*)')
+              'id, subject, body, created, incoming, channel_id, channels(channel), customer_id, customers(id, name, avatar),  messages_agents(agent_id, agents(id, name)), emails(body_html), errors(*)')
           .eq('organisation_id', organisationId)
           .eq('incoming', true)
           .order('created', ascending: false);
@@ -119,7 +119,7 @@ class MessageService extends ChangeNotifier {
       messages = await supabase
           .from('messages')
           .select(
-              'id, subject, created, incoming, channel_id, channels(channel), customer_id, customers(name), emails(*), errors(*)')
+              'id, subject, body, created, incoming, channel_id, channels(channel), customer_id, customers(id, name),  messages_agents(agent_id, agents(id, name)), emails(body_html), errors(*)')
           .eq('organisation_id', organisationId)
           .eq('incoming', true)
           .eq(viewDecoded['key'], viewDecoded['value'])
@@ -134,7 +134,7 @@ class MessageService extends ChangeNotifier {
     final messageHistory = await supabase
         .from('messages')
         .select(
-            'id, subject, body, incoming, created, channel_id, channels(channel), customer_id, customers(name, avatar), emails(body_html), messages_agents(agent_id, agents(id, name)), errors(*)')
+            'id, subject, body, incoming, created, channel_id, channels(channel), customer_id, customers(name, avatar), emails(body_html), messages_agents(agent_id, agents(id, name))), errors(*)')
         .eq('customer_id', customerId)
         .order('created', ascending: true);
     return messageHistory;

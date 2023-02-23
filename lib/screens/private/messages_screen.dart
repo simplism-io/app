@@ -24,6 +24,7 @@ import '../../constants/links/logo_header_link.dart';
 import '../../services/util_service.dart';
 import 'create_view_screen.dart';
 import 'message_detail_screen.dart';
+import 'messages_by_customer_screen.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -44,6 +45,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   List? localMessages = [];
   bool showSideBar = true;
   bool showCustomerBar = false;
+  late bool previousStateShowSideBar;
   late Map customerInFocus;
   Uint8List? customerAvatarBytes;
 
@@ -92,12 +94,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   toggleCustomerBar(customer) {
     setState(() {
-      showSideBar = false;
+      if (showSideBar == true) {
+        previousStateShowSideBar = true;
+        showSideBar = false;
+      }
       if (customer != null && showCustomerBar == false) {
         showCustomerBar = !showCustomerBar;
       }
       if (customer == null && showCustomerBar == true) {
         showCustomerBar = !showCustomerBar;
+        showSideBar = previousStateShowSideBar;
       }
       if (showCustomerBar == true) {
         customerAvatarBytes = base64Decode(customer['avatar']);
@@ -229,25 +235,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 ),
                               ],
                             ),
-                            // Column(
-                            //   children: [
-                            //     const SizedBox(height: 4),
-                            //     SizedBox(
-                            //       child: Builder(
-                            //         builder: (context) {
-                            //           return IconButton(
-                            //             icon: const Icon(
-                            //               Icons.chevron_left,
-                            //             ),
-                            //             onPressed: () {
-                            //               Scaffold.of(context).openDrawer();
-                            //             },
-                            //           );
-                            //         },
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
                             Consumer<MessageService>(
                                 builder: (context, ms, child) => Padding(
                                       padding: const EdgeInsets.fromLTRB(
@@ -435,7 +422,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             showCustomerBar == true
                 ? ResponsiveRowColumnItem(
                     child: SizedBox(
-                    height: 220,
+                    height: 250,
                     width: 200,
                     child: Card(
                       child: Padding(
@@ -468,7 +455,19 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   child: Image.memory(customerAvatarBytes!)),
                             ),
                             const SizedBox(height: 20.0),
-                            Text(customerInFocus['name'])
+                            Text(customerInFocus['name']),
+                            const SizedBox(height: 20.0),
+                            TextButton(
+                              onPressed: () => {
+                                Navigator.of(context, rootNavigator: true).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            MessagesByCustomerScreen(
+                                                customer: customerInFocus,
+                                                agent: widget.agent))),
+                              },
+                              child: Text('See all messages'),
+                            )
                           ],
                         ),
                       ),
@@ -487,6 +486,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             scrollDirection: Axis.vertical,
                             itemCount: ms.messages.length,
                             itemBuilder: (context, index) {
+                              ms.messages[index]['customers'];
                               localMessages = ms.messages;
                               return SizedBox(
                                 child: Padding(
@@ -540,6 +540,42 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                           ],
                                                           child: Row(
                                                             children: [
+                                                              TextButton(
+                                                                style: TextButton
+                                                                    .styleFrom(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .zero,
+                                                                  minimumSize:
+                                                                      const Size(
+                                                                          40,
+                                                                          20),
+                                                                  tapTargetSize:
+                                                                      MaterialTapTargetSize
+                                                                          .shrinkWrap,
+                                                                ),
+                                                                onPressed: () =>
+                                                                    {
+                                                                  Navigator.of(
+                                                                          context,
+                                                                          rootNavigator:
+                                                                              true)
+                                                                      .push(MaterialPageRoute(
+                                                                          builder: (context) => MessagesByCustomerScreen(
+                                                                              customer: ms.messages[index]['customers'],
+                                                                              agent: widget.agent))),
+                                                                },
+                                                                child: Text(
+                                                                    ms.messages[index]
+                                                                            [
+                                                                            'customers']
+                                                                        [
+                                                                        'name'],
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            10)),
+                                                              ),
+                                                              const Spacer(),
                                                               Text(
                                                                 Jiffy(ms.messages[
                                                                             index]
@@ -553,31 +589,37 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                                         FontWeight
                                                                             .bold),
                                                               ),
-                                                              Text(' by ',
-                                                                  style: const TextStyle(
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .fromLTRB(
+                                                                        3,
+                                                                        0,
+                                                                        3,
+                                                                        0),
+                                                                child: Text(
+                                                                    'via',
+                                                                    style:
+                                                                        const TextStyle(
                                                                       fontSize:
                                                                           10,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold)),
-                                                              Text(ms.messages[
-                                                                          index]
-                                                                      [
-                                                                      'customers']
-                                                                  ['name']),
-                                                              Text(' via ',
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          10,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold)),
-                                                              UtilService().getIcon(
-                                                                  ms.messages[index]
-                                                                          [
-                                                                          'channels']
-                                                                      [
-                                                                      'channel']),
+                                                                    )),
+                                                              ),
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            0,
+                                                                            1,
+                                                                            0,
+                                                                            0),
+                                                                child: UtilService().getIcon(
+                                                                    ms.messages[index]
+                                                                            [
+                                                                            'channels']
+                                                                        [
+                                                                        'channel']),
+                                                              ),
                                                             ],
                                                           )),
                                                       Row(
@@ -590,7 +632,17 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                                             TABLET)
                                                               ],
                                                               child: SizedBox(
-                                                                  width: 100,
+                                                                  width: ResponsiveValue(
+                                                                      context,
+                                                                      defaultValue:
+                                                                          100.0,
+                                                                      valueWhen: [
+                                                                        const Condition.largerThan(
+                                                                            name:
+                                                                                TABLET,
+                                                                            value:
+                                                                                150.0),
+                                                                      ]).value!,
                                                                   child:
                                                                       TextButton(
                                                                           style: TextButton.styleFrom(
@@ -611,7 +663,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                                             UtilService().truncateString(
                                                                                 ms.messages[index]['customers']['name'],
                                                                                 ResponsiveValue(context, defaultValue: 12, valueWhen: [
-                                                                                  const Condition.largerThan(name: TABLET, value: 12),
+                                                                                  const Condition.largerThan(name: TABLET, value: 18),
                                                                                   const Condition.smallerThan(name: TABLET, value: 12)
                                                                                 ]).value!),
                                                                           )))),

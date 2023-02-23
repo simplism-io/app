@@ -153,7 +153,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                                       labelStyle: const TextStyle(
                                         fontSize: 15,
                                       ), //label style
-                                      prefixIcon: const PasswordIcon(),
+                                      prefixIcon: const PasswordIcon(size: 20),
                                       suffixIcon: Padding(
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 0, 15, 0),
@@ -252,7 +252,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                                             .colorScheme
                                             .secondary,
                                       ), //label style
-                                      prefixIcon: const PasswordIcon(),
+                                      prefixIcon: const PasswordIcon(size: 20),
                                       suffixIcon: Padding(
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 0, 15, 0),

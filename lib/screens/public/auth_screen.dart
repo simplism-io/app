@@ -481,7 +481,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                                         fontSize: 15,
                                                       ), //label style
                                                       prefixIcon:
-                                                          const OrganisationIcon(),
+                                                          const OrganisationIcon(
+                                                              size: 20),
                                                       hintText: LocalizationService
                                                                   .of(context)
                                                               ?.translate(
@@ -582,8 +583,11 @@ class _AuthScreenState extends State<AuthScreen> {
                                               labelStyle: const TextStyle(
                                                 fontSize: 15,
                                               ), //label style
-                                              prefixIcon:
-                                                  const EmailIcon(size: 15)),
+                                              prefixIcon: const Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    15, 0, 15, 0),
+                                                child: EmailIcon(size: 20),
+                                              )),
                                           textAlign: TextAlign.left,
                                           initialValue: email,
                                           autofocus: true,
@@ -648,7 +652,11 @@ class _AuthScreenState extends State<AuthScreen> {
                                               labelStyle: const TextStyle(
                                                 fontSize: 15,
                                               ), //label style
-                                              prefixIcon: const PasswordIcon(),
+                                              prefixIcon: const Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    15, 0, 15, 0),
+                                                child: PasswordIcon(size: 20),
+                                              ),
                                               suffixIcon: Padding(
                                                 padding:
                                                     const EdgeInsets.fromLTRB(

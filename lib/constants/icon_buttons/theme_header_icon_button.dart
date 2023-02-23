@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart' as pv;
-import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../services/theme_service.dart';
 
@@ -27,16 +26,7 @@ class ThemeHeaderIconButton extends StatelessWidget {
                     onPressed: () => theme.toggleTheme()),
               )
             : Padding(
-                padding: EdgeInsets.fromLTRB(
-                    20.0,
-                    10.0,
-                    ResponsiveValue(context,
-                            defaultValue: 50.0,
-                            valueWhen: const [
-                              Condition.smallerThan(name: TABLET, value: 10.0)
-                            ]).value ??
-                        50.0,
-                    0.0),
+                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),
                 child: IconButton(
                     icon: Icon(
                       (defaultTargetPlatform == TargetPlatform.iOS ||

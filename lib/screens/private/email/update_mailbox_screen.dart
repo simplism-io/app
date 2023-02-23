@@ -259,7 +259,8 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                             labelStyle: const TextStyle(
                                               fontSize: 15,
                                             ), //label style
-                                            prefixIcon: const PasswordIcon(),
+                                            prefixIcon:
+                                                const PasswordIcon(size: 20),
                                             suffixIcon: Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
@@ -336,7 +337,7 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                           labelStyle: const TextStyle(
                                             fontSize: 15,
                                           ), //label style
-                                          prefixIcon: const ImapIcon(),
+                                          prefixIcon: const ImapIcon(size: 20),
                                           hintText: LocalizationService.of(
                                                       context)
                                                   ?.translate(
@@ -405,7 +406,7 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                           labelStyle: const TextStyle(
                                             fontSize: 15,
                                           ), //label style
-                                          prefixIcon: const PortIcon(),
+                                          prefixIcon: const PortIcon(size: 20),
                                           hintText: LocalizationService.of(
                                                       context)
                                                   ?.translate(
@@ -474,7 +475,7 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                           labelStyle: const TextStyle(
                                             fontSize: 15,
                                           ), //label style
-                                          prefixIcon: const SmtpIcon(),
+                                          prefixIcon: const SmtpIcon(size: 20),
                                           hintText: LocalizationService.of(
                                                       context)
                                                   ?.translate(
@@ -542,7 +543,7 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                           labelStyle: const TextStyle(
                                             fontSize: 15,
                                           ), //label style
-                                          prefixIcon: const PortIcon(),
+                                          prefixIcon: const PortIcon(size: 20),
                                           hintText: LocalizationService.of(
                                                       context)
                                                   ?.translate(
@@ -611,7 +612,8 @@ class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
                                           : selectedValue,
                                       decoration: InputDecoration(
                                           //hintText: 'Mailbox status',
-                                          prefixIcon: const StatusIcon(),
+                                          prefixIcon:
+                                              const StatusIcon(size: 20),
                                           border: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(5.0)))),

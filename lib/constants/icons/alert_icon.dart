@@ -9,14 +9,12 @@ class AlertIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-        child: Icon(
-            (defaultTargetPlatform == TargetPlatform.iOS ||
-                    defaultTargetPlatform == TargetPlatform.macOS)
-                ? CupertinoIcons.exclamationmark_bubble
-                : FontAwesomeIcons.circleExclamation,
-            color: Theme.of(context).colorScheme.onBackground,
-            size: size));
+    return Icon(
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+                defaultTargetPlatform == TargetPlatform.macOS)
+            ? CupertinoIcons.exclamationmark_bubble
+            : FontAwesomeIcons.circleExclamation,
+        color: Theme.of(context).colorScheme.onBackground,
+        size: size);
   }
 }

@@ -113,7 +113,7 @@ class _CreateOrganisationScreenState extends State<CreateOrganisationScreen> {
                                   labelStyle: const TextStyle(
                                     fontSize: 15,
                                   ), //label style
-                                  prefixIcon: const OrganisationIcon(),
+                                  prefixIcon: const OrganisationIcon(size: 20),
                                   hintText: LocalizationService.of(context)
                                           ?.translate(
                                               'organisation_input_label') ??

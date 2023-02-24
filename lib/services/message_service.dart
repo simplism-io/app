@@ -134,8 +134,19 @@ class MessageService extends ChangeNotifier {
     final messageHistory = await supabase
         .from('messages')
         .select(
-            'id, subject, body, incoming, created, channel_id, channels(channel), customer_id, customers(name, avatar), emails(body_html), messages_agents(agent_id, agents(id, name))), errors(*)')
+            'id, subject, body, incoming, created, channel_id, channels(channel), customer_id, customers(id, name, avatar), emails(body_html), messages_agents(agent_id, agents(id, name))), errors(*)')
         .eq('customer_id', customerId)
+        .order('created', ascending: true);
+    return messageHistory;
+  }
+
+  Future getCustomerMessagesWithSameSubject(customerId, subject) async {
+    final messageHistory = await supabase
+        .from('messages')
+        .select(
+            'id, subject, body, incoming, created, channel_id, channels(channel), customer_id, customers(id, name, avatar), emails(body_html), messages_agents(agent_id, agents(id, name))), errors(*)')
+        .eq('customer_id', customerId)
+        .eq('subject', subject)
         .order('created', ascending: true);
     return messageHistory;
   }

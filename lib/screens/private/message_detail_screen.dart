@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:base/constants/loaders/loader.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,7 @@ import '../../constants/drawers/private_menu_end_drawer.dart';
 import '../../constants/icon_buttons/go_back_icon_button.dart';
 import '../../constants/icon_buttons/go_back_text_button.dart';
 import '../../constants/links/logo_header_link.dart';
+import '../../constants/loaders/loader.dart';
 import '../../services/localization_service.dart';
 import '../../services/message_service.dart';
 import '../../services/util_service.dart';
@@ -35,16 +35,48 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // extendBody: false,
-      // resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const <Widget>[
-            GoBackIconButton(toRoot: true),
-            LogoHeaderLink()
+          children: <Widget>[
+            ResponsiveVisibility(
+                visible: false,
+                visibleWhen: const [Condition.smallerThan(name: TABLET)],
+                child: Builder(builder: (context) {
+                  return Padding(
+                    padding: EdgeInsets.fromLTRB(
+                        ResponsiveValue(context,
+                            defaultValue: 10.0,
+                            valueWhen: [
+                              const Condition.largerThan(
+                                  name: MOBILE, value: 20.0),
+                            ]).value!,
+                        0,
+                        0,
+                        0),
+                    child: IconButton(
+                      icon: Icon(
+                        CupertinoIcons.collections,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
+                  );
+                })),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                  ResponsiveValue(context, defaultValue: 0.0, valueWhen: [
+                    const Condition.largerThan(name: MOBILE, value: 10.0),
+                  ]).value!,
+                  0,
+                  0,
+                  0),
+              child: const LogoHeaderLink(),
+            )
           ],
         ),
         titleSpacing: 0,
@@ -53,7 +85,13 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         actions: [
           Builder(builder: (context) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
+              padding: EdgeInsets.fromLTRB(
+                  0,
+                  0,
+                  ResponsiveValue(context, defaultValue: 10.0, valueWhen: [
+                    const Condition.largerThan(name: MOBILE, value: 10.0),
+                  ]).value!,
+                  0),
               child: IconButton(
                 icon: Icon(
                     (defaultTargetPlatform == TargetPlatform.iOS ||
@@ -75,7 +113,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
               visible: false,
               visibleWhen: const [Condition.largerThan(name: MOBILE)],
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
+                padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
@@ -87,7 +125,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 ),
               )),
           Padding(
-            padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Row(
               children: [
                 Text(
@@ -116,13 +154,187 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: Divider(color: Theme.of(context).colorScheme.surface),
           ),
+          const SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+              child: FutureBuilder(
+                builder: (ctx, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          '${snapshot.error} occurred',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      );
+                    } else if (snapshot.hasData) {
+                      final messages = snapshot.data;
+                      return SizedBox(
+                        child: SingleChildScrollView(
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemCount: messages.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: messages[index]
+                                                      ['incoming'] ==
+                                                  true
+                                              ? MainAxisAlignment.start
+                                              : MainAxisAlignment.end,
+                                          children: [
+                                            // Padding(
+                                            //   padding: const EdgeInsets.fromLTRB(
+                                            //       5, 0, 5, 0),
+                                            //   child: SizedBox(
+                                            //     child: messages[index]['incoming'] ==
+                                            //             true
+                                            //         ? getIcon(
+                                            //             widget.message['channels']
+                                            //                 ['channel'])
+                                            //         : '',
+                                            //   ),
+                                            // ),
+                                            SizedBox(
+                                                child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      8, 0, 8, 0),
+                                              child: Text(
+                                                  Jiffy(messages[index]
+                                                          ['created'])
+                                                      .fromNow(),
+                                                  style: const TextStyle(
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            )),
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: Card(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surface,
+                                            elevation: 0,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      10.0),
+                                                  child: Text(
+                                                    messages[index]['subject'],
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                messages[index]['channels']
+                                                            ['channel'] ==
+                                                        'email'
+                                                    ? Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .fromLTRB(
+                                                                10, 5, 10, 10),
+                                                        child: HtmlWidget(
+                                                          messages[index][
+                                                                      'emails'][0]
+                                                                  [
+                                                                  'body_html'] ??
+                                                              '',
+                                                        ),
+                                                      )
+                                                    : Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .fromLTRB(
+                                                                10, 5, 10, 10),
+                                                        child: Text(
+                                                          messages[index]['channels']
+                                                                      [
+                                                                      'channel'] ==
+                                                                  'alert'
+                                                              ? LocalizationService.of(
+                                                                          context)
+                                                                      ?.translate(
+                                                                          messages[index]
+                                                                              [
+                                                                              'body']) ??
+                                                                  ''
+                                                              : messages[index][
+                                                                      'body'] ??
+                                                                  '',
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 15),
+                                                        ),
+                                                      ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ));
+                              }),
+                        ),
+                      );
+                    }
+                  }
+                  return const Center(
+                    child: Loader(size: 50.0),
+                  );
+                },
+                future: MessageService().getCustomerMessagesWithSameSubject(
+                    widget.message['customer_id'], widget.message['subject']),
+              ),
+            ),
+          ),
+          TextButton(
+              onPressed: () => {
+                    Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                            builder: (context) => MessagesByCustomerScreen(
+                                customer: widget.message['customers'],
+                                agent: widget.agent)))
+                  },
+              child: Text(
+                  'See previous messages in this conversation with ${widget.message['customers']['name']}')),
+          SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                  child: Padding(
+                padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
+                child: Text(Jiffy(widget.message['created']).fromNow(),
+                    style: const TextStyle(
+                        fontSize: 10, fontWeight: FontWeight.bold)),
+              )),
+            ],
+          ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: Card(
               color: Theme.of(context).colorScheme.surface,
+              elevation: 0,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,7 +384,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                 agent: widget.agent)))
                   },
               child: Text(
-                  'See all messages by ${widget.message['customers']['name']}'))
+                  'See all messages ${widget.message['customers']['name']}')),
         ],
       ),
       floatingActionButton:

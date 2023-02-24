@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../constants/icon_buttons/go_back_icon_button.dart';
 import '../../constants/links/logo_header_link.dart';
 import '../../constants/loaders/loader.dart';
 import '../../services/localization_service.dart';
 import '../../services/message_service.dart';
+import 'message_detail_screen.dart';
 
 class MessagesByCustomerScreen extends StatelessWidget {
   final Map customer;
@@ -27,9 +29,43 @@ class MessagesByCustomerScreen extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const <Widget>[
-            GoBackIconButton(toRoot: false),
-            LogoHeaderLink()
+          children: <Widget>[
+            ResponsiveVisibility(
+                visible: false,
+                visibleWhen: const [Condition.smallerThan(name: TABLET)],
+                child: Builder(builder: (context) {
+                  return Padding(
+                    padding: EdgeInsets.fromLTRB(
+                        ResponsiveValue(context,
+                            defaultValue: 10.0,
+                            valueWhen: [
+                              const Condition.largerThan(
+                                  name: MOBILE, value: 20.0),
+                            ]).value!,
+                        0,
+                        0,
+                        0),
+                    child: IconButton(
+                      icon: Icon(
+                        CupertinoIcons.collections,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
+                  );
+                })),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                  ResponsiveValue(context, defaultValue: 0.0, valueWhen: [
+                    const Condition.largerThan(name: MOBILE, value: 10.0),
+                  ]).value!,
+                  0,
+                  0,
+                  0),
+              child: const LogoHeaderLink(),
+            )
           ],
         ),
         titleSpacing: 0,
@@ -38,7 +74,13 @@ class MessagesByCustomerScreen extends StatelessWidget {
         actions: [
           Builder(builder: (context) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
+              padding: EdgeInsets.fromLTRB(
+                  0,
+                  0,
+                  ResponsiveValue(context, defaultValue: 10.0, valueWhen: [
+                    const Condition.largerThan(name: MOBILE, value: 10.0),
+                  ]).value!,
+                  0),
               child: IconButton(
                 icon: Icon(
                     (defaultTargetPlatform == TargetPlatform.iOS ||
@@ -63,7 +105,7 @@ class MessagesByCustomerScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Padding(
-                  padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                   child: GoBackTextButton(toRoot: false),
                 ),
                 const Spacer(),
@@ -72,7 +114,7 @@ class MessagesByCustomerScreen extends StatelessWidget {
                         style: const TextStyle(fontWeight: FontWeight.bold))),
                 const Spacer(),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                   child: TextButton(
                       style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
@@ -80,17 +122,17 @@ class MessagesByCustomerScreen extends StatelessWidget {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           alignment: Alignment.centerRight),
                       onPressed: () => {},
-                      child: Text('See customer profile')),
+                      child: Text('See profile')),
                 )
               ],
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Divider(color: Theme.of(context).colorScheme.surface),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
+                padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                 child: FutureBuilder(
                   builder: (ctx, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
@@ -138,7 +180,7 @@ class MessagesByCustomerScreen extends StatelessWidget {
                                                   child: Padding(
                                                 padding:
                                                     const EdgeInsets.fromLTRB(
-                                                        5, 0, 5, 0),
+                                                        8, 0, 8, 0),
                                                 child: Text(
                                                     Jiffy(messages[index]
                                                             ['created'])
@@ -150,112 +192,99 @@ class MessagesByCustomerScreen extends StatelessWidget {
                                               )),
                                             ],
                                           ),
-                                          LimitedBox(
-                                            maxWidth: 400,
-                                            child: Row(
-                                              mainAxisAlignment: messages[index]
-                                                          ['incoming'] ==
-                                                      true
-                                                  ? MainAxisAlignment.start
-                                                  : MainAxisAlignment.end,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          0, 5, 0, 5),
-                                                  child: Card(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .surface,
-                                                    child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  10,
-                                                                  10,
-                                                                  10,
-                                                                  0),
-                                                          child: Text(
+                                          GestureDetector(
+                                            onTap: () => {
+                                              Navigator.of(context,
+                                                      rootNavigator: true)
+                                                  .pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        MessageDetailScreen(
+                                                            message:
+                                                                messages[index],
+                                                            agent: agent)),
+                                                (Route<dynamic> route) => false,
+                                              )
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 5, 0, 5),
+                                              child: Card(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .surface,
+                                                elevation: 0,
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              10.0),
+                                                      child: Text(
+                                                        messages[index]
+                                                            ['subject'],
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    ),
+                                                    messages[index]['channels']
+                                                                ['channel'] ==
+                                                            'email'
+                                                        ? Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    10,
+                                                                    5,
+                                                                    10,
+                                                                    10),
+                                                            child: HtmlWidget(
                                                               messages[index][
-                                                                          'incoming'] ==
-                                                                      true
-                                                                  ? messages[index]
-                                                                          ['customers']
-                                                                      ['name']
-                                                                  : messages[index]['messages_agents']
-                                                                              .length >
-                                                                          0
-                                                                      ? messages[index]['messages_agents'][0]
-                                                                              ['agents']
+                                                                          'emails'][0]
+                                                                      [
+                                                                      'body_html'] ??
+                                                                  '',
+                                                            ),
+                                                          )
+                                                        : Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    10,
+                                                                    5,
+                                                                    10,
+                                                                    10),
+                                                            child: Text(
+                                                              messages[index]['channels']
                                                                           [
-                                                                          'name']
-                                                                      : 'Agent name',
-                                                              style: const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold)),
-                                                        ),
-                                                        messages[index]['channels']
-                                                                    [
-                                                                    'channel'] ==
-                                                                'email'
-                                                            ? Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                            .fromLTRB(
-                                                                        10,
-                                                                        5,
-                                                                        10,
-                                                                        10),
-                                                                child:
-                                                                    HtmlWidget(
-                                                                  messages[index]['emails']
-                                                                              [
-                                                                              0]
-                                                                          [
-                                                                          'body_html'] ??
-                                                                      '',
-                                                                ),
-                                                              )
-                                                            : Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                            .fromLTRB(
-                                                                        10,
-                                                                        5,
-                                                                        10,
-                                                                        10),
-                                                                child: Text(
-                                                                  messages[index]['channels']
-                                                                              [
-                                                                              'channel'] ==
-                                                                          'alert'
-                                                                      ? LocalizationService.of(context)?.translate(messages[index]
+                                                                          'channel'] ==
+                                                                      'alert'
+                                                                  ? LocalizationService.of(
+                                                                              context)
+                                                                          ?.translate(messages[index]
                                                                               [
                                                                               'body']) ??
-                                                                          ''
-                                                                      : messages[index]
-                                                                              [
-                                                                              'body'] ??
-                                                                          '',
-                                                                  style: const TextStyle(
+                                                                      ''
+                                                                  : messages[index]
+                                                                          [
+                                                                          'body'] ??
+                                                                      '',
+                                                              style:
+                                                                  const TextStyle(
                                                                       fontSize:
                                                                           15),
-                                                                ),
-                                                              ),
-                                                      ],
-                                                    ),
-                                                  ),
+                                                            ),
+                                                          ),
+                                                  ],
                                                 ),
-                                              ],
+                                              ),
                                             ),
                                           ),
                                         ],

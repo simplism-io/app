@@ -740,10 +740,10 @@ packages:
     dependency: "direct main"
     description:
       name: quill_html_editor
-      sha256: bab3d8b099bc605bd294a50823d63d9fefaf327a49c1b9ee44411082ddf8e272
+      sha256: "37f690f126f14ee68dffc2c8574487d99227668d20ab302b8fad1de2afbb7aeb"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.8"
+    version: "2.0.9"
   realtime_client:
     dependency: transitive
     description:

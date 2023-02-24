@@ -234,6 +234,30 @@ class MessagesByCustomerScreen extends StatelessWidget {
                                                                     .bold),
                                                       ),
                                                     ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          10, 0, 10, 0),
+                                                      child: Divider(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onSurface),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          10, 7, 0, 0),
+                                                      child: Text(
+                                                          messages[index][
+                                                                      'customers']
+                                                                  ['name'] +
+                                                              ':',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                    ),
                                                     messages[index]['channels']
                                                                 ['channel'] ==
                                                             'email'

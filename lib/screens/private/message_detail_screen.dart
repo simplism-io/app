@@ -32,6 +32,14 @@ class MessageDetailScreen extends StatefulWidget {
 }
 
 class _MessageDetailScreenState extends State<MessageDetailScreen> {
+  bool showPreviousMessages = false;
+
+  toggleShowPreviousMessages() {
+    setState(() {
+      showPreviousMessages = !showPreviousMessages;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,234 +165,298 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: Divider(color: Theme.of(context).colorScheme.surface),
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-              child: FutureBuilder(
-                builder: (ctx, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          '${snapshot.error} occurred',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      );
-                    } else if (snapshot.hasData) {
-                      final messages = snapshot.data;
-                      return SizedBox(
-                        child: SingleChildScrollView(
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              itemCount: messages.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: messages[index]
-                                                      ['incoming'] ==
-                                                  true
-                                              ? MainAxisAlignment.start
-                                              : MainAxisAlignment.end,
-                                          children: [
-                                            // Padding(
-                                            //   padding: const EdgeInsets.fromLTRB(
-                                            //       5, 0, 5, 0),
-                                            //   child: SizedBox(
-                                            //     child: messages[index]['incoming'] ==
-                                            //             true
-                                            //         ? getIcon(
-                                            //             widget.message['channels']
-                                            //                 ['channel'])
-                                            //         : '',
-                                            //   ),
-                                            // ),
-                                            SizedBox(
-                                                child: Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      8, 0, 8, 0),
-                                              child: Text(
-                                                  Jiffy(messages[index]
-                                                          ['created'])
-                                                      .fromNow(),
-                                                  style: const TextStyle(
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                            )),
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 5, 0, 5),
-                                          child: Card(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .surface,
-                                            elevation: 0,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      10.0),
-                                                  child: Text(
-                                                    messages[index]['subject'],
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ),
-                                                messages[index]['channels']
-                                                            ['channel'] ==
-                                                        'email'
-                                                    ? Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                10, 5, 10, 10),
-                                                        child: HtmlWidget(
-                                                          messages[index][
-                                                                      'emails'][0]
-                                                                  [
-                                                                  'body_html'] ??
-                                                              '',
-                                                        ),
-                                                      )
-                                                    : Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                10, 5, 10, 10),
-                                                        child: Text(
+          showPreviousMessages == true
+              ? Expanded(
+                  child: Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                      child: showPreviousMessages == true
+                          ? FutureBuilder(
+                              builder: (ctx, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.hasError) {
+                                    return Center(
+                                      child: Text(
+                                        '${snapshot.error} occurred',
+                                        style: const TextStyle(fontSize: 18),
+                                      ),
+                                    );
+                                  } else if (snapshot.data.length > 0 &&
+                                      showPreviousMessages == true) {
+                                    final messages = snapshot.data;
+                                    return SizedBox(
+                                      child: SingleChildScrollView(
+                                        child: ListView.builder(
+                                            shrinkWrap: true,
+                                            scrollDirection: Axis.vertical,
+                                            itemCount: messages.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return Column(
+                                                children: [
+                                                  showPreviousMessages ==
+                                                              true &&
+                                                          index == 0
+                                                      ? TextButton(
+                                                          onPressed: () => {
+                                                                toggleShowPreviousMessages()
+                                                              },
+                                                          child: Text(
+                                                              'Hide previous messages in this conversation with ${widget.message['customers']['name']}',
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      12)))
+                                                      : Container(),
+                                                  const SizedBox(height: 10),
+                                                  SizedBox(
+                                                      child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(7, 0, 7, 0),
+                                                    child: Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                            Jiffy(messages[
+                                                                        index]
+                                                                    ['created'])
+                                                                .fromNow(),
+                                                            style: const TextStyle(
+                                                                fontSize: 10,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                      ],
+                                                    ),
+                                                  )),
+                                                  Padding(
+                                                    padding: EdgeInsets.fromLTRB(
+                                                        messages[index]['messages_agents']
+                                                                    .length >
+                                                                0
+                                                            ? 60
+                                                            : 0,
+                                                        0,
+                                                        messages[index]['messages_agents']
+                                                                    .length >
+                                                                0
+                                                            ? 0
+                                                            : 60,
+                                                        0),
+                                                    child: Card(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .surface,
+                                                      elevation: 0,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    10.0,
+                                                                    10.0,
+                                                                    10.0,
+                                                                    0),
+                                                            child: Text(
+                                                              messages[index][
+                                                                          'customers']
+                                                                      ['name'] +
+                                                                  ':',
+                                                              style: const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                          ),
                                                           messages[index]['channels']
                                                                       [
                                                                       'channel'] ==
-                                                                  'alert'
-                                                              ? LocalizationService.of(
-                                                                          context)
-                                                                      ?.translate(
-                                                                          messages[index]
-                                                                              [
-                                                                              'body']) ??
-                                                                  ''
-                                                              : messages[index][
-                                                                      'body'] ??
-                                                                  '',
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize: 15),
-                                                        ),
+                                                                  'email'
+                                                              ? Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                              .fromLTRB(
+                                                                          10,
+                                                                          5,
+                                                                          10,
+                                                                          10),
+                                                                  child:
+                                                                      HtmlWidget(
+                                                                    messages[index]['emails'][0]
+                                                                            [
+                                                                            'body_html'] ??
+                                                                        '',
+                                                                  ),
+                                                                )
+                                                              : Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                              .fromLTRB(
+                                                                          10,
+                                                                          5,
+                                                                          10,
+                                                                          10),
+                                                                  child: Text(
+                                                                    messages[index]['channels']['channel'] ==
+                                                                            'alert'
+                                                                        ? LocalizationService.of(context)?.translate(messages[index]['body']) ??
+                                                                            ''
+                                                                        : messages[index]['body'] ??
+                                                                            '',
+                                                                    style: const TextStyle(
+                                                                        fontSize:
+                                                                            15),
+                                                                  ),
+                                                                ),
+                                                        ],
                                                       ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ));
-                              }),
-                        ),
-                      );
-                    }
-                  }
-                  return const Center(
-                    child: Loader(size: 50.0),
-                  );
-                },
-                future: MessageService().getCustomerMessagesWithSameSubject(
-                    widget.message['customer_id'], widget.message['subject']),
-              ),
-            ),
-          ),
-          TextButton(
-              onPressed: () => {
-                    Navigator.of(context, rootNavigator: true).push(
-                        MaterialPageRoute(
-                            builder: (context) => MessagesByCustomerScreen(
-                                customer: widget.message['customers'],
-                                agent: widget.agent)))
-                  },
-              child: Text(
-                  'See previous messages in this conversation with ${widget.message['customers']['name']}')),
-          SizedBox(height: 10),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                  child: Padding(
-                padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
-                child: Text(Jiffy(widget.message['created']).fromNow(),
-                    style: const TextStyle(
-                        fontSize: 10, fontWeight: FontWeight.bold)),
-              )),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-            child: Card(
-              color: Theme.of(context).colorScheme.surface,
-              elevation: 0,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                    child: Text(
-                        widget.message['incoming'] == true
-                            ? widget.message['customers']['name']
-                            : widget.message['messages_agents'].length > 0
-                                ? widget.message['messages_agents'][0]['agents']
-                                    ['name']
-                                : 'Agent name',
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  widget.message['channels']['channel'] == 'email'
-                      ? Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-                          child: HtmlWidget(
-                            widget.message['emails'][0]['body_html'] ?? '',
-                          ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                                                    ),
+                                                  ),
+                                                  showPreviousMessages ==
+                                                              true &&
+                                                          messages.length ==
+                                                              (index + 1)
+                                                      ? Column(
+                                                          children: [
+                                                            SizedBox(
+                                                                height: 20),
+                                                            TextButton(
+                                                                onPressed:
+                                                                    () => {
+                                                                          Navigator.of(context, rootNavigator: true)
+                                                                              .push(MaterialPageRoute(builder: (context) => MessagesByCustomerScreen(customer: widget.message['customers'], agent: widget.agent)))
+                                                                        },
+                                                                child: Text(
+                                                                    'See all messages by ${widget.message['customers']['name']}',
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            12))),
+                                                          ],
+                                                        )
+                                                      : Container(),
+                                                ],
+                                              );
+                                            }),
+                                      ),
+                                    );
+                                  } else {
+                                    return SizedBox(
+                                        child: Text(
+                                            'There are no previous messages'));
+                                  }
+                                }
+                                return const Center(
+                                  child: Loader(size: 50.0),
+                                );
+                              },
+                              future: MessageService()
+                                  .getCustomerMessagesWithSameSubject(
+                                      widget.message['customer_id'],
+                                      widget.message['subject']),
+                            )
+                          : Container()),
+                )
+              : Container(),
+          showPreviousMessages == false
+              ? const SizedBox(height: 10)
+              : Container(),
+          showPreviousMessages == false
+              ? TextButton(
+                  onPressed: () => {toggleShowPreviousMessages()},
+                  child: Text(
+                      'See previous messages in this conversation with ${widget.message['customers']['name']}',
+                      style: TextStyle(fontSize: 12)))
+              : Container(),
+          showPreviousMessages == false
+              ? const SizedBox(height: 10)
+              : Container(),
+          showPreviousMessages == false
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                        child: Padding(
+                      padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
+                      child: Text(Jiffy(widget.message['created']).fromNow(),
+                          style: const TextStyle(
+                              fontSize: 10, fontWeight: FontWeight.bold)),
+                    )),
+                  ],
+                )
+              : Container(),
+          showPreviousMessages == false
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                  child: Card(
+                    color: Theme.of(context).colorScheme.surface,
+                    elevation: 0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                           child: Text(
-                            widget.message['channels']['channel'] == 'alert'
-                                ? LocalizationService.of(context)
-                                        ?.translate(widget.message['body']) ??
-                                    ''
-                                : widget.message['body'] ?? '',
-                            style: const TextStyle(fontSize: 15),
-                          ),
+                              widget.message['incoming'] == true
+                                  ? widget.message['customers']['name'] + ':'
+                                  : widget.message['messages_agents'].length > 0
+                                      ? widget.message['messages_agents'][0]
+                                              ['agents']['name'] +
+                                          ':'
+                                      : 'Agent name',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                         ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          TextButton(
-              onPressed: () => {
-                    Navigator.of(context, rootNavigator: true).push(
-                        MaterialPageRoute(
-                            builder: (context) => MessagesByCustomerScreen(
-                                customer: widget.message['customers'],
-                                agent: widget.agent)))
-                  },
-              child: Text(
-                  'See all messages ${widget.message['customers']['name']}')),
+                        widget.message['channels']['channel'] == 'email'
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                                child: HtmlWidget(
+                                  widget.message['emails'][0]['body_html'] ??
+                                      '',
+                                ),
+                              )
+                            : Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                                child: Text(
+                                  widget.message['channels']['channel'] ==
+                                          'alert'
+                                      ? LocalizationService.of(context)
+                                              ?.translate(
+                                                  widget.message['body']) ??
+                                          ''
+                                      : widget.message['body'] ?? '',
+                                  style: const TextStyle(fontSize: 15),
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
+                )
+              : Container(),
+          showPreviousMessages == false ? SizedBox(height: 20) : Container(),
+          showPreviousMessages == false
+              ? TextButton(
+                  onPressed: () => {
+                        Navigator.of(context, rootNavigator: true).push(
+                            MaterialPageRoute(
+                                builder: (context) => MessagesByCustomerScreen(
+                                    customer: widget.message['customers'],
+                                    agent: widget.agent)))
+                      },
+                  child: Text(
+                      'See all messages by ${widget.message['customers']['name']}',
+                      style: TextStyle(fontSize: 12)))
+              : Container(),
         ],
       ),
       floatingActionButton:
@@ -555,48 +627,30 @@ class _ReplyFormState extends State<ReplyForm> {
                   elevation: 5,
                   shape: RoundedRectangleBorder(
                       borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
+                          topLeft: Radius.circular(5),
+                          topRight: Radius.circular(5)),
                       side: BorderSide(
                           width: 1,
                           color: Theme.of(context).colorScheme.surface)),
                   constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.945,
+                    maxWidth: MediaQuery.of(context).size.width * 0.965,
                   ),
                   context: context,
                   builder: (context) => SizedBox(
-                        height: 270,
+                        height: 240,
                         child: Column(
                           children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const Spacer(),
-                                IconButton(
-                                  icon: Icon(
-                                    FontAwesomeIcons.xmark,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground,
-                                    size: 15,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            ),
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                               child: Column(
-                                //mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Card(
                                     color:
                                         Theme.of(context).colorScheme.surface,
                                     child: SizedBox(
                                       height:
-                                          attachments.isNotEmpty ? 220 : 168,
+                                          // attachments.isNotEmpty ? 220 : 168,
+                                          attachments.isNotEmpty ? 220 : 158,
                                       width: double.infinity,
                                       child: Form(
                                         key: formKey,
@@ -610,6 +664,11 @@ class _ReplyFormState extends State<ReplyForm> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               QuillHtmlEditor(
+                                                hintTextStyle: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurface),
                                                 textStyle: TextStyle(
                                                     fontSize: 12,
                                                     color: Theme.of(context)
@@ -711,8 +770,10 @@ class _ReplyFormState extends State<ReplyForm> {
                                   ),
                                   Row(
                                     children: [
-                                      Card(
+                                      SizedBox(
+                                        width: 300,
                                         child: ToolBar(
+                                            toolBarColor: Colors.black,
                                             padding: const EdgeInsets.all(7),
                                             activeIconColor: Theme.of(context)
                                                 .colorScheme
@@ -725,6 +786,25 @@ class _ReplyFormState extends State<ReplyForm> {
                                             toolBarConfig: customToolBarList),
                                       ),
                                       const Spacer(),
+                                      ResponsiveVisibility(
+                                          visible: false,
+                                          visibleWhen: const [
+                                            Condition.smallerThan(name: TABLET)
+                                          ],
+                                          child: IconButton(
+                                              onPressed: () =>
+                                                  {Navigator.of(context).pop()},
+                                              icon: Icon(FontAwesomeIcons
+                                                  .circleXmark))),
+                                      ResponsiveVisibility(
+                                          visible: false,
+                                          visibleWhen: const [
+                                            Condition.largerThan(name: TABLET)
+                                          ],
+                                          child: TextButton(
+                                              onPressed: () =>
+                                                  {Navigator.of(context).pop()},
+                                              child: Text('Close'))),
                                       ResponsiveVisibility(
                                           visible: false,
                                           visibleWhen: const [
@@ -831,7 +911,7 @@ class _ReplyFormState extends State<ReplyForm> {
                                               child: const Icon(
                                                 FontAwesomeIcons
                                                     .circleChevronRight,
-                                                size: 18,
+                                                size: 25,
                                               )))
                                     ],
                                   )

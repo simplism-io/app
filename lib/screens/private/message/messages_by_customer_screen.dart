@@ -8,11 +8,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../constants/icon_buttons/go_back_icon_button.dart';
-import '../../constants/links/logo_header_link.dart';
-import '../../constants/loaders/loader.dart';
-import '../../services/localization_service.dart';
-import '../../services/message_service.dart';
+import '../../../constants/icon_buttons/go_back_icon_button.dart';
+import '../../../constants/links/logo_header_link.dart';
+import '../../../constants/loaders/loader.dart';
+import '../../../services/localization_service.dart';
+import '../../../services/message_service.dart';
 import 'message_detail_screen.dart';
 
 class MessagesByCustomerScreen extends StatelessWidget {

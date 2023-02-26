@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../services/agent_service.dart';
-import '../../services/localization_service.dart';
-import '../root.dart';
+import '../../../services/agent_service.dart';
+import '../../../services/localization_service.dart';
+import '../../root.dart';
 
 class CreateOrganisationScreen extends StatefulWidget {
   const CreateOrganisationScreen({super.key});

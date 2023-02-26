@@ -8,10 +8,10 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../main.dart';
-import '../../services/localization_service.dart';
-import '../../constants/loaders/loader.dart';
-import '../root.dart';
+import '../../../main.dart';
+import '../../../services/localization_service.dart';
+import '../../../constants/loaders/loader.dart';
+import '../../root.dart';
 import 'update_password_screen.dart';
 import 'update_agent_screen.dart';
 

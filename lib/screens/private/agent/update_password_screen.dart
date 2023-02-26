@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../constants/icon_buttons/go_back_icon_button.dart';
-import '../../services/agent_service.dart';
-import '../../services/localization_service.dart';
+import '../../../constants/icon_buttons/go_back_icon_button.dart';
+import '../../../services/agent_service.dart';
+import '../../../services/localization_service.dart';
 
 class UpdatePasswordScreen extends StatefulWidget {
   final dynamic agent;

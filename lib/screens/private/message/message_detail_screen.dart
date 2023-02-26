@@ -10,14 +10,14 @@ import 'package:quill_html_editor/quill_html_editor.dart';
 import 'package:html/parser.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:jiffy/jiffy.dart';
-import '../../constants/drawers/private_menu_end_drawer.dart';
-import '../../constants/icon_buttons/go_back_icon_button.dart';
-import '../../constants/icon_buttons/go_back_text_button.dart';
-import '../../constants/links/logo_header_link.dart';
-import '../../constants/loaders/loader.dart';
-import '../../services/localization_service.dart';
-import '../../services/message_service.dart';
-import '../../services/util_service.dart';
+import '../../../constants/drawers/private_menu_end_drawer.dart';
+import '../../../constants/icon_buttons/go_back_icon_button.dart';
+import '../../../constants/icon_buttons/go_back_text_button.dart';
+import '../../../constants/links/logo_header_link.dart';
+import '../../../constants/loaders/loader.dart';
+import '../../../services/localization_service.dart';
+import '../../../services/message_service.dart';
+import '../../../services/util_service.dart';
 import 'messages_by_customer_screen.dart';
 
 class MessageDetailScreen extends StatefulWidget {

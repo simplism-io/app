@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../screens/private/admin_screen.dart';
-import '../../screens/private/agent_screen.dart';
+import '../../screens/private/admin/admin_screen.dart';
+import '../../screens/private/agent/agent_screen.dart';
 import '../../services/agent_service.dart';
 import '../../services/biometric_service.dart';
 import '../../services/internationalization_service.dart';

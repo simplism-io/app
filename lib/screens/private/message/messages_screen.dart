@@ -16,13 +16,13 @@ import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../constants/icons/chevron_right_icon.dart';
-import '../../services/localization_service.dart';
-import '../../services/mailbox_service.dart';
-import '../../services/message_service.dart';
-import '../../constants/links/logo_header_link.dart';
-import '../../services/util_service.dart';
-import 'create_view_screen.dart';
+import '../../../constants/icons/chevron_right_icon.dart';
+import '../../../services/localization_service.dart';
+import '../../../services/mailbox_service.dart';
+import '../../../services/message_service.dart';
+import '../../../constants/links/logo_header_link.dart';
+import '../../../services/util_service.dart';
+import '../view/create_view_screen.dart';
 import 'message_detail_screen.dart';
 import 'messages_by_customer_screen.dart';
 

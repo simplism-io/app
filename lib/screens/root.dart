@@ -7,9 +7,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../constants/loaders/loader.dart';
 import '../services/agent_service.dart';
-import 'private/create_agent_name_screen.dart';
-import 'private/create_organisation_screen.dart';
-import 'private/messages_screen.dart';
+import 'private/agent/create_agent_name_screen.dart';
+import 'private/organisation/create_organisation_screen.dart';
+import 'private/message/messages_screen.dart';
 import 'public/auth_screen.dart';
 import 'public/index_screen.dart';
 

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../services/agent_service.dart';
-import '../../services/localization_service.dart';
-import '../root.dart';
+import '../../../services/agent_service.dart';
+import '../../../services/localization_service.dart';
+import '../../root.dart';
 
 class CreateAgentNameScreen extends StatefulWidget {
   const CreateAgentNameScreen({super.key});

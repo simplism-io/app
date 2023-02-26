@@ -9,10 +9,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../constants/icons/email_icon.dart';
-import '../../services/agent_service.dart';
-import '../../services/localization_service.dart';
-import '../root.dart';
+import '../../../constants/icons/email_icon.dart';
+import '../../../services/agent_service.dart';
+import '../../../services/localization_service.dart';
+import '../../root.dart';
 import 'agent_screen.dart';
 
 final supabase = Supabase.instance.client;

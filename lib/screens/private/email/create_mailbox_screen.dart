@@ -23,7 +23,8 @@ class CreateMailboxScreen extends StatefulWidget {
 
 class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
   final formKey = GlobalKey<FormState>();
-  bool loader = false;
+  bool loaderTestMailBox = false;
+  bool loaderCreateMailBox = false;
 
   String? email;
   String? password;
@@ -33,17 +34,75 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
   String? smtpPort;
 
   bool obscureText = true;
+  bool canTestMailBox = false;
+  bool mailBoxIsTested = false;
+  String? testedMailboxId;
 
   toggleObscure() {
     setState(() => obscureText = !obscureText);
   }
 
+  checkIfCanTestMailbox() {
+    if (smtpPort!.length > 2) {
+      if (formKey.currentState!.validate()) {
+        setState(() {
+          canTestMailBox = true;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future<void> submit() async {
-      setState(() => loader = true);
-      final result = await MailBoxService()
-          .createMailBox(email, password, imapUrl, imapPort, smtpUrl, smtpPort);
+    Future<void> testMailBox() async {
+
+      setState(() => loaderTestMailBox = true);
+      final mailboxId = await MailBoxService().createMailBox(
+          email, password, imapUrl, imapPort, smtpUrl, smtpPort, false);
+      if (mailboxId != null) {
+        print(mailboxId);
+        testedMailboxId = mailboxId;
+        // start timeer
+
+        await Future.delayed(const Duration(seconds: 5));
+        final result = await MailBoxService().loadMailBox(mailboxId);
+
+        print(result);
+
+        if (result['tested'] == true) {
+          setState(() {
+            mailBoxIsTested == true;
+          });
+        }
+
+        // query mailbox for test
+        // TURN TEST KEY GREEN
+        // SET mailboxistested to true
+      } else {
+        setState(() {
+          loaderTestMailBox = false;
+        });
+        if (!mounted) return;
+        setState(() => {loaderTestMailBox = false});
+        final snackBar = SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.error,
+          content: Text(
+              LocalizationService.of(context)
+                      ?.translate('general_error_snackbar_label') ??
+                  '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onError,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+
+    Future<void> createMailBox() async {
+      setState(() => loaderCreateMailBox = true);
+      final result =
+          await MailBoxService().markMailBoxAsTested(testedMailboxId);
       if (result == true) {
         if (!mounted) return;
         final snackBar = SnackBar(
@@ -64,10 +123,10 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
             (route) => false);
       } else {
         setState(() {
-          loader = false;
+          loaderCreateMailBox = false;
         });
         if (!mounted) return;
-        setState(() => {loader = false});
+        setState(() => {loaderCreateMailBox = false});
         final snackBar = SnackBar(
           backgroundColor: Theme.of(context).colorScheme.error,
           content: Text(
@@ -198,7 +257,10 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                               : null;
                                         },
                                         onChanged: (val) {
-                                          setState(() => email = val);
+                                          setState(() => {
+                                                email = val,
+                                                checkIfCanTestMailbox()
+                                              });
                                         }),
                                   ),
                                   const SizedBox(height: 15.0),
@@ -301,7 +363,10 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                 : null;
                                           },
                                           onChanged: (val) {
-                                            setState(() => password = val);
+                                            setState(() => {
+                                                  password = val,
+                                                  checkIfCanTestMailbox()
+                                                });
                                           })),
                                   const SizedBox(height: 15),
                                   SizedBox(
@@ -367,7 +432,10 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                               : null;
                                         },
                                         onChanged: (val) {
-                                          setState(() => imapUrl = val);
+                                          setState(() => {
+                                                imapUrl = val,
+                                                checkIfCanTestMailbox()
+                                              });
                                         }),
                                   ),
                                   const SizedBox(height: 15),
@@ -434,7 +502,10 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                               : null;
                                         },
                                         onChanged: (val) {
-                                          setState(() => imapPort = val);
+                                          setState(() => {
+                                                imapPort = val,
+                                                checkIfCanTestMailbox()
+                                              });
                                         }),
                                   ),
                                   const SizedBox(height: 15),
@@ -491,7 +562,6 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                         textAlign: TextAlign.left,
                                         autofocus: true,
                                         validator: (String? value) {
-                                          //print(value.length);
                                           return (value != null &&
                                                   value.length < 2)
                                               ? LocalizationService.of(context)
@@ -501,7 +571,10 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                               : null;
                                         },
                                         onChanged: (val) {
-                                          setState(() => smtpUrl = val);
+                                          setState(() => {
+                                                smtpUrl = val,
+                                                checkIfCanTestMailbox()
+                                              });
                                         }),
                                   ),
                                   const SizedBox(height: 15),
@@ -558,7 +631,6 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                         textAlign: TextAlign.left,
                                         autofocus: true,
                                         validator: (String? value) {
-                                          //print(value.length);
                                           return (value != null &&
                                                   value.length < 2)
                                               ? LocalizationService.of(context)
@@ -568,92 +640,177 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                               : null;
                                         },
                                         onChanged: (val) {
-                                          setState(() => smtpPort = val);
+                                          setState(
+                                            () => {
+                                              smtpPort = val,
+                                              checkIfCanTestMailbox()
+                                            },
+                                          );
                                         }),
                                   ),
                                   const SizedBox(height: 15),
-                                  SizedBox(
-                                    width: ResponsiveValue(context,
-                                        defaultValue: 360.0,
-                                        valueWhen: const [
-                                          Condition.largerThan(
-                                              name: MOBILE, value: 360.0),
-                                          Condition.smallerThan(
-                                              name: TABLET,
-                                              value: double.infinity)
-                                        ]).value,
-                                    child: (defaultTargetPlatform ==
-                                                TargetPlatform.iOS ||
-                                            defaultTargetPlatform ==
-                                                TargetPlatform.macOS)
-                                        ? CupertinoButton(
-                                            onPressed: () async {
-                                              if (formKey.currentState!
-                                                  .validate()) {
-                                                submit();
-                                              } else {
-                                                setState(() {
-                                                  loader = false;
-                                                });
-                                              }
-                                            },
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            child: Text(
-                                              loader == true
-                                                  ? LocalizationService.of(
-                                                              context)
-                                                          ?.translate(
-                                                              'loader_button_label') ??
-                                                      ''
-                                                  : LocalizationService.of(
-                                                              context)
-                                                          ?.translate(
-                                                              'create_mailbox_button_label') ??
-                                                      '',
-                                              style: TextStyle(
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                          width: ResponsiveValue(context,
+                                              defaultValue: 175.0,
+                                              valueWhen: [
+                                                Condition.smallerThan(
+                                                    name: TABLET,
+                                                    value:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.38)
+                                              ]).value,
+                                          child: (defaultTargetPlatform ==
+                                                      TargetPlatform.iOS ||
+                                                  defaultTargetPlatform ==
+                                                      TargetPlatform.macOS)
+                                              ? CupertinoButton(
+                                                  onPressed:
+                                                      canTestMailBox == true
+                                                          ? () async =>
+                                                              testMailBox()
+                                                          : null,
                                                   color: Theme.of(context)
                                                       .colorScheme
-                                                      .onPrimary,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          )
-                                        : ElevatedButton(
-                                            onPressed: () async {
-                                              if (formKey.currentState!
-                                                  .validate()) {
-                                                submit();
-                                              } else {
-                                                setState(() {
-                                                  loader = false;
-                                                });
-                                              }
-                                            },
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(15.0),
-                                              child: Text(
-                                                loader == true
-                                                    ? LocalizationService.of(
-                                                                context)
-                                                            ?.translate(
-                                                                'loader_button_label') ??
-                                                        ''
-                                                    : LocalizationService.of(
-                                                                context)
-                                                            ?.translate(
-                                                                'create_mailbox_button_label') ??
-                                                        '',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onPrimary,
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                                      .primary,
+                                                  child: Text(
+                                                    loaderTestMailBox == true
+                                                        ? LocalizationService
+                                                                    .of(context)
+                                                                ?.translate(
+                                                                    'loader_button_label') ??
+                                                            ''
+                                                        : LocalizationService
+                                                                    .of(context)
+                                                                ?.translate(
+                                                                    'test_mailbox_button_label') ??
+                                                            '',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                )
+                                              : ElevatedButton(
+                                                  onPressed:
+                                                      canTestMailBox == true
+                                                          ? () async =>
+                                                              testMailBox()
+                                                          : null,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                            .fromLTRB(
+                                                        10.0, 15.0, 10.0, 15.0),
+                                                    child: Text(
+                                                      loaderTestMailBox == true
+                                                          ? LocalizationService
+                                                                      .of(
+                                                                          context)
+                                                                  ?.translate(
+                                                                      'loader_button_label') ??
+                                                              ''
+                                                          : LocalizationService
+                                                                      .of(
+                                                                          context)
+                                                                  ?.translate(
+                                                                      'test_mailbox_button_label') ??
+                                                              '',
+                                                      style: TextStyle(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onPrimary,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                )),
+                                      const Spacer(),
+                                      SizedBox(
+                                        width: ResponsiveValue(context,
+                                            defaultValue: 175.0,
+                                            valueWhen: [
+                                              Condition.smallerThan(
+                                                  name: TABLET,
+                                                  value: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.38)
+                                            ]).value,
+                                        child: (defaultTargetPlatform ==
+                                                    TargetPlatform.iOS ||
+                                                defaultTargetPlatform ==
+                                                    TargetPlatform.macOS)
+                                            ? CupertinoButton(
+                                                onPressed:
+                                                    mailBoxIsTested == true
+                                                        ? () async =>
+                                                            createMailBox()
+                                                        : null,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                child: Text(
+                                                  loaderCreateMailBox == true
+                                                      ? LocalizationService.of(
+                                                                  context)
+                                                              ?.translate(
+                                                                  'loader_button_label') ??
+                                                          ''
+                                                      : LocalizationService.of(
+                                                                  context)
+                                                              ?.translate(
+                                                                  'create_mailbox_button_label') ??
+                                                          '',
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimary,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              )
+                                            : ElevatedButton(
+                                                onPressed:
+                                                    mailBoxIsTested == true
+                                                        ? () async =>
+                                                            createMailBox()
+                                                        : null,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          10.0,
+                                                          15.0,
+                                                          10.0,
+                                                          15.0),
+                                                  child: Text(
+                                                    loaderCreateMailBox == true
+                                                        ? LocalizationService
+                                                                    .of(context)
+                                                                ?.translate(
+                                                                    'loader_button_label') ??
+                                                            ''
+                                                        : LocalizationService
+                                                                    .of(context)
+                                                                ?.translate(
+                                                                    'create_mailbox_button_label') ??
+                                                            '',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
+                                      ),
+                                    ],
                                   )
                                 ],
                               )),

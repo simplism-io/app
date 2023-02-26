@@ -20,7 +20,7 @@ class MessageService extends ChangeNotifier {
       supabase.auth.currentSession!.user.userMetadata!['organisation_id'];
   String totalMessageCount = '0';
 
-  loadViewfromPrefs() async {
+  loadViewFromPrefs() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     final view = pref.getString(keyView);
     if (kDebugMode) {
@@ -50,10 +50,10 @@ class MessageService extends ChangeNotifier {
     if (kDebugMode) {
       print('Message count of $count saved to localStorage');
     }
-    loadTotalMessageCountfromPrefs();
+    loadTotalMessageCountFromPrefs();
   }
 
-  loadTotalMessageCountfromPrefs() async {
+  loadTotalMessageCountFromPrefs() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     totalMessageCount = pref.getString(keyCount)!;
     if (kDebugMode) {
@@ -68,7 +68,7 @@ class MessageService extends ChangeNotifier {
       getNewMessages();
     }
 
-    loadTotalMessageCountfromPrefs();
+    loadTotalMessageCountFromPrefs();
 
     supabase.channel('public:messages').on(
       RealtimeListenTypes.postgresChanges,
@@ -91,7 +91,7 @@ class MessageService extends ChangeNotifier {
       print('Trying to load messages');
     }
 
-    final viewEncoded = await loadViewfromPrefs();
+    final viewEncoded = await loadViewFromPrefs();
 
     if (viewEncoded == null) {
       activeView = null;

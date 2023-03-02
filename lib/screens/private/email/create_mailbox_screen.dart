@@ -55,7 +55,6 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
   @override
   Widget build(BuildContext context) {
     Future<void> testMailBox() async {
-
       setState(() => loaderTestMailBox = true);
       final mailboxId = await MailBoxService().createMailBox(
           email, password, imapUrl, imapPort, smtpUrl, smtpPort, false);
@@ -72,6 +71,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
         if (result['tested'] == true) {
           setState(() {
             mailBoxIsTested == true;
+            loaderTestMailBox = false;
           });
         }
 
@@ -714,12 +714,14 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                                   ?.translate(
                                                                       'loader_button_label') ??
                                                               ''
-                                                          : LocalizationService
-                                                                      .of(
+                                                          : mailBoxIsTested ==
+                                                                  true
+                                                              ? 'Tested'
+                                                              : LocalizationService.of(
                                                                           context)
-                                                                  ?.translate(
-                                                                      'test_mailbox_button_label') ??
-                                                              '',
+                                                                      ?.translate(
+                                                                          'test_mailbox_button_label') ??
+                                                                  '',
                                                       style: TextStyle(
                                                           color:
                                                               Theme.of(context)

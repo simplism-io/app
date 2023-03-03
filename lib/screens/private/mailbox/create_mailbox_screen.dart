@@ -1,6 +1,6 @@
 import 'package:base/constants/icons/email_icon.dart';
 import 'package:base/constants/icons/imap_icon.dart';
-import 'package:base/screens/private/email/mailbox_overview_screen.dart';
+import 'package:base/screens/private/mailbox/mailbox_overview_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +36,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
   bool obscureText = true;
   bool canTestMailBox = false;
   bool mailBoxIsTested = false;
+  bool mailBoxIsVerified = false;
   String? testedMailboxId;
 
   toggleObscure() {
@@ -59,31 +60,29 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
       final mailboxId = await MailBoxService().createMailBox(
           email, password, imapUrl, imapPort, smtpUrl, smtpPort, false);
       if (mailboxId != null) {
-        print(mailboxId);
-        testedMailboxId = mailboxId;
-        // start timeer
-
         await Future.delayed(const Duration(seconds: 5));
         final result = await MailBoxService().loadMailBox(mailboxId);
-
-        print(result);
-
-        if (result['tested'] == true) {
+        if (result[0]['tested'] == true) {
           setState(() {
-            mailBoxIsTested == true;
+            mailBoxIsTested = true;
+            mailBoxIsVerified = true;
             loaderTestMailBox = false;
           });
+        } else {
+          setState(() {
+            mailBoxIsTested = true;
+            mailBoxIsVerified = false;
+            loaderTestMailBox = false;
+          });
+          await MailBoxService().deleteMailbox(mailboxId);
         }
-
-        // query mailbox for test
-        // TURN TEST KEY GREEN
-        // SET mailboxistested to true
       } else {
         setState(() {
           loaderTestMailBox = false;
+          mailBoxIsTested = true;
+          mailBoxIsVerified = false;
         });
         if (!mounted) return;
-        setState(() => {loaderTestMailBox = false});
         final snackBar = SnackBar(
           backgroundColor: Theme.of(context).colorScheme.error,
           content: Text(
@@ -649,6 +648,23 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                         }),
                                   ),
                                   const SizedBox(height: 15),
+                                  mailBoxIsTested == true &&
+                                          mailBoxIsVerified == false
+                                      ? Column(
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            Text(
+                                              'Your mailbox could not be verified',
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .error,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(height: 25),
+                                          ],
+                                        )
+                                      : Container(),
                                   Row(
                                     children: [
                                       SizedBox(
@@ -715,8 +731,10 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                                       'loader_button_label') ??
                                                               ''
                                                           : mailBoxIsTested ==
-                                                                  true
-                                                              ? 'Tested'
+                                                                      true &&
+                                                                  mailBoxIsVerified ==
+                                                                      false
+                                                              ? 'Test again'
                                                               : LocalizationService.of(
                                                                           context)
                                                                       ?.translate(

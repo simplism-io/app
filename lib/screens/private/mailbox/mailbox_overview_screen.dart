@@ -44,37 +44,31 @@ class MailboxOverviewScreen extends StatelessWidget {
     }
 
     createMailboxLink() {
-      return Row(
-        children: [
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-            child: (defaultTargetPlatform == TargetPlatform.iOS ||
-                    defaultTargetPlatform == TargetPlatform.macOS)
-                ? CupertinoButton(
-                    onPressed: () async {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        child: (defaultTargetPlatform == TargetPlatform.iOS ||
+                defaultTargetPlatform == TargetPlatform.macOS)
+            ? CupertinoButton(
+                onPressed: () async {
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                        builder: (context) => const CreateMailboxScreen()),
+                  );
+                },
+                color: Theme.of(context).colorScheme.primary,
+                child: Text(LocalizationService.of(context)
+                        ?.translate('create_mailbox_link_label') ??
+                    ''))
+            : ElevatedButton(
+                onPressed: () => {
                       Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                             builder: (context) => const CreateMailboxScreen()),
-                      );
+                      )
                     },
-                    color: Theme.of(context).colorScheme.primary,
-                    child: Text(LocalizationService.of(context)
-                            ?.translate('create_mailbox_link_label') ??
-                        ''))
-                : ElevatedButton(
-                    onPressed: () => {
-                          Navigator.of(context, rootNavigator: true).push(
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const CreateMailboxScreen()),
-                          )
-                        },
-                    child: Text(LocalizationService.of(context)
-                            ?.translate('create_mailbox_link_label') ??
-                        '')),
-          ),
-        ],
+                child: Text(LocalizationService.of(context)
+                        ?.translate('create_mailbox_link_label') ??
+                    '')),
       );
     }
 
@@ -97,7 +91,7 @@ class MailboxOverviewScreen extends StatelessWidget {
             ),
             elevation: 0,
             backgroundColor: Theme.of(context).colorScheme.background),
-        body: IntrinsicHeight(
+        body: SingleChildScrollView(
           child: Center(
               child: SizedBox(
                   height: 800,
@@ -192,7 +186,13 @@ class MailboxOverviewScreen extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.fromLTRB(
                                               20, 20, 20, 20),
-                                          child: createMailboxLink(),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              createMailboxLink(),
+                                            ],
+                                          ),
                                         ))
                                   ]);
                             } else {
@@ -200,11 +200,41 @@ class MailboxOverviewScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     header(),
-                                    Text(LocalizationService.of(context)
-                                            ?.translate(
-                                                'no_data_message_mailboxes') ??
-                                        ''),
-                                    createMailboxLink()
+                                    Card(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
+                                        elevation: 0,
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 20, 20, 10),
+                                              child: Row(
+                                                children: [
+                                                  Text(LocalizationService.of(
+                                                              context)
+                                                          ?.translate(
+                                                              'no_data_message_mailboxes') ??
+                                                      ''),
+                                                ],
+                                              ),
+                                            ),
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          20, 10, 20, 20),
+                                                  child: createMailboxLink(),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        )),
                                   ]);
                             }
                           } else {

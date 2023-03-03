@@ -1,6 +1,6 @@
 import 'package:base/constants/icons/email_icon.dart';
 import 'package:base/constants/icons/imap_icon.dart';
-import 'package:base/screens/private/email/mailbox_overview_screen.dart';
+import 'package:base/screens/private/mailbox/mailbox_overview_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

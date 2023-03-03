@@ -102,4 +102,8 @@ class MailBoxService extends ChangeNotifier {
       }
     }
   }
+
+  Future deleteMailbox(mailBoxId) async {
+    await supabase.from('mailboxes').delete().match({'id': mailBoxId});
+  }
 }

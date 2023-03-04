@@ -1,3 +1,4 @@
+import 'package:base/constants/icon_buttons/go_back_text_button.dart';
 import 'package:base/constants/icons/email_icon.dart';
 import 'package:base/constants/icons/imap_icon.dart';
 import 'package:base/screens/private/mailbox/mailbox_overview_screen.dart';
@@ -37,7 +38,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
   bool canTestMailBox = false;
   bool mailBoxIsTested = false;
   bool mailBoxIsVerified = false;
-  String? testedMailboxId;
+  String? verifiedMailBoxId;
 
   toggleObscure() {
     setState(() => obscureText = !obscureText);
@@ -55,17 +56,18 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> testMailBox() async {
+    Future<void> verifyMailBox() async {
       setState(() => loaderTestMailBox = true);
-      final mailboxId = await MailBoxService().createOrUpdateMailBox(
-          email, password, imapUrl, imapPort, smtpUrl, smtpPort, false);
-      if (mailboxId != null) {
+      final mailBoxId = await MailBoxService().createOrUpdateMailBox(
+          email, password, imapUrl, imapPort, smtpUrl, smtpPort);
+      if (mailBoxId != null) {
         await Future.delayed(const Duration(seconds: 5));
-        final result = await MailBoxService().loadMailBox(mailboxId);
-        if (result[0]['tested'] == true) {
+        final mailBox = await MailBoxService().loadMailBox(mailBoxId);
+        if (mailBox['verified'] == true) {
           setState(() {
             mailBoxIsTested = true;
             mailBoxIsVerified = true;
+            verifiedMailBoxId = mailBoxId;
             loaderTestMailBox = false;
           });
         } else {
@@ -100,8 +102,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
 
     Future<void> createMailBox() async {
       setState(() => loaderCreateMailBox = true);
-      final result =
-          await MailBoxService().markMailBoxAsTested(testedMailboxId);
+      final result = await MailBoxService().activateMailBox(verifiedMailBoxId);
       if (result == true) {
         if (!mounted) return;
         final snackBar = SnackBar(
@@ -161,23 +162,11 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                     color: Theme.of(context).colorScheme.surface,
                     elevation: 0,
                     child: Padding(
-                      padding: const EdgeInsets.all(40.0),
+                      padding: const EdgeInsets.all(30.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextButton(
-                              style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: const Size(50, 30),
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  alignment: Alignment.centerLeft),
-                              onPressed: () => {
-                                    Navigator.pop(context),
-                                  },
-                              child: Text(LocalizationService.of(context)
-                                      ?.translate('go_back_link_label') ??
-                                  '')),
+                          const GoBackTextButton(toRoot: false),
                           const SizedBox(height: 20),
                           Text(
                               LocalizationService.of(context)?.translate(
@@ -194,15 +183,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                               child: Column(
                                 children: [
                                   SizedBox(
-                                    width: ResponsiveValue(context,
-                                        defaultValue: 360.0,
-                                        valueWhen: const [
-                                          Condition.largerThan(
-                                              name: MOBILE, value: 360.0),
-                                          Condition.smallerThan(
-                                              name: TABLET,
-                                              value: double.infinity)
-                                        ]).value,
+                                    width: double.infinity,
                                     child: TextFormField(
                                         decoration: InputDecoration(
                                           border: const OutlineInputBorder(
@@ -264,15 +245,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                   ),
                                   const SizedBox(height: 15.0),
                                   SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 360.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 360.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: TextFormField(
                                           obscureText: obscureText,
                                           decoration: InputDecoration(
@@ -369,15 +342,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                           })),
                                   const SizedBox(height: 15),
                                   SizedBox(
-                                    width: ResponsiveValue(context,
-                                        defaultValue: 360.0,
-                                        valueWhen: const [
-                                          Condition.largerThan(
-                                              name: MOBILE, value: 360.0),
-                                          Condition.smallerThan(
-                                              name: TABLET,
-                                              value: double.infinity)
-                                        ]).value,
+                                    width: double.infinity,
                                     child: TextFormField(
                                         decoration: InputDecoration(
                                           border: const OutlineInputBorder(
@@ -439,15 +404,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                   ),
                                   const SizedBox(height: 15),
                                   SizedBox(
-                                    width: ResponsiveValue(context,
-                                        defaultValue: 360.0,
-                                        valueWhen: const [
-                                          Condition.largerThan(
-                                              name: MOBILE, value: 360.0),
-                                          Condition.smallerThan(
-                                              name: TABLET,
-                                              value: double.infinity)
-                                        ]).value,
+                                    width: double.infinity,
                                     child: TextFormField(
                                         decoration: InputDecoration(
                                           border: const OutlineInputBorder(
@@ -509,15 +466,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                   ),
                                   const SizedBox(height: 15),
                                   SizedBox(
-                                    width: ResponsiveValue(context,
-                                        defaultValue: 360.0,
-                                        valueWhen: const [
-                                          Condition.largerThan(
-                                              name: MOBILE, value: 360.0),
-                                          Condition.smallerThan(
-                                              name: TABLET,
-                                              value: double.infinity)
-                                        ]).value,
+                                    width: double.infinity,
                                     child: TextFormField(
                                         decoration: InputDecoration(
                                           border: const OutlineInputBorder(
@@ -578,15 +527,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                   ),
                                   const SizedBox(height: 15),
                                   SizedBox(
-                                    width: ResponsiveValue(context,
-                                        defaultValue: 360.0,
-                                        valueWhen: const [
-                                          Condition.largerThan(
-                                              name: MOBILE, value: 360.0),
-                                          Condition.smallerThan(
-                                              name: TABLET,
-                                              value: double.infinity)
-                                        ]).value,
+                                    width: double.infinity,
                                     child: TextFormField(
                                         decoration: InputDecoration(
                                           border: const OutlineInputBorder(
@@ -691,7 +632,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                   onPressed:
                                                       canTestMailBox == true
                                                           ? () async =>
-                                                              testMailBox()
+                                                              verifyMailBox()
                                                           : null,
                                                   color: Theme.of(context)
                                                       .colorScheme
@@ -720,7 +661,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                   onPressed:
                                                       canTestMailBox == true
                                                           ? () async =>
-                                                              testMailBox()
+                                                              verifyMailBox()
                                                           : null,
                                                   child: Padding(
                                                     padding: const EdgeInsets
@@ -772,7 +713,9 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                     TargetPlatform.macOS)
                                             ? CupertinoButton(
                                                 onPressed:
-                                                    mailBoxIsTested == true
+                                                    mailBoxIsTested == true &&
+                                                            mailBoxIsVerified ==
+                                                                true
                                                         ? () async =>
                                                             createMailBox()
                                                         : null,
@@ -801,7 +744,9 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                               )
                                             : ElevatedButton(
                                                 onPressed:
-                                                    mailBoxIsTested == true
+                                                    mailBoxIsTested == true &&
+                                                            mailBoxIsVerified ==
+                                                                true
                                                         ? () async =>
                                                             createMailBox()
                                                         : null,

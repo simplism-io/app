@@ -50,7 +50,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 color: Theme.of(context).colorScheme.surface,
                 elevation: 0,
                 child: Padding(
-                  padding: const EdgeInsets.all(40.0),
+                  padding: const EdgeInsets.all(30.0),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

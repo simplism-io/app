@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -18,17 +20,17 @@ class MailboxOverviewScreen extends StatelessWidget {
     header() {
       return SizedBox(
         width: ResponsiveValue(context, defaultValue: 450.0, valueWhen: const [
-          Condition.largerThan(name: MOBILE, value: 450.0),
+          Condition.largerThan(name: MOBILE, value: 500.0),
           Condition.smallerThan(name: TABLET, value: double.infinity)
         ]).value,
         child: Card(
           color: Theme.of(context).colorScheme.surface,
           elevation: 0,
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(30.0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const GoBackTextButton(toRoot: true),
+              const GoBackTextButton(toRoot: false),
               const SizedBox(height: 20),
               Text(
                   LocalizationService.of(context)
@@ -103,7 +105,7 @@ class MailboxOverviewScreen extends StatelessWidget {
                             name: TABLET, value: double.infinity)
                       ]).value,
                   child: Padding(
-                      padding: const EdgeInsets.all(40.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: FutureBuilder(
                         builder: (ctx, snapshot) {
                           if (snapshot.connectionState ==
@@ -179,6 +181,60 @@ class MailboxOverviewScreen extends StatelessWidget {
                                                         );
                                                       },
                                                     ),
+                                                    IconButton(
+                                                      iconSize: 10,
+                                                      icon: const Icon(
+                                                        FontAwesomeIcons.xmark,
+                                                      ),
+                                                      onPressed: () async {
+                                                        final result =
+                                                            await MailBoxService()
+                                                                .deleteMailBox(
+                                                                    mailboxes[
+                                                                            index]
+                                                                        ['id']);
+                                                        if (result == null) {
+                                                          Navigator.of(context,
+                                                                  rootNavigator:
+                                                                      true)
+                                                              .push(
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        const MailboxOverviewScreen()),
+                                                          );
+                                                        } else {
+                                                          final snackBar =
+                                                              SnackBar(
+                                                            backgroundColor:
+                                                                Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .error,
+                                                            content: Text(
+                                                                LocalizationService.of(
+                                                                            context)
+                                                                        ?.translate(
+                                                                            'general_error_snackbar_label') ??
+                                                                    '',
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onError,
+                                                                )),
+                                                          );
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                                  snackBar);
+                                                        }
+                                                      },
+                                                    ),
                                                   ],
                                                 ),
                                               ),
@@ -217,7 +273,7 @@ class MailboxOverviewScreen extends StatelessWidget {
                                             Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
-                                                      20, 20, 20, 10),
+                                                      30, 20, 30, 10),
                                               child: Row(
                                                 children: [
                                                   Text(LocalizationService.of(
@@ -235,7 +291,7 @@ class MailboxOverviewScreen extends StatelessWidget {
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.fromLTRB(
-                                                          20, 10, 20, 20),
+                                                          30, 10, 30, 20),
                                                   child: createMailboxLink(),
                                                 ),
                                               ],

@@ -238,12 +238,7 @@ class _AuthScreenState extends State<AuthScreen> {
         child: IntrinsicHeight(
           child: Center(
             child: SizedBox(
-              width: ResponsiveValue(context,
-                  defaultValue: 450.0,
-                  valueWhen: const [
-                    Condition.largerThan(name: MOBILE, value: 450.0),
-                    Condition.smallerThan(name: TABLET, value: double.infinity)
-                  ]).value,
+              width: 450,
               child: Padding(
                   padding: EdgeInsets.fromLTRB(
                       8.0,
@@ -260,7 +255,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       elevation: 0,
                       child: Padding(
                         padding:
-                            const EdgeInsets.fromLTRB(15.0, 30.0, 15.0, 40.0),
+                            const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 40.0),
                         child: reset == false
                             ? Form(
                                 key: formKey,
@@ -280,16 +275,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                             defaultTargetPlatform ==
                                                 TargetPlatform.macOS)
                                         ? SizedBox(
-                                            width: ResponsiveValue(context,
-                                                defaultValue: 300.0,
-                                                valueWhen: const [
-                                                  Condition.largerThan(
-                                                      name: MOBILE,
-                                                      value: 300.0),
-                                                  Condition.smallerThan(
-                                                      name: TABLET,
-                                                      value: double.infinity)
-                                                ]).value,
+                                            width: double.infinity,
                                             child: (defaultTargetPlatform ==
                                                         TargetPlatform.iOS ||
                                                     defaultTargetPlatform ==
@@ -363,15 +349,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                         ? const SizedBox(height: 15.0)
                                         : Container(),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: (defaultTargetPlatform ==
                                                   TargetPlatform.iOS ||
                                               defaultTargetPlatform ==
@@ -452,17 +430,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                         ? Column(
                                             children: [
                                               SizedBox(
-                                                width: ResponsiveValue(context,
-                                                    defaultValue: 300.0,
-                                                    valueWhen: const [
-                                                      Condition.largerThan(
-                                                          name: MOBILE,
-                                                          value: 300.0),
-                                                      Condition.smallerThan(
-                                                          name: TABLET,
-                                                          value:
-                                                              double.infinity)
-                                                    ]).value,
+                                                width: double.infinity,
                                                 child: TextFormField(
                                                     decoration: InputDecoration(
                                                       border: const OutlineInputBorder(
@@ -539,15 +507,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                           )
                                         : Container(),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: TextFormField(
                                           decoration: InputDecoration(
                                               hintText: LocalizationService
@@ -603,15 +563,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ),
                                     const SizedBox(height: 15.0),
                                     SizedBox(
-                                        width: ResponsiveValue(context,
-                                            defaultValue: 300.0,
-                                            valueWhen: const [
-                                              Condition.largerThan(
-                                                  name: MOBILE, value: 300.0),
-                                              Condition.smallerThan(
-                                                  name: TABLET,
-                                                  value: double.infinity)
-                                            ]).value,
+                                        width: double.infinity,
                                         child: TextFormField(
                                             obscureText: obscureText,
                                             decoration: InputDecoration(
@@ -710,15 +662,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                             })),
                                     const SizedBox(height: 15.0),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: signup == false
                                           ? (defaultTargetPlatform ==
                                                       TargetPlatform.iOS ||
@@ -935,15 +879,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ]),
                                     const SizedBox(height: 30.0),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: (defaultTargetPlatform ==
                                                   TargetPlatform.iOS ||
                                               defaultTargetPlatform ==
@@ -1091,15 +1027,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                             fontWeight: FontWeight.bold)),
                                     const SizedBox(height: 40.0),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: TextFormField(
                                           decoration: InputDecoration(
                                               hintText: LocalizationService
@@ -1152,15 +1080,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ),
                                     const SizedBox(height: 15.0),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: (defaultTargetPlatform ==
                                                   TargetPlatform.iOS ||
                                               defaultTargetPlatform ==

@@ -57,7 +57,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
   Widget build(BuildContext context) {
     Future<void> testMailBox() async {
       setState(() => loaderTestMailBox = true);
-      final mailboxId = await MailBoxService().createMailBox(
+      final mailboxId = await MailBoxService().createOrUpdateMailBox(
           email, password, imapUrl, imapPort, smtpUrl, smtpPort, false);
       if (mailboxId != null) {
         await Future.delayed(const Duration(seconds: 5));
@@ -74,7 +74,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
             mailBoxIsVerified = false;
             loaderTestMailBox = false;
           });
-          await MailBoxService().deleteMailbox(mailboxId);
+          //await MailBoxService().deleteMailbox(mailboxId);
         }
       } else {
         setState(() {
@@ -649,12 +649,16 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                   ),
                                   const SizedBox(height: 15),
                                   mailBoxIsTested == true &&
-                                          mailBoxIsVerified == false
+                                          mailBoxIsVerified == false &&
+                                          loaderTestMailBox == false
                                       ? Column(
                                           children: [
                                             const SizedBox(height: 10),
                                             Text(
-                                              'Your mailbox could not be verified',
+                                              LocalizationService.of(context)
+                                                      ?.translate(
+                                                          'mailbox_verification_error_label') ??
+                                                  '',
                                               style: TextStyle(
                                                   color: Theme.of(context)
                                                       .colorScheme

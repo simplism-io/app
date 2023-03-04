@@ -45,6 +45,7 @@
   "loader_button_label": "Even geduld s.v.p...",
   "logo_header_label": "Base",
   "mailbox_overview_header_label": "Mailboxes",
+  "mailbox_verification_error_label": "De mailbox kon niet geverifieerd worden",
   "main_tagline": "Base template",
   "make_select_avatar_label": "Avatar selecteren of maken",
   "manage_email_link_label": "Beheer email",

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-class GoBackIconWidget extends StatelessWidget {
-  const GoBackIconWidget({super.key});
+class PublicMenuIconButton extends StatelessWidget {
+  const PublicMenuIconButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,13 +15,14 @@ class GoBackIconWidget extends StatelessWidget {
       child: Builder(builder: (context) {
         return IconButton(
           icon: Icon(
-              (defaultTargetPlatform == TargetPlatform.iOS ||
-                      defaultTargetPlatform == TargetPlatform.macOS)
-                  ? CupertinoIcons.chevron_left
-                  : FontAwesomeIcons.chevronLeft,
-              color: Theme.of(context).colorScheme.onBackground),
+            (defaultTargetPlatform == TargetPlatform.iOS ||
+                    defaultTargetPlatform == TargetPlatform.macOS)
+                ? CupertinoIcons.bars
+                : FontAwesomeIcons.bars,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
           onPressed: () {
-            Navigator.pop(context);
+            Scaffold.of(context).openDrawer();
           },
         );
       }),

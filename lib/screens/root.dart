@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../constants/loaders/loader_spinner_widget.dart';
+import '../constants/loaders/loader.dart';
 import '../services/agent_service.dart';
-import 'private/create_agent_name_screen.dart';
-import 'private/create_organisation_screen.dart';
-import 'private/messages_screen.dart';
+import 'private/agent/create_agent_name_screen.dart';
+import 'private/organisation/create_organisation_screen.dart';
+import 'private/message/messages_screen.dart';
 import 'public/auth_screen.dart';
 import 'public/index_screen.dart';
 
@@ -79,7 +79,7 @@ class _RootState extends State<Root> {
                   }
                 }
               }
-              return const LoaderSpinnerWidget();
+              return const Loader(size: 50.0);
             },
             future: AgentService().loadAgent(),
           );

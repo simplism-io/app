@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../constants/icons/go_back_icon.dart';
-import '../../services/agent_service.dart';
-import '../../services/localization_service.dart';
+import '../../../constants/icon_buttons/go_back_icon_button.dart';
+import '../../../services/agent_service.dart';
+import '../../../services/localization_service.dart';
 
 class UpdatePasswordScreen extends StatefulWidget {
   final dynamic agent;
@@ -74,7 +74,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          leading: const GoBackIconWidget(),
+          leading: const GoBackIconButton(toRoot: false),
           elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.background,
         ),
@@ -153,7 +153,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                                       labelStyle: const TextStyle(
                                         fontSize: 15,
                                       ), //label style
-                                      prefixIcon: const PasswordIcon(),
+                                      prefixIcon: const PasswordIcon(size: 20),
                                       suffixIcon: Padding(
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 0, 15, 0),
@@ -252,7 +252,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                                             .colorScheme
                                             .secondary,
                                       ), //label style
-                                      prefixIcon: const PasswordIcon(),
+                                      prefixIcon: const PasswordIcon(size: 20),
                                       suffixIcon: Padding(
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 0, 15, 0),

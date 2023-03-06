@@ -10,12 +10,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../constants/drop_downs/language_header_dropdown_widget.dart';
 import '../../constants/headers/public_menu_header.dart';
+import '../../constants/icon_buttons/github_icon_button.dart';
 import '../../constants/icons/email_icon.dart';
-import '../../constants/icons/public_menu_icon.dart';
-import '../../constants/icons/theme_header_icon.dart';
+import '../../constants/icon_buttons/public_menu_icon_button.dart';
+import '../../constants/icon_buttons/theme_header_icon_button.dart';
 
-import '../../constants/links/about_drawer_link.dart';
-import '../../constants/links/about_header_link.dart';
+import '../../constants/links/github_drawer_link.dart';
 import '../../constants/links/faq_drawer_link.dart';
 import '../../constants/links/faq_header_link.dart';
 import '../../constants/links/features_drawer_link.dart';
@@ -197,7 +197,7 @@ class _AuthScreenState extends State<AuthScreen> {
             FeaturesDrawerLink(highlight: false),
             PricingDrawerLink(highlight: false),
             FaqDrawerLink(highlight: false),
-            AboutDrawerLink(highlight: false)
+            GithubDrawerLink()
           ],
         ),
       );
@@ -219,7 +219,7 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: const <Widget>[PublicMenuIcon(), LogoHeaderLink()],
+            children: const <Widget>[PublicMenuIconButton(), LogoHeaderLink()],
           ),
         ),
         titleSpacing: 0,
@@ -228,22 +228,17 @@ class _AuthScreenState extends State<AuthScreen> {
         actions: const [
           FeaturesHeaderLink(highlight: false),
           PricingHeaderLink(highlight: false),
-          AboutUsHeaderLink(highlight: false),
           FaqHeaderLink(highlight: false),
           LanguageHeaderDropdown(),
-          ThemeHeaderIcon(),
+          ThemeHeaderIconButton(),
+          GithubIconButton(),
         ],
       ),
       body: SingleChildScrollView(
         child: IntrinsicHeight(
           child: Center(
             child: SizedBox(
-              width: ResponsiveValue(context,
-                  defaultValue: 450.0,
-                  valueWhen: const [
-                    Condition.largerThan(name: MOBILE, value: 450.0),
-                    Condition.smallerThan(name: TABLET, value: double.infinity)
-                  ]).value,
+              width: 450,
               child: Padding(
                   padding: EdgeInsets.fromLTRB(
                       8.0,
@@ -260,7 +255,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       elevation: 0,
                       child: Padding(
                         padding:
-                            const EdgeInsets.fromLTRB(15.0, 30.0, 15.0, 40.0),
+                            const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 40.0),
                         child: reset == false
                             ? Form(
                                 key: formKey,
@@ -280,16 +275,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                             defaultTargetPlatform ==
                                                 TargetPlatform.macOS)
                                         ? SizedBox(
-                                            width: ResponsiveValue(context,
-                                                defaultValue: 300.0,
-                                                valueWhen: const [
-                                                  Condition.largerThan(
-                                                      name: MOBILE,
-                                                      value: 300.0),
-                                                  Condition.smallerThan(
-                                                      name: TABLET,
-                                                      value: double.infinity)
-                                                ]).value,
+                                            width: double.infinity,
                                             child: (defaultTargetPlatform ==
                                                         TargetPlatform.iOS ||
                                                     defaultTargetPlatform ==
@@ -363,15 +349,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                         ? const SizedBox(height: 15.0)
                                         : Container(),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: (defaultTargetPlatform ==
                                                   TargetPlatform.iOS ||
                                               defaultTargetPlatform ==
@@ -452,17 +430,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                         ? Column(
                                             children: [
                                               SizedBox(
-                                                width: ResponsiveValue(context,
-                                                    defaultValue: 300.0,
-                                                    valueWhen: const [
-                                                      Condition.largerThan(
-                                                          name: MOBILE,
-                                                          value: 300.0),
-                                                      Condition.smallerThan(
-                                                          name: TABLET,
-                                                          value:
-                                                              double.infinity)
-                                                    ]).value,
+                                                width: double.infinity,
                                                 child: TextFormField(
                                                     decoration: InputDecoration(
                                                       border: const OutlineInputBorder(
@@ -481,7 +449,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                                         fontSize: 15,
                                                       ), //label style
                                                       prefixIcon:
-                                                          const OrganisationIcon(),
+                                                          const OrganisationIcon(
+                                                              size: 20),
                                                       hintText: LocalizationService
                                                                   .of(context)
                                                               ?.translate(
@@ -538,15 +507,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                           )
                                         : Container(),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: TextFormField(
                                           decoration: InputDecoration(
                                               hintText: LocalizationService
@@ -582,7 +543,11 @@ class _AuthScreenState extends State<AuthScreen> {
                                               labelStyle: const TextStyle(
                                                 fontSize: 15,
                                               ), //label style
-                                              prefixIcon: const EmailIcon()),
+                                              prefixIcon: const Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    15, 0, 15, 0),
+                                                child: EmailIcon(size: 20),
+                                              )),
                                           textAlign: TextAlign.left,
                                           initialValue: email,
                                           autofocus: true,
@@ -598,15 +563,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ),
                                     const SizedBox(height: 15.0),
                                     SizedBox(
-                                        width: ResponsiveValue(context,
-                                            defaultValue: 300.0,
-                                            valueWhen: const [
-                                              Condition.largerThan(
-                                                  name: MOBILE, value: 300.0),
-                                              Condition.smallerThan(
-                                                  name: TABLET,
-                                                  value: double.infinity)
-                                            ]).value,
+                                        width: double.infinity,
                                         child: TextFormField(
                                             obscureText: obscureText,
                                             decoration: InputDecoration(
@@ -647,7 +604,11 @@ class _AuthScreenState extends State<AuthScreen> {
                                               labelStyle: const TextStyle(
                                                 fontSize: 15,
                                               ), //label style
-                                              prefixIcon: const PasswordIcon(),
+                                              prefixIcon: const Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    15, 0, 15, 0),
+                                                child: PasswordIcon(size: 20),
+                                              ),
                                               suffixIcon: Padding(
                                                 padding:
                                                     const EdgeInsets.fromLTRB(
@@ -701,15 +662,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                             })),
                                     const SizedBox(height: 15.0),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: signup == false
                                           ? (defaultTargetPlatform ==
                                                       TargetPlatform.iOS ||
@@ -926,15 +879,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ]),
                                     const SizedBox(height: 30.0),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: (defaultTargetPlatform ==
                                                   TargetPlatform.iOS ||
                                               defaultTargetPlatform ==
@@ -1082,15 +1027,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                             fontWeight: FontWeight.bold)),
                                     const SizedBox(height: 40.0),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: TextFormField(
                                           decoration: InputDecoration(
                                               hintText: LocalizationService
@@ -1126,7 +1063,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                               labelStyle: const TextStyle(
                                                 fontSize: 15,
                                               ), //label style
-                                              prefixIcon: const EmailIcon()),
+                                              prefixIcon:
+                                                  const EmailIcon(size: 15)),
                                           textAlign: TextAlign.left,
                                           initialValue: email,
                                           autofocus: true,
@@ -1142,15 +1080,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ),
                                     const SizedBox(height: 15.0),
                                     SizedBox(
-                                      width: ResponsiveValue(context,
-                                          defaultValue: 300.0,
-                                          valueWhen: const [
-                                            Condition.largerThan(
-                                                name: MOBILE, value: 300.0),
-                                            Condition.smallerThan(
-                                                name: TABLET,
-                                                value: double.infinity)
-                                          ]).value,
+                                      width: double.infinity,
                                       child: (defaultTargetPlatform ==
                                                   TargetPlatform.iOS ||
                                               defaultTargetPlatform ==

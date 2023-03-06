@@ -6,33 +6,86 @@ final supabase = Supabase.instance.client;
 class MailBoxService extends ChangeNotifier {
   Map? mailboxStatus;
 
-  Future loadMailBoxes() async {
-    return await supabase.from('mailboxes').select().eq('organisation_id',
-        supabase.auth.currentSession!.user.userMetadata!['organisation_id']);
+  Future loadVerifiedMailBoxes() async {
+    return await supabase
+        .from('mailboxes')
+        .select('*, emails(id)')
+        .eq('organisation_id',
+            supabase.auth.currentSession!.user.userMetadata!['organisation_id'])
+        .eq('verified', true);
   }
 
-  Future createMailBox(
-      email, password, imapUrl, imapPort, smtpUrl, smtpPort) async {
-    final mailbox = await supabase
+  Future loadMailBox(mailBoxId) async {
+    return await supabase
         .from('mailboxes')
-        .insert({
-          'email': email,
-          'password': password,
-          'imap_url': imapUrl,
-          'imap_port': imapPort,
-          'smtp_url': smtpUrl,
-          'smtp_port': smtpPort,
-          'organisation_id': supabase
-              .auth.currentSession!.user.userMetadata!['organisation_id']
-        })
+        .select('id, verified')
+        .eq('id', mailBoxId)
         .select()
         .single();
+  }
 
-    if (mailbox != null) {
-      return true;
+  Future loadMailBoxWithoutId(email) async {
+    return await supabase
+        .from('mailboxes')
+        .select('id')
+        .eq('email', email)
+        .select();
+  }
+
+  Future createOrUpdateMailBox(
+      email, password, imapUrl, imapPort, smtpUrl, smtpPort) async {
+    final mailBoxLoaded = await loadMailBoxWithoutId(email);
+    String? mailBoxId;
+
+    if (mailBoxLoaded.length == 0) {
+      if (kDebugMode) {
+        print('Creating mailbox');
+      }
+      final mailBoxCreated = await supabase
+          .from('mailboxes')
+          .insert({
+            'email': email,
+            'password': password,
+            'imap_url': imapUrl,
+            'imap_port': imapPort,
+            'smtp_url': smtpUrl,
+            'smtp_port': smtpPort,
+            'organisation_id': supabase
+                .auth.currentSession!.user.userMetadata!['organisation_id'],
+            'verified': false,
+            'active': false
+          })
+          .select()
+          .single();
+      mailBoxId = mailBoxCreated['id'];
     } else {
-      return false;
+      if (kDebugMode) {
+        print('Updating mailbox');
+        final mailBoxUpdated = await supabase
+            .from('mailboxes')
+            .update({
+              'email': email,
+              'password': password,
+              'imap_url': imapUrl,
+              'imap_port': imapPort,
+              'smtp_url': smtpUrl,
+              'smtp_port': smtpPort,
+              'verified': false,
+              'active': false,
+            })
+            .match({'id': mailBoxLoaded[0]['id']})
+            .select()
+            .single();
+
+        mailBoxId = mailBoxUpdated['id'];
+      }
     }
+
+    if (mailBoxId != null) {
+      return mailBoxId;
+    } else {
+      return null;
+    } //   mailBoxId = mailBoxCreated['id'];
   }
 
   Future updateMailBox(
@@ -50,6 +103,7 @@ class MailBoxService extends ChangeNotifier {
             'imap_port': imapPort,
             'smtp_url': smtpUrl,
             'smtp_port': smtpPort,
+            'verified': true,
             'active': active
           })
           .match({'id': id})
@@ -57,6 +111,79 @@ class MailBoxService extends ChangeNotifier {
           .single();
 
       if (mailbox != null) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  Future verifyMailBox(id) async {
+    try {
+      if (kDebugMode) {
+        print('Trying to confirm mailbox');
+      }
+      final mailbox = await supabase
+          .from('mailboxes')
+          .update({'verified': true})
+          .match({'id': id})
+          .select()
+          .single();
+
+      if (mailbox != null) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  Future activateMailBox(id) async {
+    try {
+      if (kDebugMode) {
+        print('Trying to confirm mailbox');
+      }
+      final mailbox = await supabase
+          .from('mailboxes')
+          .update({'active': true})
+          .match({'id': id})
+          .select()
+          .single();
+
+      if (mailbox != null) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  Future deleteMailBox(mailBoxId) async {
+    try {
+      if (kDebugMode) {
+        print('Trying to confirm mailbox');
+      }
+      final mailbox = await supabase
+          .from('mailboxes')
+          .update({'deleted': true})
+          .match({'id': mailBoxId})
+          .select()
+          .single();
+
+      if (mailbox != null) {
+        await supabase.from('mailboxes').delete().match({'id': mailBoxId});
         return true;
       } else {
         return false;

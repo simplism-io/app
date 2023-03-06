@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/foundation.dart';
@@ -25,6 +26,7 @@ class InternationalizationService extends ChangeNotifier {
     String tempLocale = prefs.getString('language_code') ?? 'en';
     _locale = Locale(tempLocale);
     selectedItem = tempLocale;
+
     if (kDebugMode) {
       print('Locale loaded from storage. Locale is: $tempLocale');
     }
@@ -37,10 +39,12 @@ class InternationalizationService extends ChangeNotifier {
       _locale = const Locale("nl");
       await prefs.setString('language_code', 'nl');
       await prefs.setString('country_code', '');
+      await Jiffy.locale("nl");
     } else {
       _locale = const Locale("en");
       await prefs.setString('language_code', 'en');
       await prefs.setString('country_code', 'US');
+      await Jiffy.locale("en");
     }
     if (kDebugMode) {
       print('Locale saved to storage. Locale is: $localeToSet');

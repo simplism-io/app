@@ -13,27 +13,24 @@ class LogoHeaderLink extends StatelessWidget {
       visible: true,
       hiddenWhen: const [Condition.smallerThan(name: TABLET)],
       child: Builder(builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
-          child: TextButton(
-            child: Text(
-              LocalizationService.of(context)?.translate('logo_header_label') ??
-                  '',
-              style: TextStyle(
-                  fontSize: ResponsiveValue(context,
-                      defaultValue: 30.0,
-                      valueWhen: const [
-                        Condition.smallerThan(name: DESKTOP, value: 30.0),
-                      ]).value,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onBackground),
-            ),
-            onPressed: () {
-              Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const App()),
-                  (route) => false);
-            },
+        return TextButton(
+          child: Text(
+            LocalizationService.of(context)?.translate('logo_header_label') ??
+                '',
+            style: TextStyle(
+                fontSize: ResponsiveValue(context,
+                    defaultValue: 30.0,
+                    valueWhen: const [
+                      Condition.smallerThan(name: DESKTOP, value: 30.0),
+                    ]).value,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onBackground),
           ),
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const App()),
+                (route) => false);
+          },
         );
       }),
     );

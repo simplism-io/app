@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../services/localization_service.dart';
-import 'email/mailbox_overview_screen.dart';
+import '../../../services/localization_service.dart';
+import '../mailbox/mailbox_overview_screen.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -50,7 +50,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 color: Theme.of(context).colorScheme.surface,
                 elevation: 0,
                 child: Padding(
-                  padding: const EdgeInsets.all(40.0),
+                  padding: const EdgeInsets.all(30.0),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

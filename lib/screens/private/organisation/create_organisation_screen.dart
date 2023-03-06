@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../services/agent_service.dart';
-import '../../services/localization_service.dart';
-import '../root.dart';
+import '../../../services/agent_service.dart';
+import '../../../services/localization_service.dart';
+import '../../root.dart';
 
 class CreateOrganisationScreen extends StatefulWidget {
   const CreateOrganisationScreen({super.key});
@@ -113,7 +113,7 @@ class _CreateOrganisationScreenState extends State<CreateOrganisationScreen> {
                                   labelStyle: const TextStyle(
                                     fontSize: 15,
                                   ), //label style
-                                  prefixIcon: const OrganisationIcon(),
+                                  prefixIcon: const OrganisationIcon(size: 20),
                                   hintText: LocalizationService.of(context)
                                           ?.translate(
                                               'organisation_input_label') ??

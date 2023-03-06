@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
-class LoaderSpinnerWidget extends StatelessWidget {
-  const LoaderSpinnerWidget({Key? key}) : super(key: key);
+class Loader extends StatelessWidget {
+  final double size;
+  const Loader({Key? key, required this.size}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
           child: SizedBox(
-        height: 50.0,
-        width: 50.0,
+        height: size,
+        width: size,
         child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(
                 Theme.of(context).colorScheme.onBackground)),

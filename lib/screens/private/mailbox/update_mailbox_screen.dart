@@ -1,6 +1,6 @@
 import 'package:base/constants/icons/email_icon.dart';
 import 'package:base/constants/icons/imap_icon.dart';
-import 'package:base/screens/private/email/mailbox_overview_screen.dart';
+import 'package:base/screens/private/mailbox/mailbox_overview_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,17 +11,19 @@ import '../../../constants/icon_buttons/go_back_icon_button.dart';
 import '../../../constants/icons/password_icon.dart';
 import '../../../constants/icons/port_icon.dart';
 import '../../../constants/icons/smtp_icon.dart';
+import '../../../constants/icons/status_icon.dart';
 import '../../../services/localization_service.dart';
 import '../../../services/mailbox_service.dart';
 
-class CreateMailboxScreen extends StatefulWidget {
-  const CreateMailboxScreen({super.key});
+class UpdateMailboxScreen extends StatefulWidget {
+  final dynamic mailbox;
+  const UpdateMailboxScreen({super.key, this.mailbox});
 
   @override
-  State<CreateMailboxScreen> createState() => _CreateMailboxScreenState();
+  State<UpdateMailboxScreen> createState() => _UpdateMailboxScreenState();
 }
 
-class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
+class _UpdateMailboxScreenState extends State<UpdateMailboxScreen> {
   final formKey = GlobalKey<FormState>();
   bool loader = false;
 
@@ -33,6 +35,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
   String? smtpPort;
 
   bool obscureText = true;
+  bool? active;
 
   toggleObscure() {
     setState(() => obscureText = !obscureText);
@@ -40,17 +43,21 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var options = ['active', 'inactive'];
+
+    String? selectedValue;
+
     Future<void> submit() async {
       setState(() => loader = true);
-      final result = await MailBoxService()
-          .createMailBox(email, password, imapUrl, imapPort, smtpUrl, smtpPort);
+      final result = await MailBoxService().updateMailBox(widget.mailbox['id'],
+          email, password, imapUrl, imapPort, smtpUrl, smtpPort, active);
       if (result == true) {
         if (!mounted) return;
         final snackBar = SnackBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
           content: Text(
               LocalizationService.of(context)
-                      ?.translate('create_mailbox_name_snackbar_label') ??
+                      ?.translate('update_mailbox_snackbar_label') ??
                   '',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -85,7 +92,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          leading: const GoBackIconButton(),
+          leading: const GoBackIconButton(toRoot: false),
           elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.background),
       body: SingleChildScrollView(
@@ -123,7 +130,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                           const SizedBox(height: 20),
                           Text(
                               LocalizationService.of(context)?.translate(
-                                      'create_mailbox_header_label') ??
+                                      'update_mailbox_header_label') ??
                                   '',
                               style: TextStyle(
                                   fontSize: 25,
@@ -158,7 +165,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                           labelStyle: const TextStyle(
                                             fontSize: 15,
                                           ), //label style
-                                          prefixIcon: const EmailIcon(),
+                                          prefixIcon: const EmailIcon(size: 15),
                                           hintText: LocalizationService.of(
                                                       context)
                                                   ?.translate(
@@ -185,6 +192,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                             ),
                                           ),
                                         ),
+                                        initialValue: widget.mailbox['email'],
                                         textAlign: TextAlign.left,
                                         autofocus: true,
                                         validator: (String? value) {
@@ -251,7 +259,8 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                             labelStyle: const TextStyle(
                                               fontSize: 15,
                                             ), //label style
-                                            prefixIcon: const PasswordIcon(),
+                                            prefixIcon:
+                                                const PasswordIcon(size: 20),
                                             suffixIcon: Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
@@ -287,6 +296,8 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                   )),
                                             ),
                                           ),
+                                          initialValue:
+                                              widget.mailbox['password'],
                                           textAlign: TextAlign.left,
                                           autofocus: true,
                                           validator: (String? value) {
@@ -326,7 +337,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                           labelStyle: const TextStyle(
                                             fontSize: 15,
                                           ), //label style
-                                          prefixIcon: const ImapIcon(),
+                                          prefixIcon: const ImapIcon(size: 20),
                                           hintText: LocalizationService.of(
                                                       context)
                                                   ?.translate(
@@ -353,6 +364,8 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                             ),
                                           ),
                                         ),
+                                        initialValue:
+                                            widget.mailbox['imap_url'],
                                         textAlign: TextAlign.left,
                                         autofocus: true,
                                         validator: (String? value) {
@@ -393,7 +406,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                           labelStyle: const TextStyle(
                                             fontSize: 15,
                                           ), //label style
-                                          prefixIcon: const PortIcon(),
+                                          prefixIcon: const PortIcon(size: 20),
                                           hintText: LocalizationService.of(
                                                       context)
                                                   ?.translate(
@@ -420,6 +433,8 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                             ),
                                           ),
                                         ),
+                                        initialValue:
+                                            widget.mailbox['imap_port'],
                                         textAlign: TextAlign.left,
                                         autofocus: true,
                                         validator: (String? value) {
@@ -460,7 +475,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                           labelStyle: const TextStyle(
                                             fontSize: 15,
                                           ), //label style
-                                          prefixIcon: const SmtpIcon(),
+                                          prefixIcon: const SmtpIcon(size: 20),
                                           hintText: LocalizationService.of(
                                                       context)
                                                   ?.translate(
@@ -487,10 +502,11 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                             ),
                                           ),
                                         ),
+                                        initialValue:
+                                            widget.mailbox['smtp_url'],
                                         textAlign: TextAlign.left,
                                         autofocus: true,
                                         validator: (String? value) {
-                                          //print(value.length);
                                           return (value != null &&
                                                   value.length < 2)
                                               ? LocalizationService.of(context)
@@ -527,7 +543,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                           labelStyle: const TextStyle(
                                             fontSize: 15,
                                           ), //label style
-                                          prefixIcon: const PortIcon(),
+                                          prefixIcon: const PortIcon(size: 20),
                                           hintText: LocalizationService.of(
                                                       context)
                                                   ?.translate(
@@ -554,10 +570,11 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                             ),
                                           ),
                                         ),
+                                        initialValue:
+                                            widget.mailbox['smtp_port'],
                                         textAlign: TextAlign.left,
                                         autofocus: true,
                                         validator: (String? value) {
-                                          //print(value.length);
                                           return (value != null &&
                                                   value.length < 2)
                                               ? LocalizationService.of(context)
@@ -570,6 +587,36 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                           setState(() => smtpPort = val);
                                         }),
                                   ),
+                                  const SizedBox(height: 15),
+                                  DropdownButtonFormField(
+                                      items: options.map((String option) {
+                                        return DropdownMenuItem(
+                                            value: option, child: Text(option));
+                                      }).toList(),
+                                      onChanged: (newValue) {
+                                        setState(() => {
+                                              selectedValue = newValue,
+                                              active = selectedValue == 'active'
+                                                  ? true
+                                                  : false
+                                            });
+                                        active = selectedValue == 'active'
+                                            ? true
+                                            : false;
+                                      },
+                                      value: selectedValue == null ||
+                                              selectedValue == ''
+                                          ? widget.mailbox['active'] == true
+                                              ? 'active'
+                                              : 'inactive'
+                                          : selectedValue,
+                                      decoration: InputDecoration(
+                                          //hintText: 'Mailbox status',
+                                          prefixIcon:
+                                              const StatusIcon(size: 20),
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0)))),
                                   const SizedBox(height: 15),
                                   SizedBox(
                                     width: ResponsiveValue(context,
@@ -589,6 +636,22 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                             onPressed: () async {
                                               if (formKey.currentState!
                                                   .validate()) {
+                                                setState(() {
+                                                  email ??=
+                                                      widget.mailbox['email'];
+                                                  password ??= widget
+                                                      .mailbox['password'];
+                                                  imapUrl ??= widget
+                                                      .mailbox['imap_url'];
+                                                  imapPort ??= widget
+                                                      .mailbox['imap_port'];
+                                                  smtpUrl ??= widget
+                                                      .mailbox['smtp_url'];
+                                                  smtpPort ??= widget
+                                                      .mailbox['smtp_port'];
+                                                  active ??=
+                                                      widget.mailbox['active'];
+                                                });
                                                 submit();
                                               } else {
                                                 setState(() {
@@ -609,7 +672,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                   : LocalizationService.of(
                                                               context)
                                                           ?.translate(
-                                                              'create_mailbox_button_label') ??
+                                                              'update_mailbox_button_label') ??
                                                       '',
                                               style: TextStyle(
                                                   color: Theme.of(context)
@@ -622,6 +685,22 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                             onPressed: () async {
                                               if (formKey.currentState!
                                                   .validate()) {
+                                                setState(() {
+                                                  email ??=
+                                                      widget.mailbox['email'];
+                                                  password ??= widget
+                                                      .mailbox['password'];
+                                                  imapUrl ??= widget
+                                                      .mailbox['imap_url'];
+                                                  imapPort ??= widget
+                                                      .mailbox['imap_port'];
+                                                  smtpUrl ??= widget
+                                                      .mailbox['smtp_url'];
+                                                  smtpPort ??= widget
+                                                      .mailbox['smtp_port'];
+                                                  active ??=
+                                                      widget.mailbox['active'];
+                                                });
                                                 submit();
                                               } else {
                                                 setState(() {
@@ -642,7 +721,7 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                     : LocalizationService.of(
                                                                 context)
                                                             ?.translate(
-                                                                'create_mailbox_button_label') ??
+                                                                'update_mailbox_button_label') ??
                                                         '',
                                                 style: TextStyle(
                                                     color: Theme.of(context)

@@ -385,7 +385,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         }
                                         return const Loader(size: 25.0);
                                       },
-                                      future: MailBoxService().loadMailBoxes(),
+                                      future: MailBoxService()
+                                          .loadVerifiedMailBoxes(),
                                     ),
                                   )
                                 : Container(),

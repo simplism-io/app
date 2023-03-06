@@ -304,7 +304,7 @@ class MailboxOverviewScreen extends StatelessWidget {
                             return const Loader(size: 50.0);
                           }
                         },
-                        future: MailBoxService().loadMailBoxes(),
+                        future: MailBoxService().loadVerifiedMailBoxes(),
                       )))),
         ));
   }

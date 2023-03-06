@@ -59,9 +59,9 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
     Future<void> verifyMailBox() async {
       setState(() => loaderTestMailBox = true);
       final mailBoxId = await MailBoxService().createOrUpdateMailBox(
-          email, password, imapUrl, imapPort, smtpUrl, smtpPort);
+          email, password?.trim(), imapUrl, imapPort, smtpUrl, smtpPort);
       if (mailBoxId != null) {
-        await Future.delayed(const Duration(seconds: 5));
+        await Future.delayed(const Duration(seconds: 20));
         final mailBox = await MailBoxService().loadMailBox(mailBoxId);
         if (mailBox['verified'] == true) {
           setState(() {
@@ -76,7 +76,6 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
             mailBoxIsVerified = false;
             loaderTestMailBox = false;
           });
-          //await MailBoxService().deleteMailbox(mailboxId);
         }
       } else {
         setState(() {
@@ -629,11 +628,13 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                   defaultTargetPlatform ==
                                                       TargetPlatform.macOS)
                                               ? CupertinoButton(
-                                                  onPressed:
-                                                      canTestMailBox == true
-                                                          ? () async =>
-                                                              verifyMailBox()
-                                                          : null,
+                                                  onPressed: canTestMailBox ==
+                                                              true &&
+                                                          mailBoxIsVerified ==
+                                                              false
+                                                      ? () async =>
+                                                          verifyMailBox()
+                                                      : null,
                                                   color: Theme.of(context)
                                                       .colorScheme
                                                       .primary,
@@ -658,11 +659,13 @@ class _CreateMailboxScreenState extends State<CreateMailboxScreen> {
                                                   ),
                                                 )
                                               : ElevatedButton(
-                                                  onPressed:
-                                                      canTestMailBox == true
-                                                          ? () async =>
-                                                              verifyMailBox()
-                                                          : null,
+                                                  onPressed: canTestMailBox ==
+                                                              true &&
+                                                          mailBoxIsVerified ==
+                                                              false
+                                                      ? () async =>
+                                                          verifyMailBox()
+                                                      : null,
                                                   child: Padding(
                                                     padding: const EdgeInsets
                                                             .fromLTRB(

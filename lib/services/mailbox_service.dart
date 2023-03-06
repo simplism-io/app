@@ -6,10 +6,13 @@ final supabase = Supabase.instance.client;
 class MailBoxService extends ChangeNotifier {
   Map? mailboxStatus;
 
-  Future loadMailBoxes() async {
-    return await supabase.from('mailboxes').select('*, emails(id)').eq(
-        'organisation_id',
-        supabase.auth.currentSession!.user.userMetadata!['organisation_id']);
+  Future loadVerifiedMailBoxes() async {
+    return await supabase
+        .from('mailboxes')
+        .select('*, emails(id)')
+        .eq('organisation_id',
+            supabase.auth.currentSession!.user.userMetadata!['organisation_id'])
+        .eq('verified', true);
   }
 
   Future loadMailBox(mailBoxId) async {
@@ -32,9 +35,6 @@ class MailBoxService extends ChangeNotifier {
   Future createOrUpdateMailBox(
       email, password, imapUrl, imapPort, smtpUrl, smtpPort) async {
     final mailBoxLoaded = await loadMailBoxWithoutId(email);
-
-    print(mailBoxLoaded);
-
     String? mailBoxId;
 
     if (mailBoxLoaded.length == 0) {
@@ -71,7 +71,7 @@ class MailBoxService extends ChangeNotifier {
               'smtp_url': smtpUrl,
               'smtp_port': smtpPort,
               'verified': false,
-              'active': true,
+              'active': false,
             })
             .match({'id': mailBoxLoaded[0]['id']})
             .select()
@@ -171,6 +171,27 @@ class MailBoxService extends ChangeNotifier {
   }
 
   Future deleteMailBox(mailBoxId) async {
-    return supabase.from('mailboxes').delete().match({'id': mailBoxId});
+    try {
+      if (kDebugMode) {
+        print('Trying to confirm mailbox');
+      }
+      final mailbox = await supabase
+          .from('mailboxes')
+          .update({'deleted': true})
+          .match({'id': mailBoxId})
+          .select()
+          .single();
+
+      if (mailbox != null) {
+        await supabase.from('mailboxes').delete().match({'id': mailBoxId});
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
   }
 }

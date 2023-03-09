@@ -14,7 +14,11 @@ class GithubIconButton extends StatelessWidget {
       hiddenWhen: const [Condition.smallerThan(name: TABLET)],
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-            0.0,
+            ResponsiveValue(context, defaultValue: 10.0, valueWhen: const [
+                  Condition.smallerThan(name: DESKTOP, value: 15.0),
+                  Condition.largerThan(name: TABLET, value: 375.0)
+                ]).value ??
+                50.0,
             10.0,
             ResponsiveValue(context, defaultValue: 10.0, valueWhen: const [
                   Condition.smallerThan(name: TABLET, value: 10.0)

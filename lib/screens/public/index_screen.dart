@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../constants/drop_downs/language_header_dropdown_widget.dart';
 import '../../constants/headers/public_menu_header.dart';
@@ -40,6 +42,13 @@ class _IndexScreenState extends State<IndexScreen> {
   bool signup = false;
 
   bool obscureText = true;
+
+// If the requirement is just to play a single video.
+  final _controller = YoutubePlayerController.fromVideoId(
+    videoId: '_x5AnAmJLAA',
+    autoPlay: false,
+    params: const YoutubePlayerParams(showFullscreenButton: false),
+  );
 
   toggleObscure() {
     setState(() => obscureText = !obscureText);
@@ -97,9 +106,9 @@ class _IndexScreenState extends State<IndexScreen> {
           const FeaturesHeaderLink(highlight: false),
           const PricingHeaderLink(highlight: false),
           const FaqHeaderLink(highlight: false),
-          const LanguageHeaderDropdown(),
-          const ThemeHeaderIconButton(),
           const GithubIconButton(),
+          const ThemeHeaderIconButton(),
+          const LanguageHeaderDropdown(),
           (defaultTargetPlatform == TargetPlatform.iOS ||
                   defaultTargetPlatform == TargetPlatform.android)
               ? Container()
@@ -138,6 +147,17 @@ class _IndexScreenState extends State<IndexScreen> {
                             ]).value,
                         fontWeight: FontWeight.bold)),
               ),
+              const SizedBox(height: 50),
+              SizedBox(
+                width: 800,
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: YoutubePlayer(
+                    controller: _controller,
+                    aspectRatio: 16 / 9,
+                  ),
+                ),
+              )
             ],
           ),
         ),

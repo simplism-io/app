@@ -33,6 +33,7 @@ class MessageDetailScreen extends StatefulWidget {
 
 class _MessageDetailScreenState extends State<MessageDetailScreen> {
   bool showPreviousMessages = false;
+  bool loader = false;
 
   toggleShowPreviousMessages() {
     setState(() {
@@ -794,7 +795,7 @@ class _ReplyFormState extends State<ReplyForm> {
                                           child: IconButton(
                                               onPressed: () =>
                                                   {Navigator.of(context).pop()},
-                                              icon: Icon(FontAwesomeIcons
+                                              icon: const Icon(FontAwesomeIcons
                                                   .circleXmark))),
                                       ResponsiveVisibility(
                                           visible: false,
@@ -804,7 +805,11 @@ class _ReplyFormState extends State<ReplyForm> {
                                           child: TextButton(
                                               onPressed: () =>
                                                   {Navigator.of(context).pop()},
-                                              child: Text('Close'))),
+                                              child: Text(LocalizationService
+                                                          .of(context)
+                                                      ?.translate(
+                                                          'close_button_label') ??
+                                                  ''))),
                                       ResponsiveVisibility(
                                           visible: false,
                                           visibleWhen: const [

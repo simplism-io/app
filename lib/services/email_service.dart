@@ -30,7 +30,6 @@ class EmailService {
           'mailbox_id': mailboxId,
           'email_addresses_id': emailAddressId,
           'body_html': bodyHtml,
-          'executed': false
         })
         .select()
         .single();

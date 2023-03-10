@@ -500,6 +500,7 @@ class _ReplyFormState extends State<ReplyForm> {
       bodyHtml = await controller.getText();
       bodyText = formatHtmlString(bodyHtml!)!.trim();
       controller.enableEditor(false);
+      bool loader = false;
 
       final result = await MessageService().sendMessageProcedure(
           message['id'],

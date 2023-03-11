@@ -128,9 +128,9 @@ class MessageService extends ChangeNotifier {
       messages = await supabase
           .from('messages')
           .select(
-              'id, subject, body, created, incoming, answered, channel_id, channels(channel), customer_id, customers(id, name, avatar),  messages_agents(agent_id, agents(id, name)), emails(body_html), errors(*)')
+              'id, subject, body, show, created, channel_id, channels(channel), customer_id, customers(id, name, avatar),  messages_agents(agent_id, agents(id, name)), emails(body_html), errors(*)')
           .eq('organisation_id', organisationId)
-          .eq('incoming', true)
+          .eq('show', true)
           .order('created', ascending: false);
       await saveTotalMessageCountToPrefs((messages.length).toString());
       notifyListeners();
@@ -143,9 +143,9 @@ class MessageService extends ChangeNotifier {
       messages = await supabase
           .from('messages')
           .select(
-              'id, subject, body, message_to_answer_id, created, incoming, answered, channel_id, channels(channel), customer_id, customers(id, name),  messages_agents(agent_id, agents(id, name)), emails(body_html), errors(*)')
+              'id, subject, body, show, created, channel_id, channels(channel), customer_id, customers(id, name),  messages_agents(agent_id, agents(id, name)), emails(body_html), errors(*)')
           .eq('organisation_id', organisationId)
-          .eq('incoming', true)
+          .eq('show', true)
           .eq(viewDecoded['key'], viewDecoded['value'])
           .order('created', ascending: false);
       notifyListeners();
@@ -158,7 +158,7 @@ class MessageService extends ChangeNotifier {
     final messageHistory = await supabase
         .from('messages')
         .select(
-            'id, subject, body, message_to_answer_id, incoming, created, channel_id, channels(channel), customer_id, customers(id, name, avatar), emails(body_html), messages_agents(agent_id, agents(id, name))), errors(*)')
+            'id, subject, body, created, channel_id, channels(channel), customer_id, customers(id, name, avatar), emails(body_html), messages_agents(agent_id, agents(id, name))), errors(*)')
         .eq('customer_id', customerId)
         .order('created', ascending: true);
     return messageHistory;
@@ -168,7 +168,7 @@ class MessageService extends ChangeNotifier {
     final previousMessages = await supabase
         .from('messages')
         .select(
-            'id, subject, body, message_to_answer_id, incoming, created, channel_id, channels(channel), customer_id, customers(id, name, avatar), emails(body_html), messages_agents(agent_id, agents(id, name))), errors(*)')
+            'id, subject, body, created, channel_id, channels(channel), customer_id, customers(id, name, avatar), emails(body_html), messages_agents(agent_id, agents(id, name))), errors(*)')
         .eq('customer_id', customerId)
         .eq('subject', subject)
         .order('created', ascending: true);
@@ -181,61 +181,67 @@ class MessageService extends ChangeNotifier {
       print('Trying to send message');
     }
     bool error = false;
-    final resultCreateMessage = await createMessage(
-        messageId, channelId, customerId, subject, bodyText);
-
+    final resultCreateMessage =
+        await createMessage(channelId, customerId, subject, bodyText);
     if (resultCreateMessage != null) {
       final newMessageId = resultCreateMessage;
-      final resultCreateMessageAgent =
-          await createMessageAgent(newMessageId, agentId);
-
-      if (resultCreateMessageAgent == true) {
-        switch (channel) {
-          case "email":
-            final originalEmail = await EmailService().getEmail(messageId);
-
-            if (originalEmail != null) {
-              final emailId = await EmailService().createEmail(
-                  newMessageId,
-                  originalEmail['mailbox_id'],
-                  originalEmail['email_addresses_id'],
-                  bodyHtml);
-              // ignore: unnecessary_null_comparison
-              if (emailId != null) {
-                if (attachments.length > 0) {
-                  final resultCreateAttachments = await AttachmentService()
-                      .createAttachments(attachments, newMessageId);
-                  if (resultCreateAttachments == true) {
+      final resultCreateMessageReply =
+          await createMessageReply(newMessageId, messageId);
+      if (resultCreateMessageReply == true) {
+        final resultCreateMessageAgent =
+            await createMessageAgent(newMessageId, agentId);
+        if (resultCreateMessageAgent == true) {
+          switch (channel) {
+            case "email":
+              final originalEmail = await EmailService().getEmail(messageId);
+              if (originalEmail != null) {
+                final emailId = await EmailService().createEmail(
+                    newMessageId,
+                    originalEmail['mailbox_id'],
+                    originalEmail['email_addresses_id'],
+                    bodyHtml);
+                // ignore: unnecessary_null_comparison
+                if (emailId != null) {
+                  if (attachments.length > 0) {
+                    final resultCreateAttachments = await AttachmentService()
+                        .createAttachments(attachments, newMessageId);
+                    if (resultCreateAttachments == true) {
+                      if (kDebugMode) {
+                        print('Transaction complete');
+                      }
+                    } else {
+                      error = true;
+                      deleteMessage(newMessageId);
+                    }
+                  } else {
                     if (kDebugMode) {
                       print('Transaction complete');
                     }
-                  } else {
-                    error = true;
-                    deleteMessage(newMessageId);
                   }
                 } else {
-                  if (kDebugMode) {
-                    print('Transaction complete');
-                  }
+                  error = true;
+                  deleteMessage(newMessageId);
                 }
               } else {
-                error = true;
-                deleteMessage(newMessageId);
+                if (kDebugMode) {
+                  error = true;
+                  print('originalEmail is null');
+                }
               }
-            } else {
-              if (kDebugMode) {
-                error = true;
-                print('originalEmail is null');
-              }
-            }
-            break;
-          case "viber":
-            break;
+              break;
+            case "viber":
+              break;
+          }
+        } else {
+          error = true;
+          if (kDebugMode) {
+            print('resultCreateMessageAgent is null');
+          }
         }
       } else {
         error = true;
         if (kDebugMode) {
-          print('resultCreateMessageAgent is null');
+          print('resultCreateMessageReply is null');
         }
       }
     } else {
@@ -251,8 +257,7 @@ class MessageService extends ChangeNotifier {
     }
   }
 
-  Future createMessage(
-      messageId, channelId, customerId, subject, bodyText) async {
+  Future createMessage(channelId, customerId, subject, bodyText) async {
     if (kDebugMode) {
       print('Trying to create message');
     }
@@ -262,10 +267,9 @@ class MessageService extends ChangeNotifier {
           'organisation_id': organisationId,
           'channel_id': channelId,
           'customer_id': customerId,
-          'message_to_answer_id': messageId,
           'subject': subject,
           'body': bodyText,
-          'incoming': false
+          'show': false
         })
         .select()
         .single();
@@ -274,6 +278,26 @@ class MessageService extends ChangeNotifier {
       return message['id'];
     } else {
       return null;
+    }
+  }
+
+  Future createMessageReply(messageId, replyMessageId) async {
+    if (kDebugMode) {
+      print('Trying to create message reply');
+    }
+    final messageReply = await supabase
+        .from('messages_replies')
+        .insert({
+          'message_id': messageId,
+          'reply_message_id': replyMessageId,
+        })
+        .select()
+        .single();
+
+    if (messageReply != null) {
+      return true;
+    } else {
+      return false;
     }
   }
 

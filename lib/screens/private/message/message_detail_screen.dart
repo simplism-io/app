@@ -19,6 +19,7 @@ import '../../../services/localization_service.dart';
 import '../../../services/message_service.dart';
 import '../../../services/util_service.dart';
 import 'messages_by_customer_screen.dart';
+import 'messages_screen.dart';
 
 class MessageDetailScreen extends StatefulWidget {
   final Map message;
@@ -532,7 +533,8 @@ class _ReplyFormState extends State<ReplyForm> {
           loader = false;
         });
         controller.clear();
-        Navigator.pop(context);
+        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+            builder: (context) => MessagesScreen(agent: widget.agent)));
       } else {
         if (!mounted) {
           return;

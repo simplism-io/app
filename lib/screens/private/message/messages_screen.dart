@@ -745,22 +745,28 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                 name: MOBILE, value: 10.0)
                                           ]).value!,
                                       0.0),
-                                  child: Card(
-                                    color:
-                                        Theme.of(context).colorScheme.surface,
-                                    elevation: 0,
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          15.0, 10.0, 15.0, 10.0),
-                                      child: Row(
-                                        children: [
-                                          Text(LocalizationService.of(context)
-                                                  ?.translate(
-                                                      'no_data_message_messages') ??
-                                              ''),
-                                        ],
+                                  child: Column(
+                                    children: [
+                                      Card(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
+                                        elevation: 0,
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              15.0, 10.0, 15.0, 10.0),
+                                          child: Row(
+                                            children: [
+                                              Text(LocalizationService.of(
+                                                          context)
+                                                      ?.translate(
+                                                          'no_data_message_messages') ??
+                                                  ''),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 )
                               : const Loader(size: 50.0)),

@@ -514,224 +514,292 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               itemBuilder: (context, index) {
                                 ms.messages[index]['customers'];
                                 localMessages = ms.messages;
-                                return ms.messages[index]['answered'] == false
-                                    ? SizedBox(
-                                        child: Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                0.0,
-                                                0.0,
-                                                ResponsiveValue(context,
-                                                    defaultValue: 0.0,
-                                                    valueWhen: [
-                                                      const Condition
-                                                              .largerThan(
-                                                          name: MOBILE,
-                                                          value: 10.0)
-                                                    ]).value!,
-                                                0.0),
-                                            child: Column(
-                                              children: [
-                                                GestureDetector(
-                                                    onTap: () => {
-                                                          Navigator.of(context,
-                                                                  rootNavigator:
-                                                                      true)
-                                                              .push(
-                                                            MaterialPageRoute(
-                                                                builder: (context) => MessageDetailScreen(
-                                                                    message: ms
-                                                                            .messages[
-                                                                        index],
-                                                                    agent: widget
-                                                                        .agent)),
-                                                          )
-                                                        },
-                                                    child: Card(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .surface,
-                                                        elevation: 0,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
+                                return SizedBox(
+                                  child: Padding(
+                                      padding: EdgeInsets.fromLTRB(
+                                          0.0,
+                                          0.0,
+                                          ResponsiveValue(context,
+                                              defaultValue: 0.0,
+                                              valueWhen: [
+                                                const Condition.largerThan(
+                                                    name: MOBILE, value: 10.0)
+                                              ]).value!,
+                                          0.0),
+                                      child: Column(
+                                        children: [
+                                          GestureDetector(
+                                              onTap: () => {
+                                                    Navigator.of(context,
+                                                            rootNavigator: true)
+                                                        .push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              MessageDetailScreen(
+                                                                  message:
+                                                                      ms.messages[
+                                                                          index],
+                                                                  agent: widget
+                                                                      .agent)),
+                                                    )
+                                                  },
+                                              child: Card(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .surface,
+                                                  elevation: 0,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                            .fromLTRB(
+                                                        15, 10, 15, 10),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        ResponsiveVisibility(
+                                                            hiddenWhen: const [
+                                                              Condition
+                                                                  .largerThan(
+                                                                      name:
+                                                                          MOBILE)
+                                                            ],
+                                                            child: Row(
+                                                              children: [
+                                                                TextButton(
+                                                                  style: TextButton
+                                                                      .styleFrom(
+                                                                    padding:
+                                                                        EdgeInsets
+                                                                            .zero,
+                                                                    minimumSize:
+                                                                        const Size(
+                                                                            40,
+                                                                            20),
+                                                                    tapTargetSize:
+                                                                        MaterialTapTargetSize
+                                                                            .shrinkWrap,
+                                                                  ),
+                                                                  onPressed:
+                                                                      () => {
+                                                                    Navigator.of(
+                                                                            context,
+                                                                            rootNavigator:
+                                                                                true)
+                                                                        .push(MaterialPageRoute(
+                                                                            builder: (context) =>
+                                                                                MessagesByCustomerScreen(customer: ms.messages[index]['customers'], agent: widget.agent))),
+                                                                  },
+                                                                  child: Text(
+                                                                      ms.messages[index]
+                                                                              [
+                                                                              'customers']
+                                                                          [
+                                                                          'name'],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              10)),
+                                                                ),
+                                                                const Spacer(),
+                                                                Text(
+                                                                  Jiffy(ms.messages[
+                                                                              index]
+                                                                          [
+                                                                          'created'])
+                                                                      .fromNow(),
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          10,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                              .fromLTRB(
+                                                                          3,
+                                                                          0,
+                                                                          3,
+                                                                          0),
+                                                                  child: Text(
+                                                                      'via',
+                                                                      style: const TextStyle(
+                                                                          fontSize:
+                                                                              10,
+                                                                          fontWeight:
+                                                                              FontWeight.bold)),
+                                                                ),
+                                                                Padding(
+                                                                  padding: EdgeInsets
                                                                       .fromLTRB(
-                                                                  15,
-                                                                  10,
-                                                                  15,
-                                                                  10),
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              ResponsiveVisibility(
-                                                                  hiddenWhen: const [
-                                                                    Condition.largerThan(
-                                                                        name:
-                                                                            MOBILE)
-                                                                  ],
-                                                                  child: Row(
-                                                                    children: [
-                                                                      TextButton(
-                                                                        style: TextButton
-                                                                            .styleFrom(
-                                                                          padding:
-                                                                              EdgeInsets.zero,
-                                                                          minimumSize: const Size(
-                                                                              40,
-                                                                              20),
-                                                                          tapTargetSize:
-                                                                              MaterialTapTargetSize.shrinkWrap,
-                                                                        ),
-                                                                        onPressed:
-                                                                            () =>
+                                                                          0,
+                                                                          1,
+                                                                          0,
+                                                                          0),
+                                                                  child: UtilService().getIcon(
+                                                                      ms.messages[index]
+                                                                              [
+                                                                              'channels']
+                                                                          [
+                                                                          'channel']),
+                                                                ),
+                                                              ],
+                                                            )),
+                                                        Row(
+                                                          children: [
+                                                            ResponsiveVisibility(
+                                                                hiddenWhen: const [
+                                                                  Condition
+                                                                      .smallerThan(
+                                                                          name:
+                                                                              TABLET)
+                                                                ],
+                                                                child: SizedBox(
+                                                                    width: ResponsiveValue(
+                                                                            context,
+                                                                            defaultValue:
+                                                                                110.0,
+                                                                            valueWhen: [
+                                                                          const Condition.largerThan(
+                                                                              name: TABLET,
+                                                                              value: 150.0),
+                                                                        ])
+                                                                        .value!,
+                                                                    child:
+                                                                        TextButton(
+                                                                            style: TextButton.styleFrom(
+                                                                                padding: EdgeInsets
+                                                                                    .zero,
+                                                                                minimumSize: const Size(50,
+                                                                                    30),
+                                                                                tapTargetSize: MaterialTapTargetSize
+                                                                                    .shrinkWrap,
+                                                                                alignment: Alignment
+                                                                                    .centerLeft),
+                                                                            onPressed: () =>
                                                                                 {
-                                                                          Navigator.of(context, rootNavigator: true)
-                                                                              .push(MaterialPageRoute(builder: (context) => MessagesByCustomerScreen(customer: ms.messages[index]['customers'], agent: widget.agent))),
-                                                                        },
-                                                                        child: Text(
-                                                                            ms.messages[index]['customers'][
-                                                                                'name'],
-                                                                            style:
-                                                                                TextStyle(fontSize: 10)),
-                                                                      ),
-                                                                      const Spacer(),
-                                                                      Text(
-                                                                        Jiffy(ms.messages[index]['created'])
-                                                                            .fromNow(),
-                                                                        style: const TextStyle(
-                                                                            fontSize:
-                                                                                10,
-                                                                            fontWeight:
-                                                                                FontWeight.bold),
-                                                                      ),
-                                                                      Padding(
-                                                                        padding: const EdgeInsets.fromLTRB(
-                                                                            3,
-                                                                            0,
-                                                                            3,
-                                                                            0),
-                                                                        child: Text(
-                                                                            'via',
-                                                                            style:
-                                                                                const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                                                                      ),
-                                                                      Padding(
-                                                                        padding: EdgeInsets.fromLTRB(
+                                                                                  toggleCustomerBar(ms.messages[index]['customers'])
+                                                                                },
+                                                                            child:
+                                                                                Text(
+                                                                              UtilService().truncateString(
+                                                                                  ms.messages[index]['customers']['name'],
+                                                                                  ResponsiveValue(context, defaultValue: 12, valueWhen: [
+                                                                                    const Condition.largerThan(name: TABLET, value: 18),
+                                                                                    const Condition.smallerThan(name: TABLET, value: 12)
+                                                                                  ]).value!),
+                                                                            )))),
+                                                            Text(
+                                                              ms.messages[index]
+                                                                              [
+                                                                              'channels']
+                                                                          [
+                                                                          'channel'] ==
+                                                                      'alert'
+                                                                  ? UtilService()
+                                                                      .truncateString(
+                                                                          LocalizationService.of(context)?.translate(ms.messages[index]["subject"]) ??
+                                                                              '',
+                                                                          ResponsiveValue(
+                                                                              context,
+                                                                              defaultValue: showSideBar == true || showCustomerBar == true ? 40 : 60,
+                                                                              valueWhen: [
+                                                                                Condition.largerThan(name: TABLET, value: showSideBar == true ? 60 : 70),
+                                                                                const Condition.smallerThan(name: TABLET, value: 35)
+                                                                              ]).value!)
+                                                                  : UtilService().truncateString(
+                                                                      ms.messages[index]["subject"],
+                                                                      ResponsiveValue(context, defaultValue: showSideBar == true || showCustomerBar == true ? 40 : 60, valueWhen: [
+                                                                        Condition.largerThan(
+                                                                            name:
+                                                                                TABLET,
+                                                                            value: showSideBar == true || showCustomerBar == true
+                                                                                ? 60
+                                                                                : 70),
+                                                                        const Condition.smallerThan(
+                                                                            name:
+                                                                                TABLET,
+                                                                            value:
+                                                                                35)
+                                                                      ]).value!),
+                                                              style: const TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                            const Spacer(),
+                                                            ResponsiveVisibility(
+                                                                hiddenWhen: const [
+                                                                  Condition
+                                                                      .smallerThan(
+                                                                          name:
+                                                                              TABLET)
+                                                                ],
+                                                                child: Text(
+                                                                  Jiffy(ms.messages[
+                                                                              index]
+                                                                          [
+                                                                          'created'])
+                                                                      .fromNow(),
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          10,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                )),
+                                                            const ResponsiveVisibility(
+                                                                hiddenWhen: [
+                                                                  Condition
+                                                                      .smallerThan(
+                                                                          name:
+                                                                              TABLET)
+                                                                ],
+                                                                child: Padding(
+                                                                  padding: EdgeInsets
+                                                                      .fromLTRB(
+                                                                          3,
+                                                                          0,
+                                                                          3,
+                                                                          0),
+                                                                  child: Text(
+                                                                      'via',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              10,
+                                                                          fontWeight:
+                                                                              FontWeight.bold)),
+                                                                )),
+                                                            ResponsiveVisibility(
+                                                                hiddenWhen: const [
+                                                                  Condition
+                                                                      .smallerThan(
+                                                                          name:
+                                                                              TABLET)
+                                                                ],
+                                                                child: Padding(
+                                                                    padding: EdgeInsets
+                                                                        .fromLTRB(
                                                                             0,
                                                                             1,
                                                                             0,
                                                                             0),
-                                                                        child: UtilService().getIcon(ms.messages[index]['channels']
+                                                                    child: UtilService().getIcon(ms.messages[index]
                                                                             [
-                                                                            'channel']),
-                                                                      ),
-                                                                    ],
-                                                                  )),
-                                                              Row(
-                                                                children: [
-                                                                  ResponsiveVisibility(
-                                                                      hiddenWhen: const [
-                                                                        Condition.smallerThan(
-                                                                            name:
-                                                                                TABLET)
-                                                                      ],
-                                                                      child: SizedBox(
-                                                                          width: ResponsiveValue(context, defaultValue: 110.0, valueWhen: [
-                                                                            const Condition.largerThan(
-                                                                                name: TABLET,
-                                                                                value: 150.0),
-                                                                          ]).value!,
-                                                                          child: TextButton(
-                                                                              style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(50, 30), tapTargetSize: MaterialTapTargetSize.shrinkWrap, alignment: Alignment.centerLeft),
-                                                                              onPressed: () => {toggleCustomerBar(ms.messages[index]['customers'])},
-                                                                              child: Text(
-                                                                                UtilService().truncateString(
-                                                                                    ms.messages[index]['customers']['name'],
-                                                                                    ResponsiveValue(context, defaultValue: 12, valueWhen: [
-                                                                                      const Condition.largerThan(name: TABLET, value: 18),
-                                                                                      const Condition.smallerThan(name: TABLET, value: 12)
-                                                                                    ]).value!),
-                                                                              )))),
-                                                                  Text(
-                                                                    ms.messages[index]['channels']['channel'] ==
-                                                                            'alert'
-                                                                        ? UtilService().truncateString(
-                                                                            LocalizationService.of(context)?.translate(ms.messages[index]["subject"]) ?? '',
-                                                                            ResponsiveValue(context, defaultValue: showSideBar == true || showCustomerBar == true ? 40 : 60, valueWhen: [
-                                                                              Condition.largerThan(name: TABLET, value: showSideBar == true ? 60 : 70),
-                                                                              const Condition.smallerThan(name: TABLET, value: 35)
-                                                                            ]).value!)
-                                                                        : UtilService().truncateString(
-                                                                            ms.messages[index]["subject"],
-                                                                            ResponsiveValue(context, defaultValue: showSideBar == true || showCustomerBar == true ? 40 : 60, valueWhen: [
-                                                                              Condition.largerThan(name: TABLET, value: showSideBar == true || showCustomerBar == true ? 60 : 70),
-                                                                              const Condition.smallerThan(name: TABLET, value: 35)
-                                                                            ]).value!),
-                                                                    style: const TextStyle(
-                                                                        fontSize:
-                                                                            15,
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                  const Spacer(),
-                                                                  ResponsiveVisibility(
-                                                                      hiddenWhen: const [
-                                                                        Condition.smallerThan(
-                                                                            name:
-                                                                                TABLET)
-                                                                      ],
-                                                                      child:
-                                                                          Text(
-                                                                        Jiffy(ms.messages[index]['created'])
-                                                                            .fromNow(),
-                                                                        style: const TextStyle(
-                                                                            fontSize:
-                                                                                10,
-                                                                            fontWeight:
-                                                                                FontWeight.bold),
-                                                                      )),
-                                                                  const ResponsiveVisibility(
-                                                                      hiddenWhen: [
-                                                                        Condition.smallerThan(
-                                                                            name:
-                                                                                TABLET)
-                                                                      ],
-                                                                      child:
-                                                                          Padding(
-                                                                        padding: EdgeInsets.fromLTRB(
-                                                                            3,
-                                                                            0,
-                                                                            3,
-                                                                            0),
-                                                                        child: Text(
-                                                                            'via',
-                                                                            style:
-                                                                                TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                                                                      )),
-                                                                  ResponsiveVisibility(
-                                                                      hiddenWhen: const [
-                                                                        Condition.smallerThan(
-                                                                            name:
-                                                                                TABLET)
-                                                                      ],
-                                                                      child: Padding(
-                                                                          padding: EdgeInsets.fromLTRB(
-                                                                              0,
-                                                                              1,
-                                                                              0,
-                                                                              0),
-                                                                          child:
-                                                                              UtilService().getIcon(ms.messages[index]['channels']['channel']))),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ))),
-                                              ],
-                                            )),
-                                      )
-                                    : Container(); //getMessages();
+                                                                            'channels']
+                                                                        [
+                                                                        'channel']))),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ))),
+                                        ],
+                                      )),
+                                );
+                                //getMessages();
                               })
                           : loaded == true
                               ? Padding(

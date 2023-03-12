@@ -129,7 +129,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                   children: const [
                     Padding(
                       padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                      child: GoBackTextButton(toRoot: true),
+                      child: GoBackTextButton(toRoot: false),
                     ),
                   ],
                 ),
@@ -688,7 +688,7 @@ class _ReplyFormState extends State<ReplyForm> {
                                                             'reply_message_hinttext') ??
                                                     '',
                                                 controller: controller,
-                                                height: 150,
+                                                minHeight: 150,
                                                 onTextChanged: (text) => debugPrint(
                                                     'widget text change $text'),
                                                 isEnabled: true,

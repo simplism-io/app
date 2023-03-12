@@ -19,7 +19,7 @@ dependencies:
   responsive_framework: ^0.2.0
   shared_preferences: ^2.0.18
   provider: ^6.0.5
-  image_picker: ^0.8.6+4
+  image_picker: ^0.8.7
   email_validator: ^2.1.16
   system_theme: ^2.1.0
   flutter_native_splash: ^2.2.16
@@ -27,7 +27,7 @@ dependencies:
   circle_flags: ^1.0.4
   flutter_html: ^3.0.0-alpha.6
   file_picker: ^5.2.5
-  quill_html_editor: ^2.1.4
+  quill_html_editor: ^2.1.5
   flutter_widget_from_html: ^0.10.0
   url_launcher: ^6.1.10
   jiffy: ^5.0.0
